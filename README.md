@@ -3,7 +3,7 @@
 <p align="center">
   <a href="https://app.voltz.xyz/">
     <picture>
-      <img src="./docs/voltz-background.jpeg" alt="Voltz" width="128" />
+      <img src="./docs/voltz-background.jpeg" alt="Voltz" width="512" />
     </picture>
   </a>
 </p>
