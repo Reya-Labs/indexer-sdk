@@ -74,7 +74,13 @@
     "semantic-release-cli": "5.4.4",
     "typescript": "4.9.4"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@google-cloud/bigquery": "^6.2.0",
+    "@google-cloud/storage": "^6.9.5",
+    "@voltz-protocol/v1-sdk": "^1.103.1",
+    "dotenv": "^16.0.3",
+    "ethers": "5.4.0"
+  },
   "release": {
     "branches": [
       "main"
@@ -156,5 +162,8 @@
     "node": ">= 16.17.0",
     "yarn": ">= 1.22.0",
     "npm": "please-use-yarn"
+  },
+  "transform": {
+    "\\.js$": "<rootDir>/node_modules/babel-jest"
   }
 }
