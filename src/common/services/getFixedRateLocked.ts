@@ -6,9 +6,14 @@ export const getFixedRateLocked = (
   variableTokenDelta: ethers.BigNumber,
   fixedTokenDeltaUnbalanced: ethers.BigNumber,
 ): number => {
-  const fixedRateLocked = variableTokenDelta
+
+  if (variableTokenDelta.eq(0)) {
+    return 0;
+  }
+
+  const fixedRateLocked = fixedTokenDeltaUnbalanced
     .mul(WAD)
-    .div(fixedTokenDeltaUnbalanced)
+    .div(variableTokenDelta)
     .div(ethers.BigNumber.from(10).pow(2))
     .abs();
 
