@@ -15,8 +15,6 @@ export const sync = async (
   let counter = 0;
 
   for (const { amm, swapEvents } of Object.values(previousSwapEvents)) {
-    console.log(`swap event length: ${swapEvents.length}`);
-
     const sortedSwapEvents = swapEvents.sort((a, b) => {
       if (a.blockNumber === b.blockNumber) {
         return a.transactionIndex - b.transactionIndex;
@@ -25,7 +23,7 @@ export const sync = async (
       return a.blockNumber - b.blockNumber;
     });
 
-    for (const swapEvent of sortedSwapEvents.slice(0, 1)) {
+    for (const swapEvent of sortedSwapEvents) {
       await processSwapEvent(bigQuery, amm, swapEvent);
       counter++;
     }

@@ -1,17 +1,27 @@
-import { BigQuery } from '@google-cloud/bigquery';
+import { BigQuery, BigQueryInt, BigQueryTimestamp } from '@google-cloud/bigquery';
 
 import { DATASET_ID, PROJECT_ID, SWAPS_TABLE_ID } from '../common';
+import { bqNumericToNumber, bqTimestampToUnixSeconds } from './utils';
 
 type SwapRow = {
-  id: string;
+  eventId: string;
+  vammAddress: string;
+  ownerAddress: string;
+  tickLower: number;
+  tickUpper: number;
+  notionalLocked: number;
+  fixedRateLocked: number;
+  feePaidToLps: number;
+  eventTimestamp: number;
+  rowLastUpdatedTimestamp: number;
 };
 
 export const pullExistingSwapRow = async (
   bigQuery: BigQuery,
   eventId: string,
 ): Promise<SwapRow | null> => {
-  const sqlQuery = `SELECT * FROM \`${PROJECT_ID}.${DATASET_ID}.${SWAPS_TABLE_ID}\`
-                      WHERE eventId=\"${eventId}\"`;
+  const swapTableId = `${PROJECT_ID}.${DATASET_ID}.${SWAPS_TABLE_ID}`;
+  const sqlQuery = `SELECT * FROM \`${swapTableId}\` WHERE eventId=\"${eventId}\"`;
 
   const options = {
     query: sqlQuery,
@@ -23,5 +33,29 @@ export const pullExistingSwapRow = async (
     return null;
   }
 
-  return rows[0] as SwapRow;
+  const swapRow = rows[0] as {
+    eventId: string,
+    vammAddress: string,
+    ownerAddress: string,
+    tickLower: number,
+    tickUpper: number,
+    notionalLocked: BigQueryInt,
+    fixedRateLocked: BigQueryInt,
+    feePaidToLps: BigQueryInt,
+    eventTimestamp: BigQueryTimestamp,
+    rowLastUpdatedTimestamp: BigQueryTimestamp,
+  };
+
+  return {
+    eventId: swapRow.eventId,
+    vammAddress: swapRow.vammAddress,
+    ownerAddress: swapRow.ownerAddress,
+    tickLower: swapRow.tickLower,
+    tickUpper: swapRow.tickUpper,
+    notionalLocked: bqNumericToNumber(swapRow.notionalLocked),
+    fixedRateLocked: bqNumericToNumber(swapRow.fixedRateLocked),
+    feePaidToLps: bqNumericToNumber(swapRow.feePaidToLps),
+    eventTimestamp: bqTimestampToUnixSeconds(swapRow.eventTimestamp),
+    rowLastUpdatedTimestamp: bqTimestampToUnixSeconds(swapRow.rowLastUpdatedTimestamp),
+  };
 };

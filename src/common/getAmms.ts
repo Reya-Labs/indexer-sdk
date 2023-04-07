@@ -19,5 +19,5 @@ export const getAmms = async (chainId: number, activeAtTimestamp: number): Promi
     return item.termEndTimestampInMS / 1000 > activeAtTimestamp;
   });
 
-  return activeAmms;
+  return activeAmms.slice(0, 1);
 };
