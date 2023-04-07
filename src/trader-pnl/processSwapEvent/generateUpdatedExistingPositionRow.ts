@@ -1,37 +1,30 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
-import { ethers } from 'ethers';
 
 import { PositionRow } from '../../big-query-support';
-import { getNetFixedRateLocked, getRealizedPnLSinceLastSwap, getTimestampInSeconds } from '../../common';
-import { parseSwapEvent } from './parseSwapEvent';
+import {
+  getNetFixedRateLocked,
+  getRealizedPnLSinceLastSwap,
+  getTimestampInSeconds,
+} from '../../common';
+import { SwapEventInfo } from './parseSwapEvent';
 
 export const generateUpdatedExistingPositionRow = async (
   bigQuery: BigQuery,
   amm: AMM,
-  event: ethers.Event,
+  eventInfo: SwapEventInfo,
+  eventTimestamp: number,
   existingPosition: PositionRow,
 ) => {
-  const {
-    vammAddress,
-    fixedRateLocked,
-    notionalLocked,
-    feePaidToLps,
-    eventTimestamp,
-    ownerAddress,
-    tickLower,
-    tickUpper,
-  } = await parseSwapEvent(amm, event);
-
   const rowLastUpdatedTimestamp = getTimestampInSeconds();
-  
-  const netNotionalLocked = existingPosition.netNotionalLocked + notionalLocked;
+
+  const netNotionalLocked = existingPosition.netNotionalLocked + eventInfo.notionalLocked;
 
   const netFixedRateLocked = getNetFixedRateLocked(
     existingPosition.netFixedRateLocked,
     existingPosition.netNotionalLocked,
-    fixedRateLocked,
-    notionalLocked,
+    eventInfo.fixedRateLocked,
+    eventInfo.notionalLocked,
   );
 
   const realizedPnLSinceLastSwap = await getRealizedPnLSinceLastSwap(
@@ -44,12 +37,12 @@ export const generateUpdatedExistingPositionRow = async (
 
   return {
     marginEngineAddress: amm.marginEngineAddress,
-    vammAddress: vammAddress,
-    ownerAddress: ownerAddress,
-    tickLower: tickLower,
-    tickUpper: tickUpper,
+    vammAddress: eventInfo.vammAddress,
+    ownerAddress: eventInfo.ownerAddress,
+    tickLower: eventInfo.tickLower,
+    tickUpper: eventInfo.tickUpper,
     realizedPnLFromSwaps: existingPosition.realizedPnLFromSwaps + realizedPnLSinceLastSwap,
-    realizedPnLFromFeesPaid: existingPosition.realizedPnLFromFeesPaid + feePaidToLps,
+    realizedPnLFromFeesPaid: existingPosition.realizedPnLFromFeesPaid + eventInfo.feePaidToLps,
     netNotionalLocked: netNotionalLocked,
     netFixedRateLocked: netFixedRateLocked,
     lastUpdatedTimestamp: bigQuery.timestamp(eventTimestamp).value,
