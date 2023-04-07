@@ -1,35 +1,28 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
-import { ethers } from 'ethers';
 
 import { getTimestampInSeconds } from '../../common';
-import { parseSwapEvent } from './parseSwapEvent';
+import { SwapEventInfo } from './parseSwapEvent';
 
-export const generateNewPositionRow = async (bigQuery: BigQuery, amm: AMM, event: ethers.Event) => {
-  const {
-    vammAddress,
-    fixedRateLocked,
-    notionalLocked,
-    feePaidToLps,
-    eventTimestamp,
-    ownerAddress,
-    tickLower,
-    tickUpper,
-  } = await parseSwapEvent(amm, event);
-
+export const generateNewPositionRow = (
+  bigQuery: BigQuery,
+  amm: AMM,
+  eventInfo: SwapEventInfo,
+  eventTimestamp: number,
+) => {
   const rowLastUpdatedTimestamp = getTimestampInSeconds();
 
   // todo: add variable and fixed token balances to the row
   return {
-    marginEngineAddress: amm.marginEngineAddress,
-    vammAddress: vammAddress,
-    ownerAddress: ownerAddress,
-    tickLower: tickLower,
-    tickUpper: tickUpper,
+    marginEngineAddress: amm.marginEngineAddress.toLowerCase(),
+    vammAddress: eventInfo.vammAddress,
+    ownerAddress: eventInfo.ownerAddress,
+    tickLower: eventInfo.tickLower,
+    tickUpper: eventInfo.tickUpper,
     realizedPnLFromSwaps: 0,
-    realizedPnLFromFeesPaid: feePaidToLps,
-    netNotionalLocked: notionalLocked,
-    netFixedRateLocked: fixedRateLocked,
+    realizedPnLFromFeesPaid: eventInfo.feePaidToLps,
+    netNotionalLocked: eventInfo.notionalLocked,
+    netFixedRateLocked: eventInfo.fixedRateLocked,
     lastUpdatedTimestamp: bigQuery.timestamp(eventTimestamp).value,
     rowLastUpdatedTimestamp: bigQuery.timestamp(rowLastUpdatedTimestamp).value,
     notionalLiquidityProvided: 0,

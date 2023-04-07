@@ -1,25 +1,26 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
-import { ethers } from 'ethers';
 
 import { DATASET_ID, POSITIONS_TABLE_ID, PROJECT_ID, SWAPS_TABLE_ID } from '../../common';
 import { generateNewPositionRow } from './generateNewPositionRow';
 import { generateSwapRow } from './generateSwapRow';
+import { SwapEventInfo } from './parseSwapEvent';
 
 export const insertNewSwapAndNewPosition = async (
   bigQuery: BigQuery,
   amm: AMM,
-  eventId: string,
-  event: ethers.Event,
+  eventInfo: SwapEventInfo,
+  eventTimestamp: number,
 ): Promise<void> => {
   console.log('Inserting a new swap and a new position');
 
-  const swapRow = await generateSwapRow(bigQuery, amm, eventId, event);
-  const positionRow = await generateNewPositionRow(bigQuery, amm, event);
+  // generate swap row
+  const swapRow = generateSwapRow(bigQuery, eventInfo, eventTimestamp);
 
   const swapTableId = `${PROJECT_ID}.${DATASET_ID}.${SWAPS_TABLE_ID}`;
+
   const rawSwapRow = `
-    \"${eventId}\",
+    \"${eventInfo.eventId}\",
     \"${swapRow.vammAddress}\",
     \"${swapRow.ownerAddress}\",
     ${swapRow.tickLower}, 
@@ -31,7 +32,11 @@ export const insertNewSwapAndNewPosition = async (
     \'${swapRow.rowLastUpdatedTimestamp}\'
   `;
 
+  // generate position row
+  const positionRow = generateNewPositionRow(bigQuery, amm, eventInfo, eventTimestamp);
+
   const positionTableId = `${PROJECT_ID}.${DATASET_ID}.${POSITIONS_TABLE_ID}`;
+
   const rawPositionRow = `
     \"${positionRow.marginEngineAddress}\",
     \"${positionRow.vammAddress}\",
@@ -53,6 +58,7 @@ export const insertNewSwapAndNewPosition = async (
     \'${swapRow.eventTimestamp}\'
   `;
 
+  // build and fire sql query
   const sqlTransactionQuery = `
     BEGIN 
       BEGIN TRANSACTION;
@@ -71,6 +77,6 @@ export const insertNewSwapAndNewPosition = async (
   await bigQuery.query(options);
 
   console.log(
-    `Inserted new swap with eventId: ${eventId} and inserted a new position for ${swapRow.ownerAddress}`,
+    `Inserted new swap with eventId: ${eventInfo.eventId} and inserted a new position for ${swapRow.ownerAddress}`,
   );
 };
