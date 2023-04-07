@@ -25,7 +25,7 @@ export const sync = async (
       return a.blockNumber - b.blockNumber;
     });
 
-    for (const swapEvent of sortedSwapEvents) {
+    for (const swapEvent of sortedSwapEvents.slice(0, 1)) {
       await processSwapEvent(bigQuery, amm, swapEvent);
       counter++;
     }

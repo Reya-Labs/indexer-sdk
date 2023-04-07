@@ -17,44 +17,50 @@ export const insertNewSwapAndNewPosition = async (
   const swapRow = await generateSwapRow(bigQuery, amm, eventId, event);
   const positionRow = await generateNewPositionRow(bigQuery, amm, event);
 
+  const swapTableId = `${PROJECT_ID}.${DATASET_ID}.${SWAPS_TABLE_ID}`;
+  const rawSwapRow = `
+    \"${eventId}\",
+    \"${swapRow.vammAddress}\",
+    \"${swapRow.ownerAddress}\",
+    ${swapRow.tickLower}, 
+    ${swapRow.tickUpper}, 
+    ${swapRow.notionalLocked}, 
+    ${swapRow.fixedRateLocked},
+    ${swapRow.feePaidToLps}, 
+    \'${swapRow.eventTimestamp}\', 
+    \'${swapRow.rowLastUpdatedTimestamp}\'
+  `;
+
+  const positionTableId = `${PROJECT_ID}.${DATASET_ID}.${POSITIONS_TABLE_ID}`;
+  const rawPositionRow = `
+    \"${positionRow.marginEngineAddress}\",
+    \"${positionRow.vammAddress}\",
+    \"${positionRow.ownerAddress}\",
+    ${positionRow.tickLower},
+    ${positionRow.tickUpper},
+    ${positionRow.realizedPnLFromSwaps},
+    ${positionRow.realizedPnLFromFeesPaid},
+    ${positionRow.netNotionalLocked},
+    ${positionRow.netFixedRateLocked},
+    \'${positionRow.lastUpdatedTimestamp}\',
+    ${positionRow.notionalLiquidityProvided},                
+    ${positionRow.realizedPnLFromFeesCollected},
+    ${positionRow.netMarginDeposited},
+    ${1},
+    \'${positionRow.rowLastUpdatedTimestamp}\',
+    ${0},
+    ${0},
+    \'${swapRow.eventTimestamp}\'
+  `;
+
   const sqlTransactionQuery = `
-              BEGIN 
-              
-              BEGIN TRANSACTION;
-                  
-                  INSERT INTO \`${PROJECT_ID}.${DATASET_ID}.${SWAPS_TABLE_ID}\`
-                  VALUES (\"${eventId}\",\"${swapRow.vammAddress}\",\"${swapRow.ownerAddress}\",
-                  ${swapRow.tickLower}, ${swapRow.tickUpper}, ${swapRow.notionalLocked}, ${
-    swapRow.fixedRateLocked
-  },
-                  ${swapRow.feePaidToLps}, \'${swapRow.eventTimestamp}\', \'${
-    swapRow.rowLastUpdatedTimestamp
-  }\');
-                  
-                  INSERT INTO \`${PROJECT_ID}.${DATASET_ID}.${POSITIONS_TABLE_ID}\`
-                  VALUES(
-                      \"${positionRow.marginEngineAddress}\",
-                      \"${positionRow.vammAddress}\",
-                      \"${positionRow.ownerAddress}\",
-                      ${positionRow.tickLower},
-                      ${positionRow.tickUpper},
-                      ${positionRow.realizedPnLFromSwaps},
-                      ${positionRow.realizedPnLFromFeesPaid},
-                      ${positionRow.netNotionalLocked},
-                      ${positionRow.netFixedRateLocked},
-                      \'${positionRow.lastUpdatedTimestamp}\',
-                      ${positionRow.notionalLiquidityProvided},                
-                      ${positionRow.realizedPnLFromFeesCollected},
-                      ${positionRow.netMarginDeposited},
-                      ${1},
-                      \'${positionRow.rowLastUpdatedTimestamp}\',
-                      ${0},
-                      ${0}
-                      );           
-  
-              COMMIT TRANSACTION;
-              
-              END;`;
+    BEGIN 
+      BEGIN TRANSACTION;
+        INSERT INTO \`${swapTableId}\` VALUES (${rawSwapRow});
+        INSERT INTO \`${positionTableId}\` VALUES(${rawPositionRow});          
+      COMMIT TRANSACTION;
+    END;
+  `;
 
   const options = {
     query: sqlTransactionQuery,

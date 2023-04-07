@@ -39,8 +39,6 @@ export const getNetFixedRateLocked = (
       }
     }
   }
-
-  console.log(`net fixed rate locked is ${netFixedRateLocked}`);
-
+  
   return netFixedRateLocked;
 };

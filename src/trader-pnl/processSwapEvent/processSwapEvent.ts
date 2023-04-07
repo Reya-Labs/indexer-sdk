@@ -51,7 +51,7 @@ export const processSwapEvent = async (
   const address = event.address;
   const recipient = event.args?.recipient as string;
   const tickLower = event.args?.tickLower as number;
-  const tickUpper = event.args?.recipient as number;
+  const tickUpper = event.args?.tickUpper as number;
 
   // check if a position already exists in the positions table
   const existingPosition = await pullExistingPositionRow(
