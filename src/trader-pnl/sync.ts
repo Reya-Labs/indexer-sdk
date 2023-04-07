@@ -6,9 +6,9 @@ import { getPreviousSwapEvents } from './getPreviousSwapEvents';
 import { processSwapEvent } from './processSwapEvent';
 
 export const sync = async (
-  bigQuery: BigQuery, 
-  provider: ethers.providers.Provider, 
-  amms: AMM[]
+  bigQuery: BigQuery,
+  provider: ethers.providers.Provider,
+  amms: AMM[],
 ): Promise<number> => {
   const previousSwapEvents = await getPreviousSwapEvents(provider, amms);
 

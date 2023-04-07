@@ -1,6 +1,6 @@
 import { BigQuery } from '@google-cloud/bigquery';
 
-import { DATASET_ID, PROJECT_ID, SWAPS_TABLE_ID } from '../common/constants';
+import { DATASET_ID, PROJECT_ID, SWAPS_TABLE_ID } from '../common';
 
 type SwapRow = {
   id: string;

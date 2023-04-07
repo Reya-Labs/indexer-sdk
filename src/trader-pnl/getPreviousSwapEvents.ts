@@ -1,7 +1,7 @@
 import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
 
-import { generateVAMMContract } from '../common/generateVAMMContract';
+import { generateVAMMContract } from '../common';
 
 export type VammSwapEvents = {
   [ammId: string]: {
@@ -11,8 +11,8 @@ export type VammSwapEvents = {
 };
 
 export const getPreviousSwapEvents = async (
-  provider: ethers.providers.Provider, 
-  amms: AMM[]
+  provider: ethers.providers.Provider,
+  amms: AMM[],
 ): Promise<VammSwapEvents> => {
   const totalEventsByVammAddress: VammSwapEvents = {};
 
@@ -27,7 +27,6 @@ export const getPreviousSwapEvents = async (
   response.forEach((ammResponse) => {
     if (ammResponse.status === 'fulfilled') {
       const [amm, swapEvents] = ammResponse.value;
-
 
       totalEventsByVammAddress[amm.id] = {
         swapEvents,
