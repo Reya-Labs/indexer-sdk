@@ -9,6 +9,7 @@
     "doc": "docs"
   },
   "scripts": {
+    "execute": "npx ts-node src/index.ts",
     "prebuild": "yarn code-quality:check && rm -rf dist",
     "build": "rollup -c --bundleConfigAsCjs",
     "ts:check": "yarn ts:check-types && yarn ts:circular-check",
@@ -79,7 +80,9 @@
     "@google-cloud/storage": "^6.9.5",
     "@voltz-protocol/v1-sdk": "^1.103.1",
     "dotenv": "^16.0.3",
-    "ethers": "5.4.0"
+    "ethers": "5.4.0",
+    "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0"
   },
   "release": {
     "branches": [

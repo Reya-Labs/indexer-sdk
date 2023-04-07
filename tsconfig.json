@@ -24,6 +24,12 @@
     /* Completeness */
     "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
   },
+  "ts-node": {
+    // these options are overrides used only by ts-node
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  },
   "exclude": [
     "dist",
     "node_modules"
