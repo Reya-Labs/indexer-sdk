@@ -3,6 +3,7 @@ import { ethers } from 'ethers';
 
 dotenv.config();
 
+export const CHAIN_ID = 1;
 export const APR_2023_TIMESTAMP = 1680337863;
 
 export const MIN_ETH_NOTIONAL = 0;
