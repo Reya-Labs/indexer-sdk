@@ -1,6 +1,6 @@
 import { BigQuery } from '@google-cloud/bigquery';
 
-import { DATASET_ID, POSITIONS_TABLE_ID, PROJECT_ID } from '../common/constants';
+import { DATASET_ID, POSITIONS_TABLE_ID, PROJECT_ID } from '../common';
 
 export type PositionRow = {
   id: string;

@@ -1,5 +1,5 @@
 import { AMM, getAMMs } from '@voltz-protocol/v1-sdk';
-import * as dotenv from "dotenv";
+import * as dotenv from 'dotenv';
 
 dotenv.config();
 
