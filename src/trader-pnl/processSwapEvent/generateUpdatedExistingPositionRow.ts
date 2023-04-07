@@ -3,11 +3,7 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
 
 import { PositionRow } from '../../big-query-support';
-import {
-  getNetFixedRateLocked,
-  getRealizedPnLSinceLastSwap,
-  getTimestampInSeconds,
-} from '../../common';
+import { getNetFixedRateLocked, getRealizedPnLSinceLastSwap, getTimestampInSeconds } from '../../common';
 import { parseSwapEvent } from './parseSwapEvent';
 
 export const generateUpdatedExistingPositionRow = async (
@@ -28,7 +24,7 @@ export const generateUpdatedExistingPositionRow = async (
   } = await parseSwapEvent(amm, event);
 
   const rowLastUpdatedTimestamp = getTimestampInSeconds();
-
+  
   const netNotionalLocked = existingPosition.netNotionalLocked + notionalLocked;
 
   const netFixedRateLocked = getNetFixedRateLocked(

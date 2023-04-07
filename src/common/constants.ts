@@ -1,4 +1,7 @@
+import * as dotenv from 'dotenv';
 import { ethers } from 'ethers';
+
+dotenv.config();
 
 export const APR_2023_TIMESTAMP = 1680337863;
 

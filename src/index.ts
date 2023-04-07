@@ -17,14 +17,7 @@ async function authenticateImplicitWithAdc() {
     projectId: PROJECT_ID,
   });
 
-  const [buckets] = await storage.getBuckets();
-  console.log('Buckets:');
-
-  for (const bucket of buckets) {
-    console.log(bucket.name);
-  }
-
-  console.log('Listed all storage buckets.');
+  await storage.getBuckets();
 }
 
 export const main = async () => {
@@ -49,8 +42,6 @@ export const main = async () => {
 
   // process all historical swaps
   const historicalSwapsCounter = await sync(bigQuery, provider, amms);
-
-  console.log('historicalSwapsCounter:', historicalSwapsCounter);
 
   console.log(`Successfully processed ${historicalSwapsCounter} historical events`);
 
