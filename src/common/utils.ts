@@ -3,5 +3,9 @@ export const getTimestampInSeconds = (): number => {
 };
 
 export const getTimeInYearsBetweenTimestamps = (from: number, to: number): number => {
-  return (from - to) / 31_536_000;
+  if (from > to) {
+    throw new Error(`Unordered timestamps ${from}-${to}`);
+  }
+  
+  return (to - from) / 31_536_000;
 };
