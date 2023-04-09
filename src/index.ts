@@ -9,13 +9,17 @@ async function authenticateImplicitWithAdc() {
   });
 
   await storage.getBuckets();
-};
+}
 
 const main = async () => {
   await authenticateImplicitWithAdc();
   await run();
-}
+};
 
-main().catch(() => {
-  console.log('Execution completed.');
-});
+main()
+  .then(() => {
+    console.log('Execution completed.');
+  })
+  .catch((error) => {
+    console.log(`Error encountered. ${(error as unknown as Error).message}`);
+  });

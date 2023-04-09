@@ -6,7 +6,6 @@ export const getFixedRateLocked = (
   variableTokenDelta: ethers.BigNumber,
   fixedTokenDeltaUnbalanced: ethers.BigNumber,
 ): number => {
-
   if (variableTokenDelta.eq(0)) {
     return 0;
   }

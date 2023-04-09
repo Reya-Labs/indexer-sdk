@@ -1,18 +1,16 @@
-import { BigQuery } from '@google-cloud/bigquery';
-
+import { BigQuerySwapRow } from '../../big-query-support';
 import { getTimestampInSeconds } from '../../common';
 import { SwapEventInfo } from './parseSwapEvent';
 
 export const generateSwapRow = (
-  bigQuery: BigQuery,
   eventInfo: SwapEventInfo,
   eventTimestamp: number,
-) => {
+): BigQuerySwapRow => {
   const rowLastUpdatedTimestamp = getTimestampInSeconds();
 
   return {
     ...eventInfo,
-    eventTimestamp: bigQuery.timestamp(eventTimestamp).value,
-    rowLastUpdatedTimestamp: bigQuery.timestamp(rowLastUpdatedTimestamp).value,
+    eventTimestamp: eventTimestamp,
+    rowLastUpdatedTimestamp: rowLastUpdatedTimestamp,
   };
 };
