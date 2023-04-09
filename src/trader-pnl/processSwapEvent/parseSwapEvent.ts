@@ -1,10 +1,11 @@
 import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
 
-import { getFixedRateLocked } from '../../common';
+import { CHAIN_ID, getFixedRateLocked } from '../../common';
 
 export type SwapEventInfo = {
   eventId: string;
+
   chainId: number;
   vammAddress: string;
   ownerAddress: string;
@@ -14,6 +15,10 @@ export type SwapEventInfo = {
   notionalLocked: number;
   fixedRateLocked: number;
   feePaidToLps: number;
+
+  rateOracle: string;
+  underlyingToken: string;
+  marginEngineAddress: string;
 };
 
 export const parseSwapEvent = (amm: AMM, event: ethers.Event): SwapEventInfo => {
@@ -31,8 +36,7 @@ export const parseSwapEvent = (amm: AMM, event: ethers.Event): SwapEventInfo => 
 
   return {
     eventId: eventId.toLowerCase(),
-    // todo: add custom chain id
-    chainId: 1,
+    chainId: CHAIN_ID,
     vammAddress: amm.id.toLowerCase(),
     ownerAddress: ownerAddress.toLowerCase(),
     tickLower,
@@ -40,5 +44,8 @@ export const parseSwapEvent = (amm: AMM, event: ethers.Event): SwapEventInfo => 
     notionalLocked: Number(ethers.utils.formatUnits(variableTokenDelta, tokenDecimals)),
     fixedRateLocked: getFixedRateLocked(variableTokenDelta, fixedTokenDeltaUnbalanced),
     feePaidToLps: Number(ethers.utils.formatUnits(cumulativeFeeIncurred, tokenDecimals)),
+    rateOracle: amm.rateOracle.id,
+    underlyingToken: amm.underlyingToken.id,
+    marginEngineAddress: amm.marginEngineAddress,
   };
 };

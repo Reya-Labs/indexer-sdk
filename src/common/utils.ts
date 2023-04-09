@@ -6,6 +6,6 @@ export const getTimeInYearsBetweenTimestamps = (from: number, to: number): numbe
   if (from > to) {
     throw new Error(`Unordered timestamps ${from}-${to}`);
   }
-  
+
   return (to - from) / 31_536_000;
 };

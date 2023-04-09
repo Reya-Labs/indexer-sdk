@@ -1,9 +1,13 @@
-import { BigQuery, BigQueryInt, BigQueryTimestamp } from '@google-cloud/bigquery';
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
+import { BigQuery } from '@google-cloud/bigquery';
 
 import { DATASET_ID, POSITIONS_TABLE_ID, PROJECT_ID } from '../common';
 import { bqNumericToNumber, bqTimestampToUnixSeconds } from './utils';
 
-export type PositionRow = {
+export type BigQueryPositionRow = {
   marginEngineAddress: string;
   vammAddress: string;
   ownerAddress: string;
@@ -19,8 +23,12 @@ export type PositionRow = {
   netMarginDeposited: number;
   rateOracleIndex: number;
   rowLastUpdatedTimestamp: number;
+  fixedTokenBalance: number;
   variableTokenBalance: number;
   positionInitializationTimestamp: number;
+  rateOracle: string;
+  underlyingToken: string;
+  chainId: string;
 };
 
 export const pullExistingPositionRow = async (
@@ -29,8 +37,7 @@ export const pullExistingPositionRow = async (
   recipient: string,
   tickLower: number,
   tickUpper: number,
-): Promise<PositionRow | null> => {
-
+): Promise<BigQueryPositionRow | null> => {
   const positionTableId = `${PROJECT_ID}.${DATASET_ID}.${POSITIONS_TABLE_ID}`;
   const sqlQuery = `
     SELECT * FROM \`${positionTableId}\` 
@@ -50,45 +57,29 @@ export const pullExistingPositionRow = async (
     return null;
   }
 
-  const positionRow = rows[0] as {
-    marginEngineAddress: string;
-    vammAddress: string;
-    ownerAddress: string;
-    tickLower: number;
-    tickUpper: number;
-    realizedPnLFromSwaps: BigQueryInt;
-    realizedPnLFromFeesPaid: BigQueryInt;
-    netNotionalLocked: BigQueryInt;
-    netFixedRateLocked: BigQueryInt;
-    lastUpdatedTimestamp: BigQueryTimestamp;
-    notionalLiquidityProvided: BigQueryInt;
-    realizedPnLFromFeesCollected: BigQueryInt;
-    netMarginDeposited: BigQueryInt;
-    rateOracleIndex: BigQueryInt;
-    rowLastUpdatedTimestamp: BigQueryTimestamp;
-    variableTokenBalance: BigQueryInt;
-    positionInitializationTimestamp: BigQueryTimestamp;
+  return {
+    marginEngineAddress: rows[0].marginEngineAddress,
+    vammAddress: rows[0].vammAddress,
+    ownerAddress: rows[0].ownerAddress,
+    tickLower: rows[0].tickLower,
+    tickUpper: rows[0].tickUpper,
+    realizedPnLFromSwaps: bqNumericToNumber(rows[0].realizedPnLFromSwaps),
+    realizedPnLFromFeesPaid: bqNumericToNumber(rows[0].realizedPnLFromFeesPaid),
+    netNotionalLocked: bqNumericToNumber(rows[0].netNotionalLocked),
+    netFixedRateLocked: bqNumericToNumber(rows[0].netFixedRateLocked),
+    lastUpdatedTimestamp: bqTimestampToUnixSeconds(rows[0].lastUpdatedTimestamp),
+    notionalLiquidityProvided: bqNumericToNumber(rows[0].notionalLiquidityProvided),
+    realizedPnLFromFeesCollected: bqNumericToNumber(rows[0].realizedPnLFromFeesCollected),
+    netMarginDeposited: bqNumericToNumber(rows[0].netMarginDeposited),
+    rateOracleIndex: bqNumericToNumber(rows[0].rateOracleIndex),
+    rowLastUpdatedTimestamp: bqTimestampToUnixSeconds(rows[0].rowLastUpdatedTimestamp),
+    fixedTokenBalance: bqNumericToNumber(rows[0].fixedTokenBalance),
+    variableTokenBalance: bqNumericToNumber(rows[0].variableTokenBalance),
+    positionInitializationTimestamp: bqTimestampToUnixSeconds(
+      rows[0].positionInitializationTimestamp,
+    ),
+    rateOracle: rows[0].rateOracle,
+    underlyingToken: rows[0].underlyingToken,
+    chainId: rows[0].chainId,
   };
-
-  const resp =  {
-    marginEngineAddress: positionRow.marginEngineAddress,
-    vammAddress: positionRow.vammAddress,
-    ownerAddress: positionRow.ownerAddress,
-    tickLower: positionRow.tickLower,
-    tickUpper: positionRow.tickUpper,
-    realizedPnLFromSwaps: bqNumericToNumber(positionRow.realizedPnLFromSwaps),
-    realizedPnLFromFeesPaid: bqNumericToNumber(positionRow.realizedPnLFromFeesPaid),
-    netNotionalLocked: bqNumericToNumber(positionRow.netNotionalLocked),
-    netFixedRateLocked: bqNumericToNumber(positionRow.netFixedRateLocked),
-    lastUpdatedTimestamp: bqTimestampToUnixSeconds(positionRow.lastUpdatedTimestamp),
-    notionalLiquidityProvided: bqNumericToNumber(positionRow.notionalLiquidityProvided),
-    realizedPnLFromFeesCollected: bqNumericToNumber(positionRow.realizedPnLFromFeesCollected),
-    netMarginDeposited: bqNumericToNumber(positionRow.netMarginDeposited),
-    rateOracleIndex: bqNumericToNumber(positionRow.rateOracleIndex),
-    rowLastUpdatedTimestamp: bqTimestampToUnixSeconds(positionRow.rowLastUpdatedTimestamp),
-    variableTokenBalance: bqNumericToNumber(positionRow.variableTokenBalance),
-    positionInitializationTimestamp: bqTimestampToUnixSeconds(positionRow.positionInitializationTimestamp),
-  };
-
-  return resp;
 };

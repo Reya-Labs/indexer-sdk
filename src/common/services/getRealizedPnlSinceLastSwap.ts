@@ -7,10 +7,7 @@ export const getRealizedPnLSinceLastSwap = (
   currentFixedRate: number,
   currentNetNotional: number,
 ): number => {
-  const timeDeltaInYears = getTimeInYearsBetweenTimestamps(
-    lastSwapTimestamp,
-    currentTimestamp,
-  );
+  const timeDeltaInYears = getTimeInYearsBetweenTimestamps(lastSwapTimestamp, currentTimestamp);
 
   const fixedFactor = currentFixedRate * timeDeltaInYears;
   return currentNetNotional * (variableFactorSinceLastSwap - fixedFactor);

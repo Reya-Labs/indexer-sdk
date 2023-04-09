@@ -1,10 +1,10 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
 
-import { PositionRow } from '../../big-query-support';
+import { BigQueryPositionRow } from '../../big-query-support';
 import { DATASET_ID, POSITIONS_TABLE_ID, PROJECT_ID, SWAPS_TABLE_ID } from '../../common';
+import { generatePositionRow } from './generatePositionRow';
 import { generateSwapRow } from './generateSwapRow';
-import { generateUpdatedExistingPositionRow } from './generateUpdatedExistingPositionRow';
 import { SwapEventInfo } from './parseSwapEvent';
 
 export const insertNewSwapAndUpdateExistingPosition = async (
@@ -12,19 +12,13 @@ export const insertNewSwapAndUpdateExistingPosition = async (
   amm: AMM,
   eventInfo: SwapEventInfo,
   eventTimestamp: number,
-  existingPosition: PositionRow,
+  existingPosition: BigQueryPositionRow,
 ): Promise<void> => {
   console.log('Inserting a new swap and updating an existing position');
 
-  const swapRow = generateSwapRow(bigQuery, eventInfo, eventTimestamp);
+  const swapRow = generateSwapRow(eventInfo, eventTimestamp);
 
-  const positionRow = await generateUpdatedExistingPositionRow(
-    bigQuery,
-    amm,
-    eventInfo,
-    eventTimestamp,
-    existingPosition,
-  );
+  const positionRow = await generatePositionRow(amm, eventInfo, eventTimestamp, existingPosition);
 
   const swapTableId = `${PROJECT_ID}.${DATASET_ID}.${SWAPS_TABLE_ID}`;
   const rawSwapRow = `
@@ -37,7 +31,11 @@ export const insertNewSwapAndUpdateExistingPosition = async (
     ${swapRow.fixedRateLocked},
     ${swapRow.feePaidToLps}, 
     \'${swapRow.eventTimestamp}\', 
-    \'${swapRow.rowLastUpdatedTimestamp}\'
+    \'${swapRow.rowLastUpdatedTimestamp}\',
+    \'${swapRow.rateOracle}\',
+    \'${swapRow.underlyingToken}\',
+    \'${swapRow.marginEngineAddress}\',
+    ${swapRow.chainId}
   `;
 
   const positionTableId = `${PROJECT_ID}.${DATASET_ID}.${POSITIONS_TABLE_ID}`;

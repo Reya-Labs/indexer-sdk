@@ -9,14 +9,15 @@ export const getNetFixedRateLocked = (
 
     if (incomingSwapNotional > 0) {
       // variable taker is doubling down their variable taker exposure
-      return (currentNetFixedRate * currentNetNotional + incomingSwapFixedRate * incomingSwapNotional) 
-          / (currentNetNotional + incomingSwapNotional);
+      return (
+        (currentNetFixedRate * currentNetNotional + incomingSwapFixedRate * incomingSwapNotional) /
+        (currentNetNotional + incomingSwapNotional)
+      );
     } else {
       if (incomingSwapNotional + currentNetNotional > 0) {
         // variable taker is bringing their exposure down
         return currentNetFixedRate;
-      }
-      else {
+      } else {
         return incomingSwapFixedRate;
       }
     }
@@ -25,16 +26,17 @@ export const getNetFixedRateLocked = (
 
     if (incomingSwapNotional < 0) {
       // fixed taker is doubling down their fixed taker exposure
-      return (currentNetFixedRate * currentNetNotional + incomingSwapFixedRate * incomingSwapNotional) 
-        / (currentNetNotional + incomingSwapNotional);
+      return (
+        (currentNetFixedRate * currentNetNotional + incomingSwapFixedRate * incomingSwapNotional) /
+        (currentNetNotional + incomingSwapNotional)
+      );
     } else {
       // fixed taker is bringing their exposure down
 
       if (incomingSwapNotional + currentNetNotional < 0) {
         // variable taker is bringing their exposure down
         return currentNetFixedRate;
-      }
-      else {
+      } else {
         return incomingSwapFixedRate;
       }
     }
