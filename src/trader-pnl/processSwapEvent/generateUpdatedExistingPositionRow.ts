@@ -27,10 +27,15 @@ export const generateUpdatedExistingPositionRow = async (
     eventInfo.notionalLocked,
   );
 
-  const realizedPnLSinceLastSwap = await getRealizedPnLSinceLastSwap(
-    amm,
-    eventTimestamp,
+  const { scaled: variableFactor } = await amm.variableFactor(
+    existingPosition.lastUpdatedTimestamp * 1000,
+    eventTimestamp * 1000,
+  );
+
+  const realizedPnLSinceLastSwap = getRealizedPnLSinceLastSwap(
     existingPosition.lastUpdatedTimestamp,
+    eventTimestamp,
+    variableFactor,
     existingPosition.netFixedRateLocked,
     existingPosition.netNotionalLocked,
   );
