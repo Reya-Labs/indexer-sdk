@@ -3,6 +3,9 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 import { BigNumber, ethers } from 'ethers';
 import { pullExistingLpPositionRows } from '../../big-query-support';
 import { parseSwapEvent } from '../../common/swaps/parseSwapEvent';
+import { generateLpPositionUpdatesQuery } from './generateLpPositionUpdatesQuery';
+import { generateLpPositionRowsFromPassiveSwaps } from './generateLpPositionRowsFromPassiveSwaps';
+import { generatePassiveSwapEvents } from './generatePassiveSwapEvents';
 
 function shouldProcessSwapEvent(): boolean {
 
