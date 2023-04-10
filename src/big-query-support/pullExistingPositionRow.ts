@@ -28,7 +28,7 @@ export type BigQueryPositionRow = {
   positionInitializationTimestamp: number; // immutable
   rateOracle: string; // immutable
   underlyingToken: string; // immutable
-  chainId: string; // immutable
+  chainId: number; // immutable
 };
 
 export const pullExistingPositionRow = async (

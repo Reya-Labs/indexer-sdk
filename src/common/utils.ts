@@ -9,3 +9,7 @@ export const getTimeInYearsBetweenTimestamps = (from: number, to: number): numbe
 
   return (to - from) / 31_536_000;
 };
+
+export const sleep = (ms: number): Promise<void> => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};

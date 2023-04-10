@@ -2,6 +2,7 @@ import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
 
 import { BigQueryPositionRow } from '../../big-query-support';
+import { secondsToBqDate } from '../../big-query-support/utils';
 import { DATASET_ID, POSITIONS_TABLE_ID, PROJECT_ID, SWAPS_TABLE_ID } from '../../common';
 import { generatePositionRow } from './generatePositionRow';
 import { generateSwapRow } from './generateSwapRow';
@@ -30,8 +31,8 @@ export const insertNewSwapAndUpdateExistingPosition = async (
     ${swapRow.notionalLocked}, 
     ${swapRow.fixedRateLocked},
     ${swapRow.feePaidToLps}, 
-    \'${swapRow.eventTimestamp}\', 
-    \'${swapRow.rowLastUpdatedTimestamp}\',
+    \'${secondsToBqDate(swapRow.eventTimestamp)}\', 
+    \'${secondsToBqDate(swapRow.rowLastUpdatedTimestamp)}\',
     \'${swapRow.rateOracle}\',
     \'${swapRow.underlyingToken}\',
     \'${swapRow.marginEngineAddress}\',
@@ -50,11 +51,11 @@ export const insertNewSwapAndUpdateExistingPosition = async (
               realizedPnLFromFeesPaid=${positionRow.realizedPnLFromFeesPaid},
               netNotionalLocked=${positionRow.netNotionalLocked},
               netFixedRateLocked=${positionRow.netFixedRateLocked},
-              lastUpdatedTimestamp=\'${positionRow.lastUpdatedTimestamp}\',
+              lastUpdatedTimestamp=\'${secondsToBqDate(positionRow.lastUpdatedTimestamp)}\',
               notionalLiquidityProvided=${positionRow.notionalLiquidityProvided},
               realizedPnLFromFeesCollected=${positionRow.realizedPnLFromFeesCollected},
               netMarginDeposited=${positionRow.netMarginDeposited},
-              rowLastUpdatedTimestamp=\'${positionRow.rowLastUpdatedTimestamp}\',
+              rowLastUpdatedTimestamp=\'${secondsToBqDate(positionRow.rowLastUpdatedTimestamp)}\',
               fixedTokenBalance=${positionRow.fixedTokenBalance},
               variableTokenBalance=${positionRow.variableTokenBalance}
               WHERE vammAddress=\"${positionRow.vammAddress}\" AND 

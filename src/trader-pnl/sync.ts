@@ -1,16 +1,15 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
-import { ethers } from 'ethers';
 
 import { getPreviousSwapEvents } from './getPreviousSwapEvents';
 import { processSwapEvent } from './processSwapEvent';
 
 export const sync = async (
   bigQuery: BigQuery,
-  provider: ethers.providers.Provider,
   amms: AMM[],
+  previousBlockNumber: number,
 ): Promise<number> => {
-  const previousSwapEvents = await getPreviousSwapEvents(provider, amms);
+  const previousSwapEvents = await getPreviousSwapEvents(amms, previousBlockNumber);
 
   let counter = 0;
 
@@ -29,7 +28,12 @@ export const sync = async (
     }
   });
 
-  await Promise.allSettled(promises);
+  const output = await Promise.allSettled(promises);
+  output.forEach((v) => {
+    if (v.status === 'rejected') {
+      throw v.reason;
+    }
+  });
 
   return counter;
 };

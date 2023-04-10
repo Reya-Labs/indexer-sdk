@@ -51,7 +51,7 @@ describe('generate position row', () => {
     expect(positionRow.positionInitializationTimestamp).toBe(1681108156);
     expect(positionRow.rateOracle).toBe('rate-oracle');
     expect(positionRow.underlyingToken).toBe('token');
-    expect(positionRow.chainId).toBe('1');
+    expect(positionRow.chainId).toBe(1);
   });
 
   it('existing position', async () => {
@@ -76,7 +76,7 @@ describe('generate position row', () => {
       positionInitializationTimestamp: 1681108156,
       rateOracle: 'rate-oracle-immutable',
       underlyingToken: 'token-immutable',
-      chainId: '1-immutable',
+      chainId: 1,
     };
 
     const positionRow = await generatePositionRow(
@@ -106,6 +106,6 @@ describe('generate position row', () => {
     expect(positionRow.positionInitializationTimestamp).toBe(1681108156);
     expect(positionRow.rateOracle).toBe('rate-oracle-immutable');
     expect(positionRow.underlyingToken).toBe('token-immutable');
-    expect(positionRow.chainId).toBe('1-immutable');
+    expect(positionRow.chainId).toBe(1);
   });
 });
