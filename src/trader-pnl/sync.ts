@@ -1,7 +1,7 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
 
-import { getPreviousSwapEvents } from './getPreviousSwapEvents';
+import { getPreviousSwapEvents } from '../common/swaps/getPreviousSwapEvents';
 import { processSwapEvent } from './processSwapEvent';
 
 export const sync = async (
