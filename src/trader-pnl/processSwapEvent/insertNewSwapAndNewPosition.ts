@@ -5,7 +5,7 @@ import { secondsToBqDate } from '../../big-query-support/utils';
 import { DATASET_ID, POSITIONS_TABLE_ID, PROJECT_ID, SWAPS_TABLE_ID } from '../../common';
 import { generatePositionRow } from './generatePositionRow';
 import { generateSwapRow } from './generateSwapRow';
-import { SwapEventInfo } from './parseSwapEvent';
+import { SwapEventInfo } from '../../common/swaps/parseSwapEvent';
 
 export const insertNewSwapAndNewPosition = async (
   bigQuery: BigQuery,

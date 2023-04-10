@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/require-await */
 
 import { generateSwapRow } from '../../../src/trader-pnl/processSwapEvent/generateSwapRow';
-import { SwapEventInfo } from '../../../src/trader-pnl/processSwapEvent/parseSwapEvent';
+import { SwapEventInfo } from '../../../src/common/swaps/parseSwapEvent';
 
 describe('generate swap row', () => {
   const eventInfo = {
