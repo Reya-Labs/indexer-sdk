@@ -3,7 +3,7 @@
 
 import { BigQueryPositionRow } from '../../../src/big-query-support';
 import { generatePositionRow } from '../../../src/trader-pnl/processSwapEvent/generatePositionRow';
-import { SwapEventInfo } from '../../../src/trader-pnl/processSwapEvent/parseSwapEvent';
+import { SwapEventInfo } from '../../../src/common/swaps/parseSwapEvent';
 import { mockedAMM } from './utils';
 
 describe('generate position row', () => {

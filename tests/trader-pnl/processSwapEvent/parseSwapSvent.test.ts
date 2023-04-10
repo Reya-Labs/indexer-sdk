@@ -1,6 +1,6 @@
 import { BigNumber, Event } from 'ethers';
 
-import { parseSwapEvent } from '../../../src/trader-pnl/processSwapEvent/parseSwapEvent';
+import { parseSwapEvent } from '../../../src/common/swaps/parseSwapEvent';
 import { mockedAMM } from './utils';
 
 describe('parse swap event', () => {

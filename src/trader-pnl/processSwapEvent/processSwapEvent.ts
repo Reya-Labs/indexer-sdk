@@ -6,7 +6,7 @@ import { pullExistingPositionRow, pullExistingSwapRow } from '../../big-query-su
 import { MIN_ETH_NOTIONAL, MIN_USD_NOTIONAL } from '../../common';
 import { insertNewSwapAndNewPosition } from './insertNewSwapAndNewPosition';
 import { insertNewSwapAndUpdateExistingPosition } from './insertNewSwapAndUpdateExistingPosition';
-import { parseSwapEvent } from './parseSwapEvent';
+import { parseSwapEvent } from '../../common/swaps/parseSwapEvent';
 
 function shouldProcessSwapEvent(isETH: boolean, notionalExecuted: number): boolean {
   let shouldProcess = true;

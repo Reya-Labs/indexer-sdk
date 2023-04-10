@@ -1,7 +1,7 @@
 import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
 
-import { CHAIN_ID, getFixedRateLocked } from '../../common';
+import { CHAIN_ID, getFixedRateLocked } from '..';
 
 export type SwapEventInfo = {
   eventId: string;
