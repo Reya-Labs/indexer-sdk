@@ -3,7 +3,7 @@
 import { SwapEventInfo } from '../../common/swaps/parseSwapEvent';
 import { BigQueryPositionRow } from '../../big-query-support';
 import { getOnChainFixedAndVariableTokenBalances } from './getOnChainFixedAndVariableTokenBalances';
-import { generatePassiveSwap } from './generatePassiveSwap';
+import { generatePassiveSwapEvent } from './generatePassiveSwapEvent';
 
 export type GeneratePassiveSwapEventsArgs = {
 
@@ -47,7 +47,7 @@ export const generatePassiveSwapEvents = async ({existingLpPositionRows, current
                 console.log(`Variable and Fixed Token Balances match, no need for passive swap`); 
             } else {
                 // todo: get back once implementation is done 
-                const passiveSwap: SwapEventInfo = await generatePassiveSwap();
+                const passiveSwap: SwapEventInfo = await generatePassiveSwapEvent();
                 passiveSwapEvents.push(passiveSwap);
                 affectedLps.push(positionRow); 
             }
