@@ -16,7 +16,6 @@ export const generatePositionRow = async (
 ): Promise<BigQueryPositionRow> => {
   const rowLastUpdatedTimestamp = getTimestampInSeconds();
 
-  let realizedPnLFromSwaps = 0;
   if (existingPosition) {
     const { scaled: variableFactor } = await amm.variableFactor(
       existingPosition.lastUpdatedTimestamp * 1000,
@@ -31,27 +30,26 @@ export const generatePositionRow = async (
       existingPosition.netNotionalLocked,
     );
 
-    realizedPnLFromSwaps = existingPosition.realizedPnLFromSwaps + realizedPnLSinceLastSwap;
-  }
+    const realizedPnLFromSwaps = existingPosition.realizedPnLFromSwaps + realizedPnLSinceLastSwap;
 
-  let realizedPnLFromFeesPaid = eventInfo.feePaidToLps;
-  if (existingPosition) {
-    realizedPnLFromFeesPaid += existingPosition.realizedPnLFromFeesPaid;
-  }
+    const realizedPnLFromFeesPaid =
+      eventInfo.feePaidToLps + existingPosition.realizedPnLFromFeesPaid;
+    const netNotionalLocked = eventInfo.notionalLocked + existingPosition.netNotionalLocked;
 
-  let netNotionalLocked = eventInfo.notionalLocked;
-  if (existingPosition) {
-    netNotionalLocked += existingPosition.netNotionalLocked;
-  }
-
-  let netFixedRateLocked = eventInfo.fixedRateLocked;
-  if (existingPosition) {
-    netFixedRateLocked = getNetFixedRateLocked(
+    const netFixedRateLocked = getNetFixedRateLocked(
       existingPosition.netFixedRateLocked,
       existingPosition.netNotionalLocked,
       eventInfo.fixedRateLocked,
       eventInfo.notionalLocked,
     );
+
+    return {
+      ...existingPosition,
+      realizedPnLFromSwaps,
+      realizedPnLFromFeesPaid,
+      netNotionalLocked,
+      netFixedRateLocked,
+    };
   }
 
   // todo: add empty entries
@@ -61,10 +59,10 @@ export const generatePositionRow = async (
     ownerAddress: eventInfo.ownerAddress,
     tickLower: eventInfo.tickLower,
     tickUpper: eventInfo.tickUpper,
-    realizedPnLFromSwaps,
-    realizedPnLFromFeesPaid,
-    netNotionalLocked,
-    netFixedRateLocked,
+    realizedPnLFromSwaps: 0,
+    realizedPnLFromFeesPaid: eventInfo.feePaidToLps,
+    netNotionalLocked: eventInfo.notionalLocked,
+    netFixedRateLocked: eventInfo.fixedRateLocked,
     lastUpdatedTimestamp: eventTimestamp,
     notionalLiquidityProvided: 0,
     realizedPnLFromFeesCollected: 0,

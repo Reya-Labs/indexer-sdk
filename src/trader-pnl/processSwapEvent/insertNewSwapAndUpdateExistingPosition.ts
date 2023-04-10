@@ -46,8 +46,7 @@ export const insertNewSwapAndUpdateExistingPosition = async (
         INSERT INTO \`${swapTableId}\` VALUES (${rawSwapRow});
                 
         UPDATE \`${positionTableId}\`
-          SET marginEngineAddress=\"${positionRow.marginEngineAddress}\",
-              realizedPnLFromSwaps=${positionRow.realizedPnLFromSwaps},
+          SET realizedPnLFromSwaps=${positionRow.realizedPnLFromSwaps},
               realizedPnLFromFeesPaid=${positionRow.realizedPnLFromFeesPaid},
               netNotionalLocked=${positionRow.netNotionalLocked},
               netFixedRateLocked=${positionRow.netFixedRateLocked},
@@ -55,7 +54,9 @@ export const insertNewSwapAndUpdateExistingPosition = async (
               notionalLiquidityProvided=${positionRow.notionalLiquidityProvided},
               realizedPnLFromFeesCollected=${positionRow.realizedPnLFromFeesCollected},
               netMarginDeposited=${positionRow.netMarginDeposited},
-              rowLastUpdatedTimestamp=\'${positionRow.rowLastUpdatedTimestamp}\'
+              rowLastUpdatedTimestamp=\'${positionRow.rowLastUpdatedTimestamp}\',
+              fixedTokenBalance=${positionRow.fixedTokenBalance},
+              variableTokenBalance=${positionRow.variableTokenBalance}
               WHERE vammAddress=\"${positionRow.vammAddress}\" AND 
                     ownerAddress=\"${positionRow.ownerAddress}\" AND 
                     tickLower=${positionRow.tickLower} AND 

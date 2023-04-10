@@ -8,11 +8,11 @@ import { DATASET_ID, POSITIONS_TABLE_ID, PROJECT_ID } from '../common';
 import { bqNumericToNumber, bqTimestampToUnixSeconds } from './utils';
 
 export type BigQueryPositionRow = {
-  marginEngineAddress: string;
-  vammAddress: string;
-  ownerAddress: string;
-  tickLower: number;
-  tickUpper: number;
+  marginEngineAddress: string; // immutable
+  vammAddress: string; // immutable
+  ownerAddress: string; // immutable
+  tickLower: number; // immutable
+  tickUpper: number; // immutable
   realizedPnLFromSwaps: number;
   realizedPnLFromFeesPaid: number;
   netNotionalLocked: number;
@@ -21,14 +21,14 @@ export type BigQueryPositionRow = {
   notionalLiquidityProvided: number;
   realizedPnLFromFeesCollected: number;
   netMarginDeposited: number;
-  rateOracleIndex: number;
+  rateOracleIndex: number; // immutable
   rowLastUpdatedTimestamp: number;
   fixedTokenBalance: number;
   variableTokenBalance: number;
-  positionInitializationTimestamp: number;
-  rateOracle: string;
-  underlyingToken: string;
-  chainId: string;
+  positionInitializationTimestamp: number; // immutable
+  rateOracle: string; // immutable
+  underlyingToken: string; // immutable
+  chainId: string; // immutable
 };
 
 export const pullExistingPositionRow = async (
