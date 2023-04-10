@@ -1,11 +1,7 @@
 import { AMM } from '@voltz-protocol/v1-sdk';
 
 import { BigQueryPositionRow } from '../../big-query-support';
-import {
-  getNetFixedRateLocked,
-  getRealizedPnLSinceLastSwap,
-  getTimestampInSeconds,
-} from '../../common';
+import { getCashflowInfo, getTimestampInSeconds } from '../../common';
 import { SwapEventInfo } from './parseSwapEvent';
 
 export const generatePositionRow = async (
@@ -22,26 +18,25 @@ export const generatePositionRow = async (
       eventTimestamp * 1000,
     );
 
-    const realizedPnLSinceLastSwap = getRealizedPnLSinceLastSwap(
-      existingPosition.lastUpdatedTimestamp,
-      eventTimestamp,
+    const { netNotionalLocked, netFixedRateLocked, newCashflow, netTimestamp } = getCashflowInfo(
+      {
+        notional: existingPosition.netNotionalLocked,
+        fixedRate: existingPosition.netFixedRateLocked,
+        timestamp: existingPosition.lastUpdatedTimestamp,
+      },
+      {
+        notional: eventInfo.notionalLocked,
+        fixedRate: eventInfo.fixedRateLocked,
+        timestamp: eventTimestamp,
+      },
+      Math.floor(amm.termEndTimestampInMS / 1000),
       variableFactor,
-      existingPosition.netFixedRateLocked,
-      existingPosition.netNotionalLocked,
     );
 
-    const realizedPnLFromSwaps = existingPosition.realizedPnLFromSwaps + realizedPnLSinceLastSwap;
+    const realizedPnLFromSwaps = existingPosition.realizedPnLFromSwaps + newCashflow;
 
     const realizedPnLFromFeesPaid =
       eventInfo.feePaidToLps + existingPosition.realizedPnLFromFeesPaid;
-    const netNotionalLocked = eventInfo.notionalLocked + existingPosition.netNotionalLocked;
-
-    const netFixedRateLocked = getNetFixedRateLocked(
-      existingPosition.netFixedRateLocked,
-      existingPosition.netNotionalLocked,
-      eventInfo.fixedRateLocked,
-      eventInfo.notionalLocked,
-    );
 
     return {
       ...existingPosition,
@@ -49,6 +44,8 @@ export const generatePositionRow = async (
       realizedPnLFromFeesPaid,
       netNotionalLocked,
       netFixedRateLocked,
+      lastUpdatedTimestamp: netTimestamp,
+      rowLastUpdatedTimestamp,
     };
   }
 

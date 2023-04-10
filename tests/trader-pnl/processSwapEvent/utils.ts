@@ -29,4 +29,6 @@ export const mockedAMM = {
   },
   marginEngineAddress: 'margin-engine',
   variableFactor,
+  termStartTimestampInMS: 1609459200 * 1000, // 01.01.2021
+  termEndTimestampInMS: 1672531200 * 1000, // 01.01.2023
 } as unknown as AMM;

@@ -37,6 +37,8 @@ export const run = async () => {
       continue;
     }
 
+    console.log(`Processing blocks: ${previousBlockNumber}-${currentBlockNumber}`);
+
     try {
       await sync(bigQuery, amms, previousBlockNumber);
       previousBlockNumber = currentBlockNumber;
