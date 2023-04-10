@@ -33,6 +33,7 @@ export const processSwapEvent = async (
   const shouldProcess = shouldProcessSwapEvent(amm.isETH, eventInfo.notionalLocked);
 
   if (!shouldProcess) {
+    console.log('Swap skipped.');
     // swap should not be processed, skip
     return;
   }
@@ -40,6 +41,7 @@ export const processSwapEvent = async (
   const swapRow = await pullExistingSwapRow(bigQuery, eventInfo.eventId);
 
   if (swapRow) {
+    console.log('Swap already processed. Skipped.');
     // swap already processed, skip
     return;
   }

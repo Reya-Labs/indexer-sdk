@@ -74,6 +74,6 @@ export const generatePositionRow = async (
     positionInitializationTimestamp: eventTimestamp,
     rateOracle: amm.rateOracle.id,
     underlyingToken: amm.underlyingToken.id,
-    chainId: eventInfo.chainId.toString(),
+    chainId: eventInfo.chainId,
   };
 };

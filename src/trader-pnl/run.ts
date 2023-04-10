@@ -1,10 +1,12 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import * as dotenv from 'dotenv';
 
-import { APR_2023_TIMESTAMP, CHAIN_ID, getAmms, PROJECT_ID } from '../common';
+import { APR_2023_TIMESTAMP, CHAIN_ID, getAmms, PROJECT_ID, sleep } from '../common';
 import { sync } from './sync';
 
 dotenv.config();
+
+let previousBlockNumber = 0;
 
 export const run = async () => {
   // authenticate to GCloud
@@ -26,10 +28,21 @@ export const run = async () => {
   // get provider from the first amm
   const provider = amms[0].provider;
 
-  // process all historical swaps
-  const historicalSwapsCounter = await sync(bigQuery, provider, amms);
+  while (true) {
+    const currentBlockNumber = await provider.getBlockNumber();
 
-  console.log(`Successfully processed ${historicalSwapsCounter} historical events`);
+    if (previousBlockNumber === currentBlockNumber) {
+      console.log('Block has not changed. Sleeping...');
+      await sleep(60 * 1000); // sleep 60s
+      continue;
+    }
 
-  return 'hello';
+    try {
+      await sync(bigQuery, amms, previousBlockNumber);
+      previousBlockNumber = currentBlockNumber;
+    } catch (error) {
+      console.log(`Loop has failed with message: ${(error as Error).message}.`);
+      await sleep(60 * 1000); // sleep 60s
+    }
+  }
 };

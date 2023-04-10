@@ -11,14 +11,17 @@ export type VammSwapEvents = {
 };
 
 export const getPreviousSwapEvents = async (
-  provider: ethers.providers.Provider,
   amms: AMM[],
+  previousBlockNumber: number,
 ): Promise<VammSwapEvents> => {
   const totalEventsByVammAddress: VammSwapEvents = {};
 
   const promises = amms.map(async (amm): Promise<[AMM, ethers.Event[]]> => {
-    const vammContract = generateVAMMContract(amm.id, provider);
-    const swapEvents = await vammContract.queryFilter(vammContract.filters.Swap());
+    const vammContract = generateVAMMContract(amm.id, amm.provider);
+    const swapEvents = await vammContract.queryFilter(
+      vammContract.filters.Swap(),
+      previousBlockNumber,
+    );
     return [amm, swapEvents];
   });
 
