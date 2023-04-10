@@ -14,7 +14,7 @@ export type GetFixedRateLockedFromBalancesArgs = {
 }
 
 
-export const getFixedRatelockedFromBalances = ({
+export const getFixedRateLockedFromBalances = ({
     notionalLocked,
     cachedFixedTokenBalance,
     onChainFixedTokenBalance,

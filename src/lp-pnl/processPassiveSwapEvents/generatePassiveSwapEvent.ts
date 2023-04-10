@@ -1,5 +1,5 @@
 import { SwapEventInfo } from '../../common/swaps/parseSwapEvent';
-
+import {getFixedRateLockedFromBalances} from "./getFixedRateLockedFromBalances";
 
 
 export type GeneratePassiveSwapEventArgs = {
@@ -34,11 +34,21 @@ export const generatePassiveSwapEvent = ({
     maturityTimestamp,
     variableFactor,
     rootSwapEvent
-}: GeneratePassiveSwapEventArgs): Promise<SwapEventInfo> => {
+}: GeneratePassiveSwapEventArgs): SwapEventInfo => {
 
     const notionalLocked = cachedVariableTokenBalance-onChainVariableTokenBalance;
     // todo: get back when implementation
-    const fixedRateLocked = getFixedRateLockedFromBalances();
+    const fixedRateLocked = getFixedRateLockedFromBalances(
+        {
+            notionalLocked,
+            cachedFixedTokenBalance,
+            onChainFixedTokenBalance,
+            currentTimestamp,
+            startTimestamp,
+            maturityTimestamp,
+            variableFactor
+        }
+    );
 
     // todo: come up with an id structure for passive swap: not high prio
     const eventId = `id`;
