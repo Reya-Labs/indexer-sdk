@@ -22,6 +22,7 @@ export const getPreviousSwapEvents = async (
       vammContract.filters.Swap(),
       previousBlockNumber,
     );
+
     return [amm, swapEvents];
   });
 

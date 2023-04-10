@@ -1,3 +1,3 @@
+export * from './getCashflowInfo';
 export * from './getFixedRateLocked';
-export * from './getNetFixedRateLocked';
 export * from './getRealizedPnlSinceLastSwap';

@@ -23,11 +23,11 @@ describe('generate swap row', () => {
   } as unknown as SwapEventInfo;
 
   beforeAll(() => {
-    jest.useFakeTimers().setSystemTime(new Date('2020-01-01'));
+    jest.useFakeTimers().setSystemTime(1609459200000);
   });
 
   it('swap row', () => {
-    const swapRow = generateSwapRow(eventInfo, 1681108156);
+    const swapRow = generateSwapRow(eventInfo, 1609459200);
 
     expect(swapRow.eventId).toBe('blockhash_transactionhash_1');
     expect(swapRow.vammAddress).toBe('amm-test');
@@ -37,8 +37,8 @@ describe('generate swap row', () => {
     expect(swapRow.notionalLocked).toBe(10);
     expect(swapRow.fixedRateLocked).toBe(0.05);
     expect(swapRow.feePaidToLps).toBe(1);
-    expect(swapRow.eventTimestamp).toBe(1681108156);
-    expect(swapRow.rowLastUpdatedTimestamp).toBe(1577836800);
+    expect(swapRow.eventTimestamp).toBe(1609459200);
+    expect(swapRow.rowLastUpdatedTimestamp).toBe(1609459200);
     expect(swapRow.rateOracle).toBe('rate-oracle');
     expect(swapRow.underlyingToken).toBe('token');
     expect(swapRow.marginEngineAddress).toBe('margin-engine');
