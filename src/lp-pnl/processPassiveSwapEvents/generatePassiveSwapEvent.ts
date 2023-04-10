@@ -20,7 +20,7 @@ export type GeneratePassiveSwapEventArgs = {
 
 }
 
-export const generatePassiveSwapEvent = async ({
+export const generatePassiveSwapEvent = ({
     cachedVariableTokenBalance,
     cachedFixedTokenBalance,
     onChainVariableTokenBalance,
@@ -38,7 +38,7 @@ export const generatePassiveSwapEvent = async ({
 
     const notionalLocked = cachedVariableTokenBalance-onChainVariableTokenBalance;
     // todo: get back when implementation
-    const fixedRateLocked = await getFixedRateLockedFromBalances();
+    const fixedRateLocked = getFixedRateLockedFromBalances();
 
     // todo: come up with an id structure for passive swap: not high prio
     const eventId = `id`;
