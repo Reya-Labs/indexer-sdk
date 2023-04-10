@@ -47,7 +47,7 @@ export const generatePassiveSwapEvents = async ({existingLpPositionRows, current
                 console.log(`Variable and Fixed Token Balances match, no need for passive swap`); 
             } else {
                 // todo: get back once implementation is done 
-                const passiveSwap: SwapEventInfo = await generatePassiveSwapEvent();
+                const passiveSwap: SwapEventInfo = generatePassiveSwapEvent();
                 passiveSwapEvents.push(passiveSwap);
                 affectedLps.push(positionRow); 
             }
