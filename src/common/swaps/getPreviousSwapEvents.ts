@@ -1,7 +1,7 @@
 import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
 
-import { generateVAMMContract } from '../common';
+import { generateVAMMContract } from '..';
 
 export type VammSwapEvents = {
   [ammId: string]: {
