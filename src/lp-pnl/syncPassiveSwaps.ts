@@ -11,30 +11,29 @@ export const syncPassiveSwaps = async (
 
   const previousSwapEvents = await getPreviousSwapEvents(amms, previousBlockNumber);
 
-  // let counter = 0;
+  let counter = 0;
 
-  // const promises = Object.values(previousSwapEvents).map(async ({ amm, swapEvents }) => {
-  //   const sortedSwapEvents = swapEvents.sort((a, b) => {
-  //     if (a.blockNumber === b.blockNumber) {
-  //       return a.transactionIndex - b.transactionIndex;
-  //     }
+  const promises = Object.values(previousSwapEvents).map(async ({ amm, swapEvents }) => {
+    const sortedSwapEvents = swapEvents.sort((a, b) => {
+      if (a.blockNumber === b.blockNumber) {
+        return a.transactionIndex - b.transactionIndex;
+      }
 
-  //     return a.blockNumber - b.blockNumber;
-  //   });
+      return a.blockNumber - b.blockNumber;
+    });
 
-  //   for (const swapEvent of sortedSwapEvents) {
-  //     await processSwapEvent(bigQuery, amm, swapEvent);
-  //     counter++;
-  //   }
-  // });
+    for (const swapEvent of sortedSwapEvents) {
+      await processPassiveSwapEvents(bigQuery, amm, swapEvent);
+      counter++;
+    }
+  });
 
-  // const output = await Promise.allSettled(promises);
-  // output.forEach((v) => {
-  //   if (v.status === 'rejected') {
-  //     throw v.reason;
-  //   }
-  // });
+  const output = await Promise.allSettled(promises);
+  output.forEach((v) => {
+    if (v.status === 'rejected') {
+      throw v.reason;
+    }
+  });
 
-  // return counter;
-  return 0;
+  return counter;
 };
