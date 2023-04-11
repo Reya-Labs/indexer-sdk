@@ -14,13 +14,30 @@ function shouldProcessSwapEvent(): boolean {
   return true;
 }
 
-export const processPassiveSwapEvents = async (
+export type ProcessPassiveSwapEventsArgs = {
+
   bigQuery: BigQuery,
   amm: AMM,
   event: ethers.Event,
+  // todo: not sure if possible to derive chain id from the ethers.Event object
+  chainId: number,
+  provider: ethers.providers.Provider
+
+}
+
+
+export const processPassiveSwapEvents = async (
+ {
+  bigQuery,
+  amm,
+  event,
+  // todo: not sure if possible to derive chain id from the ethers.Event object
+  chainId,
+  provider
+ } : ProcessPassiveSwapEventsArgs
 ): Promise<void> => {
-  const eventInfo = parseSwapEvent(amm, event);
-  // todo: get back to this
+  const rootSwapEvent = parseSwapEvent(amm, event);
+  // todo: get back to this -> align the logic with the indexer in js
   const shouldProcess = shouldProcessSwapEvent();
 
   if (!shouldProcess) {
@@ -29,24 +46,41 @@ export const processPassiveSwapEvents = async (
     return;
   }
 
-  const eventTimestamp = (await event.getBlock()).timestamp;
+  const currentTimestamp = (await event.getBlock()).timestamp;
 
   // currently not able to filter by e.g. vamm address of the swap because we're skipping a lot of swaps
   // for performance reasons, however we should still filter out lps that have their first mint in the
   // future relative to the eventTimestamp since we're processing all the mint events before jumping on passive swaps
-  const existingLpPositionRows = await pullExistingLpPositionRows(bigQuery, eventTimestamp); // needs a type, check what's used for traders
+  const existingLpPositionRows = await pullExistingLpPositionRows(bigQuery, currentTimestamp); // needs a type, check what's used for traders
   const marginEngineAddress: string = amm.marginEngineAddress.toLowerCase();
   const ammStartTimestampInMS: number = amm.termStartTimestampInMS;
-  const eventTimestampInMS: number = eventTimestamp * 1000;
+  const currentTimestampInMS: number = currentTimestamp * 1000;
   const variableFactor: number = (await amm.variableFactor(
     ammStartTimestampInMS,
-    eventTimestampInMS
+    currentTimestampInMS
   )).scaled;
 
   const tokenDecimals: number = amm.underlyingToken.decimals;
+  const startTimestamp = ammStartTimestampInMS / 1000;
+  const maturityTimestamp = amm.termEndTimestampInMS / 1000;
+  const blockNumber = event.blockNumber;
 
   // todo: get back to this once generatePassiveSwapEvents is implemented
-  const {passiveSwapEvents, affectedLps} = await generatePassiveSwapEvents();
+  const {passiveSwapEvents, affectedLps} = await generatePassiveSwapEvents(
+    {
+      existingLpPositionRows,
+      currentTimestamp,
+      startTimestamp,
+      maturityTimestamp,
+      variableFactor,
+      marginEngineAddress,
+      tokenDecimals,
+      blockNumber,
+      chainId,
+      rootSwapEvent,
+      provider
+    }
+  );
 
   // todo: return once implementation is ready
   const lpPositionRows = await generateLpPositionRowsFromPassiveSwaps(passiveSwapEvents,affectedLps, bigQuery);
