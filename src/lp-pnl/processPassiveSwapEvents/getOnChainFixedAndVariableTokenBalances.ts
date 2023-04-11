@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+import { generateMarginEngineContract } from '../../common/generateMarginEngineContract';
 
 export type GetOnChainFixedAndVariableTokenBalancesArgs = {
     marginEngineAddress: string,
@@ -28,7 +29,6 @@ export const generatePassiveSwapEvents = async ({
     provider
 }: GetOnChainFixedAndVariableTokenBalancesArgs): Promise<GetOnChainFixedAndVariableTokenBalancesReturn> => {
 
-    // todo: get back when implementation ready
     const marginEngineContract = generateMarginEngineContract(marginEngineAddress, provider);
 
     // todo: how do we type the position object? 
