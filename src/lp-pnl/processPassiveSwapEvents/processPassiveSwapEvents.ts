@@ -82,7 +82,9 @@ export const processPassiveSwapEvents = async (
   );
 
   // todo: return once implementation is ready
-  const lpPositionRows = await generateLpPositionRowsFromPassiveSwaps(passiveSwapEvents,affectedLps, bigQuery);
+  const lpPositionRows = await generateLpPositionRowsFromPassiveSwaps(
+    {passiveSwapEvents, affectedLps, bigQuery}
+  );
 
   if (lpPositionRows.length === 0) { 
     // since the latest checkpoint, no lps were affected by passive swaps
