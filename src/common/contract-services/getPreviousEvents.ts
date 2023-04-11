@@ -27,14 +27,15 @@ const getEventFilter = (vammContract: ethers.Contract, eventType: string): ether
 export const getPreviousEvents = async (
   amms: AMM[],
   eventType: 'mint' | 'swap',
-  previousBlockNumber: number,
+  fromBlock: number,
+  toBlock: number,
 ): Promise<VammEvents> => {
   const totalEventsByVammAddress: VammEvents = {};
 
   const promises = amms.map(async (amm): Promise<[AMM, ethers.Event[]]> => {
     const vammContract = generateVAMMContract(amm.id, amm.provider);
     const eventFilter = getEventFilter(vammContract, eventType);
-    const events = await vammContract.queryFilter(eventFilter, previousBlockNumber);
+    const events = await vammContract.queryFilter(eventFilter, fromBlock, toBlock);
 
     return [amm, events];
   });
