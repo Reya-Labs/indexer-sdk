@@ -1,7 +1,7 @@
 import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
 
-import { CHAIN_ID, getFixedRateLocked } from '..';
+import { getFixedRateLocked } from '..';
 
 export type SwapEventInfo = {
   // todo: we should store the event timestamp in this object
@@ -23,7 +23,7 @@ export type SwapEventInfo = {
   marginEngineAddress: string;
 };
 
-export const parseSwapEvent = (amm: AMM, event: ethers.Event): SwapEventInfo => {
+export const parseSwapEvent = (chainId: number, amm: AMM, event: ethers.Event): SwapEventInfo => {
   const eventId = `${event.blockHash}_${event.transactionHash}_${event.logIndex}`;
 
   const tokenDecimals = amm.underlyingToken.decimals;
@@ -48,7 +48,7 @@ export const parseSwapEvent = (amm: AMM, event: ethers.Event): SwapEventInfo => 
   return {
     eventId: eventId.toLowerCase(),
     eventBlockNumber: event.blockNumber,
-    chainId: CHAIN_ID,
+    chainId,
     vammAddress: amm.id.toLowerCase(),
     ownerAddress: ownerAddress.toLowerCase(),
     tickLower,
