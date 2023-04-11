@@ -17,11 +17,10 @@ export const pullExistingLpPositionRows = async (
 
   // note, since we're doing time based indexing of passive swaps, can't rely on extra details from the swap event
   const sqlQuery = `
-    
     SELECT * FROM \`${positionTableId}\` 
-        WHERE 
-            notionalLiquidityProvided>0 
-            AND positionInitializationTimestamp<\'${currentTimestampBQ}\'
+      WHERE 
+        notionalLiquidityProvided>0 AND 
+        positionInitializationTimestamp<\'${currentTimestampBQ}\'
     `;
 
   const options = {

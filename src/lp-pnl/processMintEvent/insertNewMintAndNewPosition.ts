@@ -4,7 +4,7 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 import { BigQueryPositionRow } from '../../big-query-support';
 import { secondsToBqDate } from '../../big-query-support/utils';
 import { DATASET_ID, POSITIONS_TABLE_ID, PROJECT_ID } from '../../common';
-import { generatePositionRow } from '../../common/mints/generatePositionRow';
+import { generateLpPositionRow } from '../../common/mints/generateLpPositionRow';
 import { MintEventInfo } from '../../common/mints/parseMintEvent';
 
 export const insertNewMintAndNewPosition = async (
@@ -13,19 +13,13 @@ export const insertNewMintAndNewPosition = async (
   eventInfo: MintEventInfo,
   eventTimestamp: number,
 ): Promise<void> => {
-  console.log('Inserting new new position following a mint');
+  console.log('Inserting new position following a mint');
 
   // generate position row
-  const positionRow: BigQueryPositionRow | null = generatePositionRow(
-    amm,
-    eventInfo,
-    eventTimestamp,
-    null,
-  );
+  const positionRow: BigQueryPositionRow = generateLpPositionRow(amm, eventInfo, eventTimestamp);
 
-  if (positionRow) {
-    const positionTableId = `${PROJECT_ID}.${DATASET_ID}.${POSITIONS_TABLE_ID}`;
-    const rawPositionRow = `
+  const positionTableId = `${PROJECT_ID}.${DATASET_ID}.${POSITIONS_TABLE_ID}`;
+  const rawPositionRow = `
     \"${positionRow.marginEngineAddress}\",
     \"${positionRow.vammAddress}\",
     \"${positionRow.ownerAddress}\",
@@ -49,8 +43,8 @@ export const insertNewMintAndNewPosition = async (
     ${positionRow.chainId}
   `;
 
-    // build and fire sql query
-    const sqlTransactionQuery = `
+  // build and fire sql query
+  const sqlTransactionQuery = `
     BEGIN 
       BEGIN TRANSACTION;
         INSERT INTO \`${positionTableId}\` VALUES(${rawPositionRow});          
@@ -58,14 +52,13 @@ export const insertNewMintAndNewPosition = async (
     END;
   `;
 
-    const options = {
-      query: sqlTransactionQuery,
-      timeoutMs: 100000,
-      useLegacySql: false,
-    };
+  const options = {
+    query: sqlTransactionQuery,
+    timeoutMs: 100000,
+    useLegacySql: false,
+  };
 
-    await bigQuery.query(options);
+  await bigQuery.query(options);
 
-    console.log(`Inserted a new position for ${positionRow.ownerAddress}`);
-  }
+  console.log(`Inserted a new position for ${positionRow.ownerAddress}`);
 };
