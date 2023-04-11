@@ -2,6 +2,7 @@ import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
 import { pullExistingPositionRow } from '../../big-query-support';
+import { parseMintEvent } from '../../common/mints/parseMintEvent';
 import { insertNewMintAndNewPosition } from './insertNewMintAndNewPosition';
 
 
