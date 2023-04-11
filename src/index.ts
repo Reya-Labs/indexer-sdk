@@ -14,7 +14,7 @@ async function authenticateImplicitWithAdc() {
 
 const main = async () => {
   await authenticateImplicitWithAdc();
-  await run();
+  await run(1);
 };
 
 main()

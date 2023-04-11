@@ -1,8 +1,6 @@
 import { AMM, getNotionalFromLiquidity } from '@voltz-protocol/v1-sdk';
 import { BigNumber, ethers } from 'ethers';
 
-import { CHAIN_ID } from '..';
-
 export type MintEventInfo = {
   chainId: number;
   vammAddress: string;
@@ -15,7 +13,7 @@ export type MintEventInfo = {
   marginEngineAddress: string;
 };
 
-export const parseMintEvent = (amm: AMM, event: ethers.Event): MintEventInfo => {
+export const parseMintEvent = (chainId: number, amm: AMM, event: ethers.Event): MintEventInfo => {
   const tokenDecimals = amm.underlyingToken.decimals;
   const ownerAddress = event.args?.owner as string;
   const tickLower = event.args?.tickLower as number;
@@ -30,7 +28,7 @@ export const parseMintEvent = (amm: AMM, event: ethers.Event): MintEventInfo => 
   );
 
   return {
-    chainId: CHAIN_ID,
+    chainId,
     vammAddress: amm.id.toLowerCase(),
     ownerAddress: ownerAddress.toLowerCase(),
     tickLower,

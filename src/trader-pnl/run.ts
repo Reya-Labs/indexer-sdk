@@ -1,14 +1,14 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import * as dotenv from 'dotenv';
 
-import { APR_2023_TIMESTAMP, CHAIN_ID, getAmms, PROJECT_ID, sleep } from '../common';
+import { APR_2023_TIMESTAMP, getAmms, PROJECT_ID, sleep } from '../common';
 import { sync } from './sync';
 
 dotenv.config();
 
 let previousBlockNumber = 0;
 
-export const run = async () => {
+export const run = async (chainId: number) => {
   // authenticate to GCloud
   // await authenticateImplicitWithAdc();
 
@@ -18,7 +18,7 @@ export const run = async () => {
   });
 
   // fetch AMMs
-  const amms = await getAmms(CHAIN_ID, APR_2023_TIMESTAMP);
+  const amms = await getAmms(chainId, APR_2023_TIMESTAMP);
 
   if (amms.length === 0) {
     console.log('Skipping processing because the list of AMMs is empty.');
@@ -40,7 +40,7 @@ export const run = async () => {
     console.log(`Processing blocks: ${previousBlockNumber}-${currentBlockNumber}`);
 
     try {
-      await sync(bigQuery, amms, previousBlockNumber);
+      await sync(chainId, bigQuery, amms, previousBlockNumber);
       previousBlockNumber = currentBlockNumber;
     } catch (error) {
       console.log(`Loop has failed with message: ${(error as Error).message}.`);

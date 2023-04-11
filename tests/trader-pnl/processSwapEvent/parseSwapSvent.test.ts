@@ -19,7 +19,7 @@ describe('parse swap event', () => {
       },
     } as unknown as Event;
 
-    const eventInfo = parseSwapEvent(mockedAMM, event);
+    const eventInfo = parseSwapEvent(1, mockedAMM, event);
 
     expect(eventInfo).toEqual({
       eventId: 'blockhash_transactionhash_1',

@@ -26,7 +26,7 @@ export const processPassiveSwapEvents = async ({
   chainId,
 }: ProcessPassiveSwapEventsArgs): Promise<void> => {
   // Get information about root swap event
-  const rootEventInfo = parseSwapEvent(amm, event);
+  const rootEventInfo = parseSwapEvent(chainId, amm, event);
 
   // Retrieve the current timestamp
   const eventTimestamp = (await event.getBlock()).timestamp;

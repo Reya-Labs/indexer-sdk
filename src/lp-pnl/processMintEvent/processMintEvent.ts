@@ -7,12 +7,13 @@ import { parseMintEvent } from '../../common/mints/parseMintEvent';
 import { insertNewMintAndNewPosition } from './insertNewMintAndNewPosition';
 
 export const processMintEvent = async (
+  chainId: number,
   bigQuery: BigQuery,
   amm: AMM,
   event: ethers.Event,
 ): Promise<void> => {
   // todo: needs implementation
-  const eventInfo = parseMintEvent(amm, event);
+  const eventInfo = parseMintEvent(chainId, amm, event);
 
   const existingPosition = await pullExistingPositionRow(
     bigQuery,

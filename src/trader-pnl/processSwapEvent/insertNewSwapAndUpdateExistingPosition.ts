@@ -23,7 +23,7 @@ export const insertNewSwapAndUpdateExistingPosition = async (
 
   const swapTableId = `${PROJECT_ID}.${DATASET_ID}.${SWAPS_TABLE_ID}`;
   const rawSwapRow = `
-    \"${eventInfo.eventId}\",
+    \"${swapRow.eventId}\",
     \"${swapRow.vammAddress}\",
     \"${swapRow.ownerAddress}\",
     ${swapRow.tickLower}, 
