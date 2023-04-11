@@ -22,8 +22,19 @@ export const syncPassiveSwaps = async (
       return a.blockNumber - b.blockNumber;
     });
 
+
+
     for (const swapEvent of sortedSwapEvents) {
-      await processPassiveSwapEvents(bigQuery, amm, swapEvent);
+      // todo: check if the chain id can be extracted from the amm object
+      await processPassiveSwapEvents({
+
+        bigQuery,
+        amm,
+        event: swapEvent,
+        chainId: 1,
+        provider: amm.provider
+        
+        });
       counter++;
     }
   });
