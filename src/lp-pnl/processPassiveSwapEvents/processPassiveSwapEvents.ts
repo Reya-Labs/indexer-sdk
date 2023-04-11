@@ -7,13 +7,6 @@ import { generateLpPositionUpdatesQuery } from '../../big-query-support/generate
 import { generateLpPositionRowsFromPassiveSwaps } from './generateLpPositionRowsFromPassiveSwaps';
 import { generatePassiveSwapEvents } from './generatePassiveSwapEvents';
 
-function shouldProcessSwapEvent(): boolean {
-
-  // todo: this function needs to be time-dependent -> need to elaborate
-
-  return true;
-}
-
 export type ProcessPassiveSwapEventsArgs = {
 
   bigQuery: BigQuery,
@@ -31,20 +24,11 @@ export const processPassiveSwapEvents = async (
   bigQuery,
   amm,
   event,
-  // todo: not sure if possible to derive chain id from the ethers.Event object
   chainId,
   provider
  } : ProcessPassiveSwapEventsArgs
 ): Promise<void> => {
   const rootSwapEvent = parseSwapEvent(amm, event);
-  // todo: get back to this -> align the logic with the indexer in js
-  const shouldProcess = shouldProcessSwapEvent();
-
-  if (!shouldProcess) {
-    console.log('Swap event skipped.');
-    // swap should not be processed in order to extract passive swap events processed by lps
-    return;
-  }
 
   const currentTimestamp = (await event.getBlock()).timestamp;
 
