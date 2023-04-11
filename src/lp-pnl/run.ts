@@ -77,7 +77,5 @@ export const run = async () => {
       await sleep(60 * 1000); // sleep 60s
     }
 
-
-
   }
 };
