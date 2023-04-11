@@ -65,7 +65,6 @@ export const processPassiveSwapEvents = async (
   const maturityTimestamp = amm.termEndTimestampInMS / 1000;
   const blockNumber = event.blockNumber;
 
-  // todo: get back to this once generatePassiveSwapEvents is implemented
   const {passiveSwapEvents, affectedLps} = await generatePassiveSwapEvents(
     {
       existingLpPositionRows,
