@@ -1,5 +1,6 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
+
 import { getPreviousSwapEvents } from '../common/swaps/getPreviousSwapEvents';
 import { processPassiveSwapEvents } from './processPassiveSwapEvents';
 
@@ -8,7 +9,6 @@ export const syncPassiveSwaps = async (
   amms: AMM[],
   previousBlockNumber: number,
 ): Promise<number> => {
-
   const previousSwapEvents = await getPreviousSwapEvents(amms, previousBlockNumber);
 
   let counter = 0;
@@ -22,19 +22,15 @@ export const syncPassiveSwaps = async (
       return a.blockNumber - b.blockNumber;
     });
 
-
-
     for (const swapEvent of sortedSwapEvents) {
       // todo: check if the chain id can be extracted from the amm object
       await processPassiveSwapEvents({
-
         bigQuery,
         amm,
         event: swapEvent,
         chainId: 1,
-        provider: amm.provider
-        
-        });
+        provider: amm.provider,
+      });
       counter++;
     }
   });

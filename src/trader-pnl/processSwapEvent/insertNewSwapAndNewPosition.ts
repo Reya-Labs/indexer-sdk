@@ -4,8 +4,8 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 import { secondsToBqDate } from '../../big-query-support/utils';
 import { DATASET_ID, POSITIONS_TABLE_ID, PROJECT_ID, SWAPS_TABLE_ID } from '../../common';
 import { generatePositionRow } from '../../common/swaps/generatePositionRow';
-import { generateSwapRow } from './generateSwapRow';
 import { SwapEventInfo } from '../../common/swaps/parseSwapEvent';
+import { generateSwapRow } from './generateSwapRow';
 
 export const insertNewSwapAndNewPosition = async (
   bigQuery: BigQuery,

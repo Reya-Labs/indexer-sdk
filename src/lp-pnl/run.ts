@@ -31,7 +31,6 @@ export const run = async () => {
   const provider = amms[0].provider;
 
   while (true) {
-
     // syncing mints
 
     const currentBlockNumber = await provider.getBlockNumber();
@@ -60,7 +59,7 @@ export const run = async () => {
     the latest synced block that processes mints
     to make sure we don't miss any lps when generating passive swap events
     */
-    
+
     if (previousBlockNumberPassiveSwaps === currentBlockNumber) {
       console.log('Block has not changed. Sleeping...');
       await sleep(60 * 1000); // sleep 60s
@@ -76,6 +75,5 @@ export const run = async () => {
       console.log(`Loop has failed with message: ${(error as Error).message}.`);
       await sleep(60 * 1000); // sleep 60s
     }
-
   }
 };

@@ -8,12 +8,10 @@ import { DATASET_ID, POSITIONS_TABLE_ID, PROJECT_ID } from '../common';
 import { BigQueryPositionRow } from './pullExistingPositionRow';
 import { bqNumericToNumber, bqTimestampToUnixSeconds, secondsToBqDate } from './utils';
 
-
 export const pullExistingLpPositionRows = async (
   bigQuery: BigQuery,
-  currentTimestamp: number 
+  currentTimestamp: number,
 ): Promise<BigQueryPositionRow[]> => {
-
   const currentTimestampBQ = secondsToBqDate(currentTimestamp);
   const positionTableId = `${PROJECT_ID}.${DATASET_ID}.${POSITIONS_TABLE_ID}`;
 
@@ -36,36 +34,33 @@ export const pullExistingLpPositionRows = async (
     return [];
   }
 
-  const lpPositionRows = rows.map(
-    (row) => {
-        return {
-            marginEngineAddress: row.marginEngineAddress,
-            vammAddress: row.vammAddress,
-            ownerAddress: row.ownerAddress,
-            tickLower: row.tickLower,
-            tickUpper: row.tickUpper,
-            realizedPnLFromSwaps: bqNumericToNumber(row.realizedPnLFromSwaps),
-            realizedPnLFromFeesPaid: bqNumericToNumber(row.realizedPnLFromFeesPaid),
-            netNotionalLocked: bqNumericToNumber(row.netNotionalLocked),
-            netFixedRateLocked: bqNumericToNumber(row.netFixedRateLocked),
-            lastUpdatedTimestamp: bqTimestampToUnixSeconds(row.lastUpdatedTimestamp),
-            notionalLiquidityProvided: bqNumericToNumber(row.notionalLiquidityProvided),
-            realizedPnLFromFeesCollected: bqNumericToNumber(row.realizedPnLFromFeesCollected),
-            netMarginDeposited: bqNumericToNumber(row.netMarginDeposited),
-            rateOracleIndex: bqNumericToNumber(row.rateOracleIndex),
-            rowLastUpdatedTimestamp: bqTimestampToUnixSeconds(row.rowLastUpdatedTimestamp),
-            fixedTokenBalance: bqNumericToNumber(row.fixedTokenBalance),
-            variableTokenBalance: bqNumericToNumber(row.variableTokenBalance),
-            positionInitializationTimestamp: bqTimestampToUnixSeconds(
-              row.positionInitializationTimestamp,
-            ),
-            rateOracle: row.rateOracle,
-            underlyingToken: row.underlyingToken,
-            chainId: row.chainId,
-        };
-    }
-  );
+  const lpPositionRows = rows.map((row) => {
+    return {
+      marginEngineAddress: row.marginEngineAddress,
+      vammAddress: row.vammAddress,
+      ownerAddress: row.ownerAddress,
+      tickLower: row.tickLower,
+      tickUpper: row.tickUpper,
+      realizedPnLFromSwaps: bqNumericToNumber(row.realizedPnLFromSwaps),
+      realizedPnLFromFeesPaid: bqNumericToNumber(row.realizedPnLFromFeesPaid),
+      netNotionalLocked: bqNumericToNumber(row.netNotionalLocked),
+      netFixedRateLocked: bqNumericToNumber(row.netFixedRateLocked),
+      lastUpdatedTimestamp: bqTimestampToUnixSeconds(row.lastUpdatedTimestamp),
+      notionalLiquidityProvided: bqNumericToNumber(row.notionalLiquidityProvided),
+      realizedPnLFromFeesCollected: bqNumericToNumber(row.realizedPnLFromFeesCollected),
+      netMarginDeposited: bqNumericToNumber(row.netMarginDeposited),
+      rateOracleIndex: bqNumericToNumber(row.rateOracleIndex),
+      rowLastUpdatedTimestamp: bqTimestampToUnixSeconds(row.rowLastUpdatedTimestamp),
+      fixedTokenBalance: bqNumericToNumber(row.fixedTokenBalance),
+      variableTokenBalance: bqNumericToNumber(row.variableTokenBalance),
+      positionInitializationTimestamp: bqTimestampToUnixSeconds(
+        row.positionInitializationTimestamp,
+      ),
+      rateOracle: row.rateOracle,
+      underlyingToken: row.underlyingToken,
+      chainId: row.chainId,
+    };
+  });
 
   return lpPositionRows;
-
 };
