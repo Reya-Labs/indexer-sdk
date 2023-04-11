@@ -1,5 +1,6 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
+import { BigQueryPositionRow } from '../../big-query-support';
 import { secondsToBqDate } from '../../big-query-support/utils';
 import { DATASET_ID, POSITIONS_TABLE_ID, PROJECT_ID, SWAPS_TABLE_ID } from '../../common';
 import { generatePositionRow } from '../../common/mints/generatePositionRow';
@@ -14,11 +15,11 @@ export const insertNewMintAndNewPosition = async (
   console.log('Inserting new new position following a mint');
 
   // generate position row
-  const positionRow = await generatePositionRow(amm, eventInfo, eventTimestamp, null);
+  const positionRow: BigQueryPositionRow | null = await generatePositionRow(amm, eventInfo, eventTimestamp, null);
 
-  const positionTableId = `${PROJECT_ID}.${DATASET_ID}.${POSITIONS_TABLE_ID}`;
-
-  const rawPositionRow = `
+  if (positionRow) {
+    const positionTableId = `${PROJECT_ID}.${DATASET_ID}.${POSITIONS_TABLE_ID}`;
+    const rawPositionRow = `
     \"${positionRow.marginEngineAddress}\",
     \"${positionRow.vammAddress}\",
     \"${positionRow.ownerAddress}\",
@@ -42,8 +43,8 @@ export const insertNewMintAndNewPosition = async (
     ${positionRow.chainId}
   `;
 
-  // build and fire sql query
-  const sqlTransactionQuery = `
+    // build and fire sql query
+    const sqlTransactionQuery = `
     BEGIN 
       BEGIN TRANSACTION;
         INSERT INTO \`${positionTableId}\` VALUES(${rawPositionRow});          
@@ -62,4 +63,8 @@ export const insertNewMintAndNewPosition = async (
   console.log(
     `Inserted a new position for ${positionRow.ownerAddress}`,
   );
+
+  }
+
+  
 };
