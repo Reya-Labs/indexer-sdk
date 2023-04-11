@@ -8,7 +8,15 @@ import { generatePassiveSwapEvent } from './generatePassiveSwapEvent';
 export type GeneratePassiveSwapEventsArgs = {
 
     existingLpPositionRows: BigQueryPositionRow[],
-    currentTimestamp: number
+    currentTimestamp: number,
+    startTimestamp: number,
+    maturityTimestamp: number,
+    variableFactor: number,
+    marginEngineAddress: string,
+    tokenDecimals: number,
+    blockNumber: number,
+    chainId: number,
+    rootSwapEvent: SwapEventInfo
 
 }
 
@@ -17,7 +25,18 @@ export type GeneratePassiveSwapEventsReturn = {
     affectedLps: BigQueryPositionRow[]
 }
 
-export const generatePassiveSwapEvents = async ({existingLpPositionRows, currentTimestamp}: GeneratePassiveSwapEventsArgs): GeneratePassiveSwapEventsReturn => {
+export const generatePassiveSwapEvents = async ({
+    existingLpPositionRows,
+    currentTimestamp,
+    startTimestamp,
+    maturityTimestamp,
+    variableFactor,
+    marginEngineAddress,
+    tokenDecimals,
+    blockNumber,
+    chainId,
+    rootSwapEvent
+}: GeneratePassiveSwapEventsArgs): Promise<GeneratePassiveSwapEventsReturn> => {
 
     let passiveSwapEvents: SwapEventInfo[] = [];
     let affectedLps: BigQueryPositionRow[] = [];
@@ -32,7 +51,6 @@ export const generatePassiveSwapEvents = async ({existingLpPositionRows, current
 
             const cachedVariableTokenBalance: number = positionRow.variableTokenBalance;
             const cachedFixedTokenBalance: number = positionRow.fixedTokenBalance;
-            const vammAddress: string = positionRow.vammAddress;
             const ownerAddress: string = positionRow.ownerAddress;
             const tickLower: number = positionRow.tickLower; 
             const tickUpper: number = positionRow.tickUpper;
@@ -46,8 +64,23 @@ export const generatePassiveSwapEvents = async ({existingLpPositionRows, current
             if (cachedAndOnChainVariableTokenBalanceMatch && cachedAndOnChainFixedTokenBalanceMatch) {
                 console.log(`Variable and Fixed Token Balances match, no need for passive swap`); 
             } else {
-                // todo: get back once implementation is done 
-                const passiveSwap: SwapEventInfo = generatePassiveSwapEvent();
+                const passiveSwap: SwapEventInfo = generatePassiveSwapEvent(
+                    {
+                        cachedVariableTokenBalance,
+                        cachedFixedTokenBalance,
+                        onChainVariableTokenBalance,
+                        onChainFixedTokenBalance, 
+                        chainId,
+                        ownerAddress,
+                        tickLower,
+                        tickUpper,
+                        currentTimestamp,
+                        startTimestamp,
+                        maturityTimestamp,
+                        variableFactor,
+                        rootSwapEvent
+                    }
+                );
                 passiveSwapEvents.push(passiveSwap);
                 affectedLps.push(positionRow); 
             }

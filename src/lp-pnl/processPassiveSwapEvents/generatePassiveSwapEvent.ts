@@ -37,7 +37,6 @@ export const generatePassiveSwapEvent = ({
 }: GeneratePassiveSwapEventArgs): SwapEventInfo => {
 
     const notionalLocked = cachedVariableTokenBalance-onChainVariableTokenBalance;
-    // todo: get back when implementation
     const fixedRateLocked = getFixedRateLockedFromBalances(
         {
             notionalLocked,
