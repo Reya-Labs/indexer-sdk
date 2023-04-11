@@ -2,6 +2,7 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
 import { getPreviousMintEvents } from '../common/mints/getPreviousMintEvents';
+import { processMintEvent } from './processMintEvent';
 
 
 export const syncMints = async (
