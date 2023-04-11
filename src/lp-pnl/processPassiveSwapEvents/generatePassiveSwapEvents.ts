@@ -4,6 +4,7 @@ import { SwapEventInfo } from '../../common/swaps/parseSwapEvent';
 import { BigQueryPositionRow } from '../../big-query-support';
 import { getOnChainFixedAndVariableTokenBalances } from './getOnChainFixedAndVariableTokenBalances';
 import { generatePassiveSwapEvent } from './generatePassiveSwapEvent';
+import { ethers } from 'ethers';
 
 export type GeneratePassiveSwapEventsArgs = {
 
@@ -16,7 +17,8 @@ export type GeneratePassiveSwapEventsArgs = {
     tokenDecimals: number,
     blockNumber: number,
     chainId: number,
-    rootSwapEvent: SwapEventInfo
+    rootSwapEvent: SwapEventInfo,
+    provider: ethers.providers.Provider
 
 }
 
@@ -35,7 +37,8 @@ export const generatePassiveSwapEvents = async ({
     tokenDecimals,
     blockNumber,
     chainId,
-    rootSwapEvent
+    rootSwapEvent,
+    provider
 }: GeneratePassiveSwapEventsArgs): Promise<GeneratePassiveSwapEventsReturn> => {
 
     let passiveSwapEvents: SwapEventInfo[] = [];
@@ -55,8 +58,17 @@ export const generatePassiveSwapEvents = async ({
             const tickLower: number = positionRow.tickLower; 
             const tickUpper: number = positionRow.tickUpper;
 
-            // todo: get back once implementation is ready
-            const {onChainVariableTokenBalance, onChainFixedTokenBalance} = await getOnChainFixedAndVariableTokenBalances();
+            const {onChainVariableTokenBalance, onChainFixedTokenBalance} = await getOnChainFixedAndVariableTokenBalances(
+                {
+                    marginEngineAddress,
+                    ownerAddress,
+                    tickLower,
+                    tickUpper,
+                    tokenDecimals,
+                    blockNumber, 
+                    provider
+                }
+            );
 
             const cachedAndOnChainVariableTokenBalanceMatch = cachedVariableTokenBalance === onChainVariableTokenBalance;    
             const cachedAndOnChainFixedTokenBalanceMatch = cachedFixedTokenBalance === onChainFixedTokenBalance;
