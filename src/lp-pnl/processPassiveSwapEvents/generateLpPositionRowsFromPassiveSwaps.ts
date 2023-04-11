@@ -3,22 +3,26 @@
 import { SwapEventInfo } from '../../common/swaps/parseSwapEvent';
 import { BigQueryPositionRow } from '../../big-query-support';
 import { BigQuery } from '@google-cloud/bigquery';
+import { generatePositionRow } from '../../common/swaps/generatePositionRow';
+import { AMM } from '@voltz-protocol/v1-sdk';
 
 export type GenerateLpPositionRowsFromPassiveSwapsArgs = {
 
     passiveSwapEvents: SwapEventInfo[],
     affectedLps: BigQueryPositionRow[],
     bigQuery: BigQuery,
-    chainId: number
+    chainId: number,
+    amm: AMM,
+    eventTimestamp: number
 
 }
 
-
+// todo: check if we also need to pass the chainId and the bigQuery object in here
 export const generateLpPositionRowsFromPassiveSwaps = async ({
     passiveSwapEvents,
     affectedLps,
-    bigQuery,
-    chainId
+    amm,
+    eventTimestamp
 }: GenerateLpPositionRowsFromPassiveSwapsArgs): Promise<BigQueryPositionRow[]> => {
 
     if ((passiveSwapEvents.length !== affectedLps.length) || (passiveSwapEvents.length===0)) {
@@ -31,8 +35,11 @@ export const generateLpPositionRowsFromPassiveSwaps = async ({
     for (let i=0; i < numberOfSwaps; i++) { 
         const passiveSwapEvent: SwapEventInfo = passiveSwapEvents[i]; 
         const affectedLp: BigQueryPositionRow = affectedLps[i];
-        const positionRow: BigQueryPositionRow = await generateLpPositionRowFromPassiveSwap(
-            {passiveSwapEvent, affectedLp, chainId, bigQuery}
+        const positionRow: BigQueryPositionRow = await generatePositionRow(
+            amm,
+            passiveSwapEvent,
+            eventTimestamp,
+            affectedLp
         );
         positionRows.push(positionRow);
     }

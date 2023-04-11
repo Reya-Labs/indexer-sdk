@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/require-await */
 
 import { BigQueryPositionRow } from '../../../src/big-query-support';
-import { generatePositionRow } from '../../../src/trader-pnl/processSwapEvent/generatePositionRow';
+import { generatePositionRow } from '../../../src/common/swaps/generatePositionRow';
 import { SwapEventInfo } from '../../../src/common/swaps/parseSwapEvent';
 import { mockedAMM } from './utils';
 
