@@ -5,25 +5,30 @@ import { getPreviousEvents } from '../common';
 import { processPassiveSwapEvents } from './processPassiveSwapEvents';
 
 export const syncPassiveSwaps = async (
+  chainId: number,
   bigQuery: BigQuery,
   amms: AMM[],
-  previousBlockNumber: number,
-): Promise<number> => {
-  const previousSwapEvents = await getPreviousEvents(amms, 'swap', previousBlockNumber);
-
-  let counter = 0;
+  fromBlock: number,
+  toBlock: number,
+  minBlockInterval: number,
+): Promise<void> => {
+  const previousSwapEvents = await getPreviousEvents(amms, 'swap', fromBlock, toBlock);
 
   const promises = Object.values(previousSwapEvents).map(async ({ amm, events }) => {
-    for (const swapEvent of events) {
-      // todo: check if the chain id can be extracted from the amm object
-      await processPassiveSwapEvents({
-        bigQuery,
-        amm,
-        event: swapEvent,
-        chainId: 1,
-        provider: amm.provider,
-      });
-      counter++;
+    let lastProcessedBlock = fromBlock;
+    for (let i = 0; i < events.length; i++) {
+      const event = events[i];
+
+      if (event.blockNumber >= lastProcessedBlock + minBlockInterval || i + 1 === events.length) {
+        await processPassiveSwapEvents({
+          bigQuery,
+          amm,
+          event,
+          chainId,
+        });
+
+        lastProcessedBlock = event.blockNumber;
+      }
     }
   });
 
@@ -33,6 +38,4 @@ export const syncPassiveSwaps = async (
       throw v.reason;
     }
   });
-
-  return counter;
 };

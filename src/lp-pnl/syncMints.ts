@@ -8,16 +8,14 @@ export const syncMints = async (
   chainId: number,
   bigQuery: BigQuery,
   amms: AMM[],
-  previousBlockNumber: number,
-): Promise<number> => {
-  const previousMintEvents = await getPreviousEvents(amms, 'mint', previousBlockNumber);
-
-  let counter = 0;
+  fromBlock: number,
+  toBlock: number,
+): Promise<void> => {
+  const previousMintEvents = await getPreviousEvents(amms, 'mint', fromBlock, toBlock);
 
   const promises = Object.values(previousMintEvents).map(async ({ amm, events }) => {
     for (const swapEvent of events) {
       await processMintEvent(chainId, bigQuery, amm, swapEvent);
-      counter++;
     }
   });
 
@@ -27,6 +25,4 @@ export const syncMints = async (
       throw v.reason;
     }
   });
-
-  return counter;
 };

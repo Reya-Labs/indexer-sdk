@@ -14,9 +14,7 @@ export type ProcessPassiveSwapEventsArgs = {
   bigQuery: BigQuery;
   amm: AMM;
   event: ethers.Event;
-  // todo: not sure if possible to derive chain id from the ethers.Event object
   chainId: number;
-  provider: ethers.providers.Provider;
 };
 
 export const processPassiveSwapEvents = async ({
@@ -41,6 +39,11 @@ export const processPassiveSwapEvents = async ({
     eventTimestamp,
   });
 
+  if (affectedLps.length === 0) {
+    // since the latest checkpoint, no lps were affected by passive swaps
+    return;
+  }
+
   const lpPositionRows = await generateLpPositionRowsFromPassiveSwaps({
     passiveSwapEvents,
     affectedLps,
@@ -50,12 +53,7 @@ export const processPassiveSwapEvents = async ({
     currentTimestamp: eventTimestamp,
   });
 
-  if (lpPositionRows.length === 0) {
-    // since the latest checkpoint, no lps were affected by passive swaps
-    return;
-  }
-
-  const sqlTransactionQuery: string = generateLpPositionUpdatesQuery(lpPositionRows);
+  const sqlTransactionQuery = generateLpPositionUpdatesQuery(lpPositionRows);
 
   const options = {
     query: sqlTransactionQuery,

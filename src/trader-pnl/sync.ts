@@ -8,9 +8,10 @@ export const sync = async (
   chainId: number,
   bigQuery: BigQuery,
   amms: AMM[],
-  previousBlockNumber: number,
+  fromBlock: number,
+  toBlock: number,
 ): Promise<void> => {
-  const previousSwapEvents = await getPreviousEvents(amms, 'swap', previousBlockNumber);
+  const previousSwapEvents = await getPreviousEvents(amms, 'swap', fromBlock, toBlock);
 
   const promises = Object.values(previousSwapEvents).map(async ({ amm, events }) => {
     for (const swapEvent of events) {

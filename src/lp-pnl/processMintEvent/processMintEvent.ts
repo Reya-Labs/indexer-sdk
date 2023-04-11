@@ -12,7 +12,6 @@ export const processMintEvent = async (
   amm: AMM,
   event: ethers.Event,
 ): Promise<void> => {
-  // todo: needs implementation
   const eventInfo = parseMintEvent(chainId, amm, event);
 
   const existingPosition = await pullExistingPositionRow(

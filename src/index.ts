@@ -1,7 +1,8 @@
 import { Storage } from '@google-cloud/storage';
 
 import { PROJECT_ID } from './common';
-import { run } from './trader-pnl/run';
+import { run as runLPs } from './lp-pnl/run';
+import { run as runTraders } from './trader-pnl/run';
 
 // todo: will need to adjust this script to enable execution for both lps and traders
 async function authenticateImplicitWithAdc() {
@@ -12,9 +13,19 @@ async function authenticateImplicitWithAdc() {
   await storage.getBuckets();
 }
 
+const chainIds = [1];
+// const chainIds = [1, 42161];
+
 const main = async () => {
   await authenticateImplicitWithAdc();
-  await run(1);
+
+  let promises: Promise<void>[] = [];
+  // promises = promises.concat(chainIds.map((chainId) => runTraders(chainId)));
+  promises = promises.concat(chainIds.map((chainId) => runLPs(chainId)));
+
+  console.log(`Number of parallel calls ${promises.length}`);
+
+  await Promise.allSettled(promises);
 };
 
 main()

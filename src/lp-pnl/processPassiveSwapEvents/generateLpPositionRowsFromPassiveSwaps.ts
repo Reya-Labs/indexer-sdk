@@ -5,7 +5,7 @@ import { BigQueryPositionRow } from '../../big-query-support';
 import { generatePositionRow } from '../../common/swaps/generatePositionRow';
 import { SwapEventInfo } from '../../common/swaps/parseSwapEvent';
 
-export type GenerateLpPositionRowsFromPassiveSwapsArgs = {
+type Args = {
   passiveSwapEvents: SwapEventInfo[];
   affectedLps: BigQueryPositionRow[];
   bigQuery: BigQuery;
@@ -14,17 +14,12 @@ export type GenerateLpPositionRowsFromPassiveSwapsArgs = {
   currentTimestamp: number;
 };
 
-// todo: check if we also need to pass the chainId and the bigQuery object in here
 export const generateLpPositionRowsFromPassiveSwaps = async ({
   passiveSwapEvents,
   affectedLps,
   amm,
   currentTimestamp,
-}: GenerateLpPositionRowsFromPassiveSwapsArgs): Promise<BigQueryPositionRow[]> => {
-  if (passiveSwapEvents.length !== affectedLps.length || passiveSwapEvents.length === 0) {
-    return [];
-  }
-
+}: Args): Promise<BigQueryPositionRow[]> => {
   const positionRows: BigQueryPositionRow[] = [];
   const numberOfSwaps = passiveSwapEvents.length;
 

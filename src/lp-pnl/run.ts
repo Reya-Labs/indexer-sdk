@@ -7,8 +7,7 @@ import { syncPassiveSwaps } from './syncPassiveSwaps';
 
 dotenv.config();
 
-let previousBlockNumberMints = 0;
-let previousBlockNumberPassiveSwaps = 0;
+let previousBlockNumber = 0;
 
 export const run = async (chainId: number) => {
   // authenticate to GCloud
@@ -31,46 +30,24 @@ export const run = async (chainId: number) => {
   const provider = amms[0].provider;
 
   while (true) {
-    // syncing mints
-
     const currentBlockNumber = await provider.getBlockNumber();
 
-    if (previousBlockNumberMints === currentBlockNumber) {
+    if (previousBlockNumber === currentBlockNumber) {
       console.log('Block has not changed. Sleeping...');
       await sleep(60 * 1000); // sleep 60s
       continue;
     }
 
-    console.log(`Processing blocks: ${previousBlockNumberMints}-${currentBlockNumber}`);
+    console.log(`Processing blocks: ${previousBlockNumber}-${currentBlockNumber}`);
 
     try {
-      await syncMints(chainId, bigQuery, amms, previousBlockNumberMints);
-      previousBlockNumberMints = currentBlockNumber;
-    } catch (error) {
-      console.log(`Loop has failed with message: ${(error as Error).message}.`);
-      await sleep(60 * 1000); // sleep 60s
-    }
+      console.log('Processing mints...');
+      await syncMints(chainId, bigQuery, amms, previousBlockNumber, currentBlockNumber);
 
-    /*
-    syncing passive swaps
+      console.log('Processing passive swaps...');
+      await syncPassiveSwaps(chainId, bigQuery, amms, previousBlockNumber, currentBlockNumber);
 
-    note, we do not change the block number by calling await provider.getBlockNumber() again in here
-    because there's no point processing passive swaps for a block that's beyond 
-    the latest synced block that processes mints
-    to make sure we don't miss any lps when generating passive swap events
-    */
-
-    if (previousBlockNumberPassiveSwaps === currentBlockNumber) {
-      console.log('Block has not changed. Sleeping...');
-      await sleep(60 * 1000); // sleep 60s
-      continue;
-    }
-
-    console.log(`Processing blocks: ${previousBlockNumberPassiveSwaps}-${currentBlockNumber}`);
-
-    try {
-      await syncPassiveSwaps(bigQuery, amms, previousBlockNumberPassiveSwaps);
-      previousBlockNumberPassiveSwaps = currentBlockNumber;
+      previousBlockNumber = currentBlockNumber;
     } catch (error) {
       console.log(`Loop has failed with message: ${(error as Error).message}.`);
       await sleep(60 * 1000); // sleep 60s

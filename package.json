@@ -9,7 +9,7 @@
     "doc": "docs"
   },
   "scripts": {
-    "execute": "npx ts-node src/index.ts",
+    "start": "npx ts-node src/index.ts",
     "prebuild": "yarn code-quality:check && rm -rf dist",
     "build": "rollup -c --bundleConfigAsCjs",
     "ts:check": "yarn ts:check-types && yarn ts:circular-check",

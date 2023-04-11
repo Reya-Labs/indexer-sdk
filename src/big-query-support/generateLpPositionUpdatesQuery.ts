@@ -1,5 +1,6 @@
 import { DATASET_ID, POSITIONS_TABLE_ID, PROJECT_ID } from '../common';
 import { BigQueryPositionRow } from '.';
+import { secondsToBqDate } from './utils';
 
 export const generateLpPositionUpdatesQuery = (lpPositionRows: BigQueryPositionRow[]): string => {
   const positionTableId = `${PROJECT_ID}.${DATASET_ID}.${POSITIONS_TABLE_ID}`;
@@ -13,11 +14,11 @@ export const generateLpPositionUpdatesQuery = (lpPositionRows: BigQueryPositionR
             realizedPnLFromFeesPaid=${positionRow.realizedPnLFromFeesPaid},
             netNotionalLocked=${positionRow.netNotionalLocked},
             netFixedRateLocked=${positionRow.netFixedRateLocked},
-            lastUpdatedTimestamp=\'${positionRow.lastUpdatedTimestamp}\',
+            lastUpdatedTimestamp=\'${secondsToBqDate(positionRow.lastUpdatedTimestamp)}\',
             notionalLiquidityProvided=${positionRow.notionalLiquidityProvided},
             realizedPnLFromFeesCollected=${positionRow.realizedPnLFromFeesCollected},
             netMarginDeposited=${positionRow.netMarginDeposited},
-            rowLastUpdatedTimestamp=\'${positionRow.rowLastUpdatedTimestamp}\', 
+            rowLastUpdatedTimestamp=\'${secondsToBqDate(positionRow.rowLastUpdatedTimestamp)}\', 
             fixedTokenBalance=${positionRow.fixedTokenBalance}, 
             variableTokenBalance=${positionRow.variableTokenBalance}
         WHERE vammAddress=\"${positionRow.vammAddress}\" AND 
