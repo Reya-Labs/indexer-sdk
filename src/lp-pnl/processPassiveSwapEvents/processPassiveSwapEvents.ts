@@ -3,7 +3,7 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 import { BigNumber, ethers } from 'ethers';
 import { pullExistingLpPositionRows } from '../../big-query-support';
 import { parseSwapEvent } from '../../common/swaps/parseSwapEvent';
-import { generateLpPositionUpdatesQuery } from './generateLpPositionUpdatesQuery';
+import { generateLpPositionUpdatesQuery } from '../../big-query-support/generateLpPositionUpdatesQuery';
 import { generateLpPositionRowsFromPassiveSwaps } from './generateLpPositionRowsFromPassiveSwaps';
 import { generatePassiveSwapEvents } from './generatePassiveSwapEvents';
 
@@ -81,9 +81,8 @@ export const processPassiveSwapEvents = async (
     }
   );
 
-  // todo: return once implementation is ready
   const lpPositionRows = await generateLpPositionRowsFromPassiveSwaps(
-    {passiveSwapEvents, affectedLps, bigQuery}
+    {passiveSwapEvents, affectedLps, bigQuery, chainId, amm, currentTimestamp}
   );
 
   if (lpPositionRows.length === 0) { 
@@ -91,8 +90,7 @@ export const processPassiveSwapEvents = async (
     return;
   }
 
-  // todo: return once implementation done
-  const sqlTransactionQuery = generateLpPositionUpdatesQuery(lpPositionRows);
+  const sqlTransactionQuery: string = generateLpPositionUpdatesQuery(lpPositionRows);
 
   const options = {
     query: sqlTransactionQuery,

@@ -13,7 +13,7 @@ export type GenerateLpPositionRowsFromPassiveSwapsArgs = {
     bigQuery: BigQuery,
     chainId: number,
     amm: AMM,
-    eventTimestamp: number
+    currentTimestamp: number
 
 }
 
@@ -22,7 +22,7 @@ export const generateLpPositionRowsFromPassiveSwaps = async ({
     passiveSwapEvents,
     affectedLps,
     amm,
-    eventTimestamp
+    currentTimestamp
 }: GenerateLpPositionRowsFromPassiveSwapsArgs): Promise<BigQueryPositionRow[]> => {
 
     if ((passiveSwapEvents.length !== affectedLps.length) || (passiveSwapEvents.length===0)) {
@@ -38,7 +38,7 @@ export const generateLpPositionRowsFromPassiveSwaps = async ({
         const positionRow: BigQueryPositionRow = await generatePositionRow(
             amm,
             passiveSwapEvent,
-            eventTimestamp,
+            currentTimestamp,
             affectedLp
         );
         positionRows.push(positionRow);
