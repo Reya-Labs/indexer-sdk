@@ -1,5 +1,5 @@
 import { AMM, getNotionalFromLiquidity } from '@voltz-protocol/v1-sdk';
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 
 import { CHAIN_ID } from '..';
 
@@ -20,8 +20,10 @@ export const parseMintEvent = (amm: AMM, event: ethers.Event): MintEventInfo => 
   const ownerAddress = event.args?.owner as string;
   const tickLower = event.args?.tickLower as number;
   const tickUpper = event.args?.tickUpper as number;
+  const amount = event.args?.amount as BigNumber;
+
   const notionalLiquidityProvided = getNotionalFromLiquidity(
-    event.args?.amount,
+    amount,
     tickLower,
     tickUpper,
     tokenDecimals,

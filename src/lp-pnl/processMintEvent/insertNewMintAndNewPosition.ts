@@ -16,7 +16,7 @@ export const insertNewMintAndNewPosition = async (
   console.log('Inserting new new position following a mint');
 
   // generate position row
-  const positionRow: BigQueryPositionRow | null = await generatePositionRow(
+  const positionRow: BigQueryPositionRow | null = generatePositionRow(
     amm,
     eventInfo,
     eventTimestamp,

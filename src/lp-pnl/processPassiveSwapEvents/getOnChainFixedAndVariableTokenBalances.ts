@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 
 import { generateMarginEngineContract } from '../../common/generateMarginEngineContract';
 
@@ -28,26 +28,21 @@ export const getOnChainFixedAndVariableTokenBalances = async ({
 }: GetOnChainFixedAndVariableTokenBalancesArgs): Promise<GetOnChainFixedAndVariableTokenBalancesReturn> => {
   const marginEngineContract = generateMarginEngineContract(marginEngineAddress, provider);
 
-  // todo: how do we type the position object?
-  const position = await marginEngineContract.callStatic.getPosition(
+  const position = (await marginEngineContract.callStatic.getPosition(
     ownerAddress,
     tickLower,
     tickUpper,
     { blockTag: blockNumber },
-  );
+  )) as {
+    fixedTokenBalance: BigNumber;
+    variableTokenBalance: BigNumber;
+  };
 
-  if (position === null || position === undefined) {
-    throw new Error(
-      `Could not fetch the on chain position to bring fixed and variable token balances`,
-    );
-  }
-
-  // not sure if .toString() is redundunt
   const onChainFixedTokenBalance = Number(
-    ethers.utils.formatUnits(position.fixedTokenBalance.toString(), tokenDecimals),
+    ethers.utils.formatUnits(position.fixedTokenBalance, tokenDecimals),
   );
   const onChainVariableTokenBalance = Number(
-    ethers.utils.formatUnits(position.fixedTokenBalance.toString(), tokenDecimals),
+    ethers.utils.formatUnits(position.fixedTokenBalance, tokenDecimals),
   );
 
   return { onChainVariableTokenBalance, onChainFixedTokenBalance };
