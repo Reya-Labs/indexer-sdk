@@ -1,70 +1,61 @@
+import { getFixedRateLockedFromBalances } from '../../common/services';
 import { SwapEventInfo } from '../../common/swaps/parseSwapEvent';
-import { getFixedRateLockedFromBalances } from './getFixedRateLockedFromBalances';
 
 export type GeneratePassiveSwapEventArgs = {
-  cachedVariableTokenBalance: number;
-  cachedFixedTokenBalance: number;
-  onChainVariableTokenBalance: number;
-  onChainFixedTokenBalance: number;
-  chainId: number;
   ownerAddress: string;
   tickLower: number;
   tickUpper: number;
-  currentTimestamp: number;
+
+  variableTokenDelta: number;
+  fixedTokenDelta: number;
+
+  eventTimestamp: number;
+
   startTimestamp: number;
   maturityTimestamp: number;
-  variableFactor: number;
-  rootSwapEvent: SwapEventInfo;
+
+  variableFactorStartToCurrent: number;
+  rootEventInfo: SwapEventInfo;
 };
 
 export const generatePassiveSwapEvent = ({
-  cachedVariableTokenBalance,
-  cachedFixedTokenBalance,
-  onChainVariableTokenBalance,
-  onChainFixedTokenBalance,
-  chainId,
+  variableTokenDelta,
+  fixedTokenDelta,
   ownerAddress,
   tickLower,
   tickUpper,
-  currentTimestamp,
+  eventTimestamp,
   startTimestamp,
   maturityTimestamp,
-  variableFactor,
-  rootSwapEvent,
+  variableFactorStartToCurrent,
+  rootEventInfo,
 }: GeneratePassiveSwapEventArgs): SwapEventInfo => {
-  const notionalLocked = cachedVariableTokenBalance - onChainVariableTokenBalance;
   const fixedRateLocked = getFixedRateLockedFromBalances({
-    notionalLocked,
-    cachedFixedTokenBalance,
-    onChainFixedTokenBalance,
-    currentTimestamp,
+    variableTokenDelta,
+    fixedTokenDelta,
+    currentTimestamp: eventTimestamp,
     startTimestamp,
     maturityTimestamp,
-    variableFactor,
+    variableFactorStartToCurrent,
   });
 
   // todo: come up with an id structure for passive swap: not high prio
   const eventId = `id`;
-  const rateOracle = rootSwapEvent.rateOracle;
-  const underlyingToken = rootSwapEvent.underlyingToken;
-  const marginEngineAddress = rootSwapEvent.marginEngineAddress;
-  const vammAddress = rootSwapEvent.vammAddress;
-  // doesn't apply to passive swaps (since fee income of lps is accounted for separately)
-  const feePaidToLps = 0;
 
-  const passiveSwapEvent = {
+  const passiveSwapEvent: SwapEventInfo = {
     eventId,
-    chainId,
-    vammAddress,
+    eventBlockNumber: rootEventInfo.eventBlockNumber,
+    chainId: rootEventInfo.chainId,
+    vammAddress: rootEventInfo.vammAddress,
     ownerAddress,
     tickLower,
     tickUpper,
-    notionalLocked,
+    notionalLocked: variableTokenDelta,
     fixedRateLocked,
-    feePaidToLps,
-    rateOracle,
-    underlyingToken,
-    marginEngineAddress,
+    feePaidToLps: 0, // does not apply to passive swaps
+    rateOracle: rootEventInfo.rateOracle,
+    underlyingToken: rootEventInfo.underlyingToken,
+    marginEngineAddress: rootEventInfo.marginEngineAddress,
   };
 
   return passiveSwapEvent;

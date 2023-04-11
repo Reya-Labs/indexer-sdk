@@ -3,26 +3,9 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
 
 import { pullExistingPositionRow, pullExistingSwapRow } from '../../big-query-support';
-import { MIN_ETH_NOTIONAL, MIN_USD_NOTIONAL } from '../../common';
 import { parseSwapEvent } from '../../common/swaps/parseSwapEvent';
 import { insertNewSwapAndNewPosition } from './insertNewSwapAndNewPosition';
 import { insertNewSwapAndUpdateExistingPosition } from './insertNewSwapAndUpdateExistingPosition';
-
-function shouldProcessSwapEvent(isETH: boolean, notionalExecuted: number): boolean {
-  let shouldProcess = true;
-
-  if (isETH) {
-    if (Math.abs(notionalExecuted) < MIN_ETH_NOTIONAL) {
-      shouldProcess = false;
-    }
-  } else {
-    if (Math.abs(notionalExecuted) < MIN_USD_NOTIONAL) {
-      shouldProcess = false;
-    }
-  }
-
-  return shouldProcess;
-}
 
 export const processSwapEvent = async (
   bigQuery: BigQuery,
@@ -30,13 +13,6 @@ export const processSwapEvent = async (
   event: ethers.Event,
 ): Promise<void> => {
   const eventInfo = parseSwapEvent(amm, event);
-  const shouldProcess = shouldProcessSwapEvent(amm.isETH, eventInfo.notionalLocked);
-
-  if (!shouldProcess) {
-    console.log('Swap skipped.');
-    // swap should not be processed, skip
-    return;
-  }
 
   const swapRow = await pullExistingSwapRow(bigQuery, eventInfo.eventId);
 

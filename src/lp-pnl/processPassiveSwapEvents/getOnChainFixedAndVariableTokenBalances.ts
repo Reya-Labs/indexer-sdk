@@ -1,41 +1,33 @@
-import { BigNumber, ethers } from 'ethers';
+import { ethers } from 'ethers';
 
-import { generateMarginEngineContract } from '../../common/generateMarginEngineContract';
-
-export type GetOnChainFixedAndVariableTokenBalancesArgs = {
-  marginEngineAddress: string;
+type Args = {
+  marginEngineContract: ethers.Contract;
   ownerAddress: string;
   tickLower: number;
   tickUpper: number;
   tokenDecimals: number;
   blockNumber: number;
-  provider: ethers.providers.Provider;
-};
-
-export type GetOnChainFixedAndVariableTokenBalancesReturn = {
-  onChainVariableTokenBalance: number;
-  onChainFixedTokenBalance: number;
 };
 
 export const getOnChainFixedAndVariableTokenBalances = async ({
-  marginEngineAddress,
+  marginEngineContract,
   ownerAddress,
   tickLower,
   tickUpper,
   tokenDecimals,
   blockNumber,
-  provider,
-}: GetOnChainFixedAndVariableTokenBalancesArgs): Promise<GetOnChainFixedAndVariableTokenBalancesReturn> => {
-  const marginEngineContract = generateMarginEngineContract(marginEngineAddress, provider);
-
+}: Args): Promise<{
+  onChainVariableTokenBalance: number;
+  onChainFixedTokenBalance: number;
+}> => {
   const position = (await marginEngineContract.callStatic.getPosition(
     ownerAddress,
     tickLower,
     tickUpper,
     { blockTag: blockNumber },
   )) as {
-    fixedTokenBalance: BigNumber;
-    variableTokenBalance: BigNumber;
+    fixedTokenBalance: ethers.BigNumber;
+    variableTokenBalance: ethers.BigNumber;
   };
 
   const onChainFixedTokenBalance = Number(
