@@ -1,6 +1,6 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
-import { BigNumber, ethers } from 'ethers';
+import { ethers } from 'ethers';
 import { pullExistingLpPositionRows } from '../../big-query-support';
 import { parseSwapEvent } from '../../common/swaps/parseSwapEvent';
 import { generateLpPositionUpdatesQuery } from '../../big-query-support/generateLpPositionUpdatesQuery';
