@@ -6,6 +6,7 @@ import { CHAIN_ID, getFixedRateLocked } from '..';
 export type SwapEventInfo = {
   // todo: we should store the event timestamp in this object
   eventId: string;
+  eventBlockNumber: number;
 
   chainId: number;
   vammAddress: string;
@@ -31,20 +32,30 @@ export const parseSwapEvent = (amm: AMM, event: ethers.Event): SwapEventInfo => 
   const tickLower = event.args?.tickLower as number;
   const tickUpper = event.args?.tickUpper as number;
 
-  const variableTokenDelta = event.args?.variableTokenDelta as ethers.BigNumber;
-  const fixedTokenDeltaUnbalanced = event.args?.fixedTokenDeltaUnbalanced as ethers.BigNumber;
-  const cumulativeFeeIncurred = event.args?.cumulativeFeeIncurred as ethers.BigNumber;
+  const variableTokenDelta = Number(
+    ethers.utils.formatUnits(event.args?.variableTokenDelta as ethers.BigNumber, tokenDecimals),
+  );
+  const fixedTokenDeltaUnbalanced = Number(
+    ethers.utils.formatUnits(
+      event.args?.fixedTokenDeltaUnbalanced as ethers.BigNumber,
+      tokenDecimals,
+    ),
+  );
+  const cumulativeFeeIncurred = Number(
+    ethers.utils.formatUnits(event.args?.cumulativeFeeIncurred as ethers.BigNumber, tokenDecimals),
+  );
 
   return {
     eventId: eventId.toLowerCase(),
+    eventBlockNumber: event.blockNumber,
     chainId: CHAIN_ID,
     vammAddress: amm.id.toLowerCase(),
     ownerAddress: ownerAddress.toLowerCase(),
     tickLower,
     tickUpper,
-    notionalLocked: Number(ethers.utils.formatUnits(variableTokenDelta, tokenDecimals)),
+    notionalLocked: variableTokenDelta,
     fixedRateLocked: getFixedRateLocked(variableTokenDelta, fixedTokenDeltaUnbalanced),
-    feePaidToLps: Number(ethers.utils.formatUnits(cumulativeFeeIncurred, tokenDecimals)),
+    feePaidToLps: cumulativeFeeIncurred,
     rateOracle: amm.rateOracle.id,
     underlyingToken: amm.underlyingToken.id,
     marginEngineAddress: amm.marginEngineAddress,

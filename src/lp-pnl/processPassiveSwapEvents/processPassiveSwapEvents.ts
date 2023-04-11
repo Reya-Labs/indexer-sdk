@@ -24,40 +24,21 @@ export const processPassiveSwapEvents = async ({
   amm,
   event,
   chainId,
-  provider,
 }: ProcessPassiveSwapEventsArgs): Promise<void> => {
-  const rootSwapEvent = parseSwapEvent(amm, event);
+  // Get information about root swap event
+  const rootEventInfo = parseSwapEvent(amm, event);
 
-  const currentTimestamp = (await event.getBlock()).timestamp;
+  // Retrieve the current timestamp
+  const eventTimestamp = (await event.getBlock()).timestamp;
 
-  // currently not able to filter by e.g. vamm address of the swap because we're skipping a lot of swaps
-  // for performance reasons, however we should still filter out lps that have their first mint in the
-  // future relative to the eventTimestamp since we're processing all the mint events before jumping on passive swaps
-  const existingLpPositionRows = await pullExistingLpPositionRows(bigQuery, currentTimestamp); // needs a type, check what's used for traders
-  const marginEngineAddress: string = amm.marginEngineAddress.toLowerCase();
-  const ammStartTimestampInMS: number = amm.termStartTimestampInMS;
-  const currentTimestampInMS: number = currentTimestamp * 1000;
-  const variableFactor: number = (
-    await amm.variableFactor(ammStartTimestampInMS, currentTimestampInMS)
-  ).scaled;
-
-  const tokenDecimals: number = amm.underlyingToken.decimals;
-  const startTimestamp = ammStartTimestampInMS / 1000;
-  const maturityTimestamp = amm.termEndTimestampInMS / 1000;
-  const blockNumber = event.blockNumber;
+  // Retrieve all LPs
+  const existingLpPositionRows = await pullExistingLpPositionRows(bigQuery, eventTimestamp);
 
   const { passiveSwapEvents, affectedLps } = await generatePassiveSwapEvents({
     existingLpPositionRows,
-    currentTimestamp,
-    startTimestamp,
-    maturityTimestamp,
-    variableFactor,
-    marginEngineAddress,
-    tokenDecimals,
-    blockNumber,
-    chainId,
-    rootSwapEvent,
-    provider,
+    amm,
+    rootEventInfo,
+    eventTimestamp,
   });
 
   const lpPositionRows = await generateLpPositionRowsFromPassiveSwaps({
@@ -66,7 +47,7 @@ export const processPassiveSwapEvents = async ({
     bigQuery,
     chainId,
     amm,
-    currentTimestamp,
+    currentTimestamp: eventTimestamp,
   });
 
   if (lpPositionRows.length === 0) {

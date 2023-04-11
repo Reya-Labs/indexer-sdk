@@ -1,96 +1,84 @@
-import { ethers } from 'ethers';
+import { AMM } from '@voltz-protocol/v1-sdk';
 
 import { BigQueryPositionRow } from '../../big-query-support';
+import { generateMarginEngineContract } from '../../common/contract-services/generateMarginEngineContract';
 import { SwapEventInfo } from '../../common/swaps/parseSwapEvent';
 import { generatePassiveSwapEvent } from './generatePassiveSwapEvent';
 import { getOnChainFixedAndVariableTokenBalances } from './getOnChainFixedAndVariableTokenBalances';
 
-export type GeneratePassiveSwapEventsArgs = {
+type GeneratePassiveSwapEventsArgs = {
   existingLpPositionRows: BigQueryPositionRow[];
-  currentTimestamp: number;
-  startTimestamp: number;
-  maturityTimestamp: number;
-  variableFactor: number;
-  marginEngineAddress: string;
-  tokenDecimals: number;
-  blockNumber: number;
-  chainId: number;
-  rootSwapEvent: SwapEventInfo;
-  provider: ethers.providers.Provider;
-};
-
-export type GeneratePassiveSwapEventsReturn = {
-  passiveSwapEvents: SwapEventInfo[];
-  affectedLps: BigQueryPositionRow[];
+  amm: AMM;
+  rootEventInfo: SwapEventInfo;
+  eventTimestamp: number;
 };
 
 export const generatePassiveSwapEvents = async ({
   existingLpPositionRows,
-  currentTimestamp,
-  startTimestamp,
-  maturityTimestamp,
-  variableFactor,
-  marginEngineAddress,
-  tokenDecimals,
-  blockNumber,
-  chainId,
-  rootSwapEvent,
-  provider,
-}: GeneratePassiveSwapEventsArgs): Promise<GeneratePassiveSwapEventsReturn> => {
+  amm,
+  rootEventInfo,
+  eventTimestamp,
+}: GeneratePassiveSwapEventsArgs): Promise<{
+  passiveSwapEvents: SwapEventInfo[];
+  affectedLps: BigQueryPositionRow[];
+}> => {
+  // Retrieve amm info
+  const startTimestamp = Math.floor(amm.termStartTimestampInMS / 1000);
+  const maturityTimestamp = Math.floor(amm.termEndTimestampInMS / 1000);
+
+  const tokenDecimals = amm.underlyingToken.decimals;
+
+  // Get variable factor before start and event timestamp (for excess balance)
+  const variableFactorStartToCurrent = (
+    await amm.variableFactor(startTimestamp * 1000, eventTimestamp * 1000)
+  ).scaled;
+
+  // Fetch the margin engine contract
+  const marginEngineContract = generateMarginEngineContract(amm.marginEngineAddress, amm.provider);
+
   const passiveSwapEvents: SwapEventInfo[] = [];
   const affectedLps: BigQueryPositionRow[] = [];
 
-  for (let i = 0; i < existingLpPositionRows.length; i++) {
-    const positionRow: BigQueryPositionRow = existingLpPositionRows[i];
-    const lastUpdatedTimestampLP: number = positionRow.lastUpdatedTimestamp;
-    const isInFuture: boolean = lastUpdatedTimestampLP > currentTimestamp;
-
-    if (!isInFuture) {
-      const cachedVariableTokenBalance: number = positionRow.variableTokenBalance;
-      const cachedFixedTokenBalance: number = positionRow.fixedTokenBalance;
-      const ownerAddress: string = positionRow.ownerAddress;
-      const tickLower: number = positionRow.tickLower;
-      const tickUpper: number = positionRow.tickUpper;
+  for (const positionRow of existingLpPositionRows) {
+    if (positionRow.lastUpdatedTimestamp <= eventTimestamp) {
+      // position is initialized before event timestamp
+      const ownerAddress = positionRow.ownerAddress;
+      const tickLower = positionRow.tickLower;
+      const tickUpper = positionRow.tickUpper;
 
       const { onChainVariableTokenBalance, onChainFixedTokenBalance } =
         await getOnChainFixedAndVariableTokenBalances({
-          marginEngineAddress,
+          marginEngineContract,
           ownerAddress,
           tickLower,
           tickUpper,
           tokenDecimals,
-          blockNumber,
-          provider,
+          blockNumber: rootEventInfo.eventBlockNumber,
         });
 
-      const cachedAndOnChainVariableTokenBalanceMatch =
-        cachedVariableTokenBalance === onChainVariableTokenBalance;
-      const cachedAndOnChainFixedTokenBalanceMatch =
-        cachedFixedTokenBalance === onChainFixedTokenBalance;
+      const variableTokenDelta = onChainVariableTokenBalance - positionRow.variableTokenBalance;
+      const fixedTokenDelta = onChainFixedTokenBalance - positionRow.fixedTokenBalance;
 
-      if (cachedAndOnChainVariableTokenBalanceMatch && cachedAndOnChainFixedTokenBalanceMatch) {
-        console.log(`Variable and Fixed Token Balances match, no need for passive swap`);
+      if (Math.abs(variableTokenDelta) === 0 && Math.abs(fixedTokenDelta) === 0) {
+        console.log(`Zero deltas. LP not affected.`);
       } else {
         const passiveSwap: SwapEventInfo = generatePassiveSwapEvent({
-          cachedVariableTokenBalance,
-          cachedFixedTokenBalance,
-          onChainVariableTokenBalance,
-          onChainFixedTokenBalance,
-          chainId,
+          variableTokenDelta,
+          fixedTokenDelta,
           ownerAddress,
           tickLower,
           tickUpper,
-          currentTimestamp,
+          eventTimestamp,
           startTimestamp,
           maturityTimestamp,
-          variableFactor,
-          rootSwapEvent,
+          variableFactorStartToCurrent,
+          rootEventInfo,
         });
         passiveSwapEvents.push(passiveSwap);
         affectedLps.push(positionRow);
       }
     } else {
-      console.log(`this lp position was initialized in the future relative to event`);
+      console.log(`This lp position was initialized in the future relative to event.`);
     }
   }
 

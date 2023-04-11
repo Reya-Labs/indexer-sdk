@@ -45,8 +45,16 @@ export const getPreviousEvents = async (
     if (ammResponse.status === 'fulfilled') {
       const [amm, events] = ammResponse.value;
 
+      const sortedEvents = events.sort((a, b) => {
+        if (a.blockNumber === b.blockNumber) {
+          return a.transactionIndex - b.transactionIndex;
+        }
+
+        return a.blockNumber - b.blockNumber;
+      });
+
       totalEventsByVammAddress[amm.id] = {
-        events,
+        events: sortedEvents,
         amm,
       };
     } else {
