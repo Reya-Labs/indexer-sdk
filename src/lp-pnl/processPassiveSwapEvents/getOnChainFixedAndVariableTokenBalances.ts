@@ -7,8 +7,7 @@ export type GetOnChainFixedAndVariableTokenBalancesArgs = {
     tickLower: number,
     tickUpper: number,
     tokenDecimals: number,
-    blockNumber: number, 
-    chainId: number,
+    blockNumber: number,
     provider: ethers.providers.Provider
 }
 
@@ -18,14 +17,13 @@ export type GetOnChainFixedAndVariableTokenBalancesReturn = {
 }
 
 
-export const generatePassiveSwapEvents = async ({
+export const getOnChainFixedAndVariableTokenBalances = async ({
     marginEngineAddress,
     ownerAddress,
     tickLower,
     tickUpper,
     tokenDecimals,
     blockNumber, 
-    chainId,
     provider
 }: GetOnChainFixedAndVariableTokenBalancesArgs): Promise<GetOnChainFixedAndVariableTokenBalancesReturn> => {
 
