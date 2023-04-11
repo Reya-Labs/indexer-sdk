@@ -1,33 +1,29 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
+
 import { pullExistingLpPositionRows } from '../../big-query-support';
-import { parseSwapEvent } from '../../common/swaps/parseSwapEvent';
 import { generateLpPositionUpdatesQuery } from '../../big-query-support/generateLpPositionUpdatesQuery';
+import { parseSwapEvent } from '../../common/swaps/parseSwapEvent';
 import { generateLpPositionRowsFromPassiveSwaps } from './generateLpPositionRowsFromPassiveSwaps';
 import { generatePassiveSwapEvents } from './generatePassiveSwapEvents';
 
 export type ProcessPassiveSwapEventsArgs = {
-
-  bigQuery: BigQuery,
-  amm: AMM,
-  event: ethers.Event,
+  bigQuery: BigQuery;
+  amm: AMM;
+  event: ethers.Event;
   // todo: not sure if possible to derive chain id from the ethers.Event object
-  chainId: number,
-  provider: ethers.providers.Provider
+  chainId: number;
+  provider: ethers.providers.Provider;
+};
 
-}
-
-
-export const processPassiveSwapEvents = async (
- {
+export const processPassiveSwapEvents = async ({
   bigQuery,
   amm,
   event,
   chainId,
-  provider
- } : ProcessPassiveSwapEventsArgs
-): Promise<void> => {
+  provider,
+}: ProcessPassiveSwapEventsArgs): Promise<void> => {
   const rootSwapEvent = parseSwapEvent(amm, event);
 
   const currentTimestamp = (await event.getBlock()).timestamp;
@@ -39,37 +35,39 @@ export const processPassiveSwapEvents = async (
   const marginEngineAddress: string = amm.marginEngineAddress.toLowerCase();
   const ammStartTimestampInMS: number = amm.termStartTimestampInMS;
   const currentTimestampInMS: number = currentTimestamp * 1000;
-  const variableFactor: number = (await amm.variableFactor(
-    ammStartTimestampInMS,
-    currentTimestampInMS
-  )).scaled;
+  const variableFactor: number = (
+    await amm.variableFactor(ammStartTimestampInMS, currentTimestampInMS)
+  ).scaled;
 
   const tokenDecimals: number = amm.underlyingToken.decimals;
   const startTimestamp = ammStartTimestampInMS / 1000;
   const maturityTimestamp = amm.termEndTimestampInMS / 1000;
   const blockNumber = event.blockNumber;
 
-  const {passiveSwapEvents, affectedLps} = await generatePassiveSwapEvents(
-    {
-      existingLpPositionRows,
-      currentTimestamp,
-      startTimestamp,
-      maturityTimestamp,
-      variableFactor,
-      marginEngineAddress,
-      tokenDecimals,
-      blockNumber,
-      chainId,
-      rootSwapEvent,
-      provider
-    }
-  );
+  const { passiveSwapEvents, affectedLps } = await generatePassiveSwapEvents({
+    existingLpPositionRows,
+    currentTimestamp,
+    startTimestamp,
+    maturityTimestamp,
+    variableFactor,
+    marginEngineAddress,
+    tokenDecimals,
+    blockNumber,
+    chainId,
+    rootSwapEvent,
+    provider,
+  });
 
-  const lpPositionRows = await generateLpPositionRowsFromPassiveSwaps(
-    {passiveSwapEvents, affectedLps, bigQuery, chainId, amm, currentTimestamp}
-  );
+  const lpPositionRows = await generateLpPositionRowsFromPassiveSwaps({
+    passiveSwapEvents,
+    affectedLps,
+    bigQuery,
+    chainId,
+    amm,
+    currentTimestamp,
+  });
 
-  if (lpPositionRows.length === 0) { 
+  if (lpPositionRows.length === 0) {
     // since the latest checkpoint, no lps were affected by passive swaps
     return;
   }
@@ -84,8 +82,5 @@ export const processPassiveSwapEvents = async (
 
   await bigQuery.query(options);
 
-  console.log(
-    `Updated ${lpPositionRows.length} from passive swaps`,
-  );
-
+  console.log(`Updated ${lpPositionRows.length} from passive swaps`);
 };

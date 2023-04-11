@@ -1,2 +1,2 @@
-export * from './processMintEvent';
 export * from './insertNewMintAndNewPosition';
+export * from './processMintEvent';

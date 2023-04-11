@@ -1,17 +1,14 @@
-import { BigQueryPositionRow } from ".";
 import { DATASET_ID, POSITIONS_TABLE_ID, PROJECT_ID } from '../common';
-
+import { BigQueryPositionRow } from '.';
 
 export const generateLpPositionUpdatesQuery = (lpPositionRows: BigQueryPositionRow[]): string => {
- 
-    let query = ``;
-    const positionTableId = `${PROJECT_ID}.${DATASET_ID}.${POSITIONS_TABLE_ID}`;
+  let query = ``;
+  const positionTableId = `${PROJECT_ID}.${DATASET_ID}.${POSITIONS_TABLE_ID}`;
 
-    for (let i=0; i < lpPositionRows.length; i++) {
+  for (let i = 0; i < lpPositionRows.length; i++) {
+    const positionRow = lpPositionRows[i];
 
-        const positionRow = lpPositionRows[i];
-        
-        const subqueryForRow = `
+    const subqueryForRow = `
         UPDATE \`${positionTableId}\`
           SET marginEngineAddress=\"${positionRow.marginEngineAddress}\",
             realizedPnLFromSwaps=${positionRow.realizedPnLFromSwaps},realizedPnLFromFeesPaid=${positionRow.realizedPnLFromFeesPaid},
@@ -21,15 +18,12 @@ export const generateLpPositionUpdatesQuery = (lpPositionRows: BigQueryPositionR
             rowLastUpdatedTimestamp=\'${positionRow.rowLastUpdatedTimestamp}\', fixedTokenBalance=${positionRow.fixedTokenBalance}, variableTokenBalance=${positionRow.variableTokenBalance}
           WHERE vammAddress=\"${positionRow.vammAddress}\" AND ownerAddress=\"${positionRow.ownerAddress}\" AND tickLower=${positionRow.tickLower} AND tickUpper=${positionRow.tickUpper};
         `;
-    
-        query = `
+
+    query = `
           ${query}
           ${subqueryForRow}
         `;
+  }
 
-    }
-
-
-    return query;
-    
+  return query;
 };

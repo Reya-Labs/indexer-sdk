@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/require-await */
 
-import { generateSwapRow } from '../../../src/trader-pnl/processSwapEvent/generateSwapRow';
 import { SwapEventInfo } from '../../../src/common/swaps/parseSwapEvent';
+import { generateSwapRow } from '../../../src/trader-pnl/processSwapEvent/generateSwapRow';
 
 describe('generate swap row', () => {
   const eventInfo = {

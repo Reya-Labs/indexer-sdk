@@ -1,8 +1,9 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
+
 import { BigQueryPositionRow } from '../../big-query-support';
 import { secondsToBqDate } from '../../big-query-support/utils';
-import { DATASET_ID, POSITIONS_TABLE_ID, PROJECT_ID, SWAPS_TABLE_ID } from '../../common';
+import { DATASET_ID, POSITIONS_TABLE_ID, PROJECT_ID } from '../../common';
 import { generatePositionRow } from '../../common/mints/generatePositionRow';
 import { MintEventInfo } from '../../common/mints/parseMintEvent';
 
@@ -15,7 +16,12 @@ export const insertNewMintAndNewPosition = async (
   console.log('Inserting new new position following a mint');
 
   // generate position row
-  const positionRow: BigQueryPositionRow | null = await generatePositionRow(amm, eventInfo, eventTimestamp, null);
+  const positionRow: BigQueryPositionRow | null = await generatePositionRow(
+    amm,
+    eventInfo,
+    eventTimestamp,
+    null,
+  );
 
   if (positionRow) {
     const positionTableId = `${PROJECT_ID}.${DATASET_ID}.${POSITIONS_TABLE_ID}`;
@@ -52,19 +58,14 @@ export const insertNewMintAndNewPosition = async (
     END;
   `;
 
-  const options = {
-    query: sqlTransactionQuery,
-    timeoutMs: 100000,
-    useLegacySql: false,
-  };
+    const options = {
+      query: sqlTransactionQuery,
+      timeoutMs: 100000,
+      useLegacySql: false,
+    };
 
-  await bigQuery.query(options);
+    await bigQuery.query(options);
 
-  console.log(
-    `Inserted a new position for ${positionRow.ownerAddress}`,
-  );
-
+    console.log(`Inserted a new position for ${positionRow.ownerAddress}`);
   }
-
-  
 };

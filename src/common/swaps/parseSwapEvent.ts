@@ -4,7 +4,6 @@ import { ethers } from 'ethers';
 import { CHAIN_ID, getFixedRateLocked } from '..';
 
 export type SwapEventInfo = {
-
   // todo: we should store the event timestamp in this object
   eventId: string;
 

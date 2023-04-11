@@ -4,9 +4,8 @@ export const generateMarginEngineContract = (
   address: string,
   provider: ethers.providers.Provider,
 ): ethers.Contract => {
-    
-    const abi = [
-        `function getPosition(address _owner,int24 _tickLower,int24 _tickUpper) external returns (
+  const abi = [
+    `function getPosition(address _owner,int24 _tickLower,int24 _tickUpper) external returns (
             bool isSettled,
             uint128 _liquidity,
             int256 margin,
@@ -18,10 +17,10 @@ export const generateMarginEngineContract = (
             uint256 rewardPerAmount, 
             uint256 accumulatedFees
         )
-        `
-    ];
+        `,
+  ];
 
-    const contract = new ethers.Contract(address, abi, provider);
+  const contract = new ethers.Contract(address, abi, provider);
 
-    return contract;
+  return contract;
 };
