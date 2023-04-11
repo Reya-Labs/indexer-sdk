@@ -1,5 +1,5 @@
 export * from './constants';
-export * from './generateVAMMContract';
+export * from './contract-services';
 export * from './getAmms';
 export * from './services';
 export * from './utils';

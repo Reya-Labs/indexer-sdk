@@ -2,8 +2,10 @@ import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
 
-import { pullExistingLpPositionRows } from '../../big-query-support';
-import { generateLpPositionUpdatesQuery } from '../../big-query-support/generateLpPositionUpdatesQuery';
+import {
+  generateLpPositionUpdatesQuery,
+  pullExistingLpPositionRows,
+} from '../../big-query-support';
 import { parseSwapEvent } from '../../common/swaps/parseSwapEvent';
 import { generateLpPositionRowsFromPassiveSwaps } from './generateLpPositionRowsFromPassiveSwaps';
 import { generatePassiveSwapEvents } from './generatePassiveSwapEvents';

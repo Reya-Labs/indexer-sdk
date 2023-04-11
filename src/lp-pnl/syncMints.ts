@@ -1,7 +1,7 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
 
-import { getPreviousMintEvents } from '../common/mints/getPreviousMintEvents';
+import { getPreviousEvents } from '../common';
 import { processMintEvent } from './processMintEvent';
 
 export const syncMints = async (
@@ -9,12 +9,12 @@ export const syncMints = async (
   amms: AMM[],
   previousBlockNumber: number,
 ): Promise<number> => {
-  const previousMintEvents = await getPreviousMintEvents(amms, previousBlockNumber);
+  const previousMintEvents = await getPreviousEvents(amms, 'mint', previousBlockNumber);
 
   let counter = 0;
 
-  const promises = Object.values(previousMintEvents).map(async ({ amm, mintEvents }) => {
-    const sortedSwapEvents = mintEvents.sort((a, b) => {
+  const promises = Object.values(previousMintEvents).map(async ({ amm, events }) => {
+    const sortedSwapEvents = events.sort((a, b) => {
       if (a.blockNumber === b.blockNumber) {
         return a.transactionIndex - b.transactionIndex;
       }
