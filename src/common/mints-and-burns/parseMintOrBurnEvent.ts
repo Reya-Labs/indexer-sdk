@@ -15,7 +15,7 @@ export type MintOrBurnEventInfo = {
 };
 
 export const parseMintOrBurnEvent = (chainId: number, amm: AMM, event: ethers.Event, isBurn: boolean): MintOrBurnEventInfo => {
-  const eventId = `${event.blockHash}_${event.transactionHash}_${event.logIndex}`;
+  const eventId = (`${event.blockHash}_${event.transactionHash}_${event.logIndex}`).toLowerCase();
   const tokenDecimals = amm.underlyingToken.decimals;
   const ownerAddress = event.args?.owner as string;
   const tickLower = event.args?.tickLower as number;

@@ -4,6 +4,8 @@ import { mockedAMM } from '../../utils';
 
 describe('parse mint or burn event', () => {
   it('parse mint or burn event', () => {
+    
+    
     const event = {
       blockHash: 'blockHash',
       transactionHash: 'transactionHash',
