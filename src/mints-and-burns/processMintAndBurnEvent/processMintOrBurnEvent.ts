@@ -19,8 +19,6 @@ export const processMintOrBurnEvent = async (
 
   const existingMintOrBurnEvent = await pullExistingMintOrBurnRow(bigQuery, eventInfo.eventId);
 
-  console.log("here3");
-
   if (existingMintOrBurnEvent === null) {
     await insertNewMintOrBurn(bigQuery, eventInfo, eventTimestamp);
   }
