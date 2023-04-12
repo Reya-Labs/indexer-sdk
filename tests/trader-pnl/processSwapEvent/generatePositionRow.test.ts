@@ -6,6 +6,15 @@ import { generatePositionRow } from '../../../src/common/swaps/generatePositionR
 import { SwapEventInfo } from '../../../src/common/swaps/parseSwapEvent';
 import { mockedAMM } from './utils';
 
+jest.useFakeTimers().setSystemTime(1640995200000); // 01.01.2022
+jest.mock('../../../src/common/services/getVariableFactor.ts', () => {
+  return {
+    getVariableFactor: jest.fn(() => {
+      return 0.03;
+    }),
+  };
+});
+
 describe('generate position row', () => {
   const eventInfo = {
     eventId: 'blockhash_transactionhash_1',
@@ -23,10 +32,6 @@ describe('generate position row', () => {
     underlyingToken: 'token',
     marginEngineAddress: 'margin-engine',
   } as unknown as SwapEventInfo;
-
-  beforeAll(() => {
-    jest.useFakeTimers().setSystemTime(1640995200000); // 01.01.2022
-  });
 
   it('non-existing position', async () => {
     const positionRow = await generatePositionRow(mockedAMM, eventInfo, 1609459200, null);

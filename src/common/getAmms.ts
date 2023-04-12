@@ -16,10 +16,8 @@ export const getAmms = async (chainId: number, activeAtTimestamp: number): Promi
 
   // Filter out the inactive pools
   const activeAmms = amms.filter((item) => {
-    return item.termEndTimestampInMS / 1000 <= activeAtTimestamp;
+    return item.termEndTimestampInMS / 1000 > activeAtTimestamp;
   });
-
-  // const activeAmms = amms.filter((item) => item.id.toLowerCase() === '0x943309c6D1fD572414A640C68F6F71Ef2113171c'.toLowerCase());
 
   return activeAmms;
 };
