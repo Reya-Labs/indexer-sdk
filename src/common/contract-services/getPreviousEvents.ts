@@ -1,12 +1,12 @@
 import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
+import { ExtendedEvent } from '../types';
 
 import { generateVAMMContract } from './generateVAMMContract';
 
 export type VammEvents = {
   [ammId: string]: {
-    events: ethers.Event[];
-    amm: AMM;
+    events: ExtendedEvent[];
   };
 };
 
