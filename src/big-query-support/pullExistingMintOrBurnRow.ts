@@ -7,7 +7,7 @@ import { BigQuery } from '@google-cloud/bigquery';
 import { DATASET_ID, PROJECT_ID, MINTS_BURNS_TABLE_ID } from '../common';
 import { bqNumericToNumber, bqTimestampToUnixSeconds } from './utils';
 
-export type BigQueryMintBurnRow = {
+export type BigQueryMintOrBurnRow = {
   eventId: string;
   vammAddress: string;
   ownerAddress: string;
@@ -25,7 +25,7 @@ export type BigQueryMintBurnRow = {
 export const pullExistingMintOrBurnRow = async (
   bigQuery: BigQuery,
   eventId: string,
-): Promise<BigQueryMintBurnRow | null> => {
+): Promise<BigQueryMintOrBurnRow | null> => {
   const mintBurnTableId = `${PROJECT_ID}.${DATASET_ID}.${MINTS_BURNS_TABLE_ID}`;
   const sqlQuery = `SELECT * FROM \`${mintBurnTableId}\` WHERE eventId=\"${eventId}\"`;
 

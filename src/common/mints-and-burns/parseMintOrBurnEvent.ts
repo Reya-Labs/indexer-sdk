@@ -8,7 +8,7 @@ export type MintOrBurnEventInfo = {
   ownerAddress: string;
   tickLower: number;
   tickUpper: number;
-  notionalLiquidityProvided: number;
+  notionalDelta: number;
   rateOracle: string;
   underlyingToken: string;
   marginEngineAddress: string;
@@ -22,7 +22,7 @@ export const parseMintOrBurnEvent = (chainId: number, amm: AMM, event: ethers.Ev
   const tickUpper = event.args?.tickUpper as number;
   const amount = event.args?.amount as BigNumber;
 
-  let notionalLiquidityProvided = getNotionalFromLiquidity(
+  let notionalDelta = getNotionalFromLiquidity(
     amount,
     tickLower,
     tickUpper,
@@ -30,7 +30,7 @@ export const parseMintOrBurnEvent = (chainId: number, amm: AMM, event: ethers.Ev
   );
 
   if (isBurn) {
-    notionalLiquidityProvided =  -1.0 * notionalLiquidityProvided;
+    notionalDelta =  -1.0 * notionalDelta;
   }
 
   return {
@@ -40,7 +40,7 @@ export const parseMintOrBurnEvent = (chainId: number, amm: AMM, event: ethers.Ev
     ownerAddress: ownerAddress.toLowerCase(),
     tickLower,
     tickUpper,
-    notionalLiquidityProvided,
+    notionalDelta,
     rateOracle: amm.rateOracle.id,
     underlyingToken: amm.underlyingToken.id,
     marginEngineAddress: amm.marginEngineAddress,
