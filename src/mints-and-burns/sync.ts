@@ -14,10 +14,10 @@ export const sync = async (
   
   const previousMintEvents = await getPreviousEvents(amms, ['mint'], fromBlock, toBlock);
 
-  const promises = Object.values(previousMintEvents).map(async ({ amm, events }) => {
+  const promises = Object.values(previousMintEvents).map(async ({ events }) => {
     for (const event of events) {
       // todo: check if we can infer event name when parsing the event
-      await processMintOrBurnEvent(chainId, bigQuery, amm, event, true);
+      await processMintOrBurnEvent(chainId, bigQuery, event, true);
     }
   });
 

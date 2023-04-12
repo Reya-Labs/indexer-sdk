@@ -4,18 +4,18 @@ import { ethers } from 'ethers';
 
 import { pullExistingMintOrBurnRow } from '../../big-query-support';
 import { parseMintOrBurnEvent } from '../../common/mints-and-burns/parseMintOrBurnEvent';
+import { ExtendedEvent } from '../../common/types';
 import { insertNewMintOrBurn } from './insertNewMintOrBurn';
 
 export const processMintOrBurnEvent = async (
   chainId: number,
   bigQuery: BigQuery,
-  amm: AMM,
-  event: ethers.Event,
+  event: ExtendedEvent,
   isBurn: boolean
 ): Promise<void> => {
   console.log('Mint Or Burn processing...');
 
-  const eventInfo = parseMintOrBurnEvent(chainId, amm, event, isBurn);
+  const eventInfo = parseMintOrBurnEvent(chainId, event, isBurn);
 
   const eventTimestamp = (await event.getBlock()).timestamp;
 
