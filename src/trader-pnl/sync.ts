@@ -13,9 +13,9 @@ export const sync = async (
 ): Promise<void> => {
   const previousSwapEvents = await getPreviousEvents(amms, ['swap'], fromBlock, toBlock);
 
-  const promises = Object.values(previousSwapEvents).map(async ({ amm, events }) => {
+  const promises = Object.values(previousSwapEvents).map(async ({ events }) => {
     for (const swapEvent of events) {
-      await processSwapEvent(chainId, bigQuery, amm, swapEvent);
+      await processSwapEvent(chainId, bigQuery, swapEvent);
     }
   });
 
