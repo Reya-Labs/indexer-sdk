@@ -16,7 +16,7 @@ export const sync = async (
 
   const promises = Object.values(previousMintEvents).map(async ({ amm, events }) => {
     for (const event of events) {
-      // todo: check if we can infer event name from the event
+      // todo: check if we can infer event name when parsing the event
       await processMintOrBurnEvent(chainId, bigQuery, amm, event, true);
     }
   });
