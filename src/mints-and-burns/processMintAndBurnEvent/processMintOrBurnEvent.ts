@@ -24,10 +24,6 @@ export const processMintOrBurnEvent = async (
 
   const existingMintOrBurnEvent = await pullExistingMintOrBurnRow(
     bigQuery,
-    eventInfo.vammAddress,
-    eventInfo.ownerAddress,
-    eventInfo.tickLower,
-    eventInfo.tickUpper,
     eventId
   );
 

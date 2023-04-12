@@ -22,7 +22,7 @@ export type BigQueryMintBurnRow = {
   chainId: number;
 };
 
-export const pullExistingMintBurnRow = async (
+export const pullExistingMintOrBurnRow = async (
   bigQuery: BigQuery,
   eventId: string,
 ): Promise<BigQueryMintBurnRow | null> => {
