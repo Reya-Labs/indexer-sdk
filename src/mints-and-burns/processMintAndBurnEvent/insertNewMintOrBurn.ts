@@ -5,14 +5,12 @@ import { DATASET_ID, PROJECT_ID, MINTS_BURNS_TABLE_ID } from '../../common';
 import { MintOrBurnEventInfo } from '../../common/mints-and-burns/parseMintOrBurnEvent';
 import { generateMintOrBurnRow } from './generateMintOrBurnRow';
 
-export const insertNewSwapAndNewPosition = async (
+export const insertNewMintOrBurn = async (
   bigQuery: BigQuery,
   eventInfo: MintOrBurnEventInfo,
   eventTimestamp: number,
 ): Promise<void> => {
   console.log('Inserting a new swap and a new position');
-
-  // generate mintor burn row
   const mintOrBurnRow: BigQueryMintOrBurnRow = generateMintOrBurnRow(eventInfo, eventTimestamp);
 
   const mintOrBurnTableId = `${PROJECT_ID}.${DATASET_ID}.${MINTS_BURNS_TABLE_ID}`;

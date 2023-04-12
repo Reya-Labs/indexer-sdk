@@ -19,19 +19,15 @@ export const processMintOrBurnEvent = async (
 
   const eventTimestamp = (await event.getBlock()).timestamp;
 
-  // todo: needs implementation
-  const eventId = '0x'
-
   const existingMintOrBurnEvent = await pullExistingMintOrBurnRow(
     bigQuery,
-    eventId
+    eventInfo.eventId
   );
 
   if (existingMintOrBurnEvent === null) { 
 
-    await insertNewMintOrBurn(bigQuery, amm, eventInfo, eventTimestamp);
+    await insertNewMintOrBurn(bigQuery, eventInfo, eventTimestamp);
 
   }
-
 
 };
