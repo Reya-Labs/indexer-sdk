@@ -30,7 +30,7 @@ export const parseMintOrBurnEvent = (chainId: number, amm: AMM, event: ethers.Ev
   );
 
   if (isBurn) {
-    notionalDelta =  -1.0 * notionalDelta;
+    notionalDelta = -1.0 * notionalDelta;
   }
 
   return {

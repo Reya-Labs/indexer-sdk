@@ -1,4 +1,5 @@
 import { BigQuery } from '@google-cloud/bigquery';
+import { BigQueryMintOrBurnRow } from '../../big-query-support';
 import { secondsToBqDate } from '../../big-query-support/utils';
 import { DATASET_ID, PROJECT_ID, MINTS_BURNS_TABLE_ID } from '../../common';
 import { MintOrBurnEventInfo } from '../../common/mints-and-burns/parseMintOrBurnEvent';
@@ -12,7 +13,7 @@ export const insertNewSwapAndNewPosition = async (
   console.log('Inserting a new swap and a new position');
 
   // generate mintor burn row
-  const mintOrBurnRow = generateMintOrBurnRow(eventInfo, eventTimestamp);
+  const mintOrBurnRow: BigQueryMintOrBurnRow = generateMintOrBurnRow(eventInfo, eventTimestamp);
 
   const mintOrBurnTableId = `${PROJECT_ID}.${DATASET_ID}.${MINTS_BURNS_TABLE_ID}`;
 
@@ -50,6 +51,6 @@ export const insertNewSwapAndNewPosition = async (
   await bigQuery.query(options);
 
   console.log(
-    `Inserted new swap with eventId: ${eventInfo.eventId} and inserted a new position for ${swapRow.ownerAddress}`,
+    `Inserted new swap with eventId: ${eventInfo.eventId} and inserted a new position for ${mintOrBurnRow.ownerAddress}`,
   );
 };
