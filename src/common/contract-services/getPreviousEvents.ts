@@ -66,7 +66,7 @@ export const getPreviousEvents = async (
         amm,
       };
     } else {
-      throw new Error(`Unable to retrieve ${eventType} events`);
+      throw new Error(`Unable to retrieve events`);
     }
   });
 
