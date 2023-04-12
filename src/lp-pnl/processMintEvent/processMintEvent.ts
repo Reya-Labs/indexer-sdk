@@ -4,17 +4,17 @@ import { ethers } from 'ethers';
 
 import { pullExistingPositionRow } from '../../big-query-support';
 import { parseMintOrBurnEvent } from '../../common/mints-and-burns/parseMintOrBurnEvent';
+import { ExtendedEvent } from '../../common/types';
 import { insertNewMintAndNewPosition } from './insertNewMintAndNewPosition';
 
 export const processMintEvent = async (
   chainId: number,
   bigQuery: BigQuery,
-  amm: AMM,
-  event: ethers.Event,
+  event: ExtendedEvent,
 ): Promise<void> => {
   console.log('Mint processing...');
 
-  const eventInfo = parseMintOrBurnEvent(chainId, amm, event, false);
+  const eventInfo = parseMintOrBurnEvent(chainId, event, false);
 
   const existingPosition = await pullExistingPositionRow(
     bigQuery,
@@ -33,6 +33,6 @@ export const processMintEvent = async (
 
     const eventTimestamp = (await event.getBlock()).timestamp;
 
-    await insertNewMintAndNewPosition(bigQuery, amm, eventInfo, eventTimestamp);
+    await insertNewMintAndNewPosition(bigQuery, eventInfo, eventTimestamp);
   }
 };

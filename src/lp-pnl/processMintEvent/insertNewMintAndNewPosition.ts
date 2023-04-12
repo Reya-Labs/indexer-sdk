@@ -5,18 +5,17 @@ import { BigQueryPositionRow } from '../../big-query-support';
 import { secondsToBqDate } from '../../big-query-support/utils';
 import { DATASET_ID, POSITIONS_TABLE_ID, PROJECT_ID } from '../../common';
 import { generateLpPositionRow } from '../../common/mints-and-burns/generateLpPositionRow';
-import { MintEventInfo } from '../../common/mints-and-burns/parseMintOrBurnEvent';
+import { MintOrBurnEventInfo } from '../../common/mints-and-burns/parseMintOrBurnEvent';
 
 export const insertNewMintAndNewPosition = async (
   bigQuery: BigQuery,
-  amm: AMM,
-  eventInfo: MintEventInfo,
+  eventInfo: MintOrBurnEventInfo,
   eventTimestamp: number,
 ): Promise<void> => {
   console.log('Inserting new position following a mint');
 
   // generate position row
-  const positionRow: BigQueryPositionRow = generateLpPositionRow(amm, eventInfo, eventTimestamp);
+  const positionRow: BigQueryPositionRow = generateLpPositionRow(eventInfo, eventTimestamp);
 
   const positionTableId = `${PROJECT_ID}.${DATASET_ID}.${POSITIONS_TABLE_ID}`;
   const rawPositionRow = `

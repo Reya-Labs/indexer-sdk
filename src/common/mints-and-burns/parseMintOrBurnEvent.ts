@@ -1,5 +1,5 @@
 import { AMM, getNotionalFromLiquidity } from '@voltz-protocol/v1-sdk';
-import { BigNumber, ethers } from 'ethers';
+import { BigNumber } from 'ethers';
 import { ExtendedEvent } from '../types';
 
 export type MintOrBurnEventInfo = {
@@ -13,6 +13,7 @@ export type MintOrBurnEventInfo = {
   rateOracle: string;
   underlyingToken: string;
   marginEngineAddress: string;
+  amm: AMM;
 };
 
 export const parseMintOrBurnEvent = (chainId: number, event: ExtendedEvent, isBurn: boolean): MintOrBurnEventInfo => {
@@ -22,6 +23,7 @@ export const parseMintOrBurnEvent = (chainId: number, event: ExtendedEvent, isBu
   const tickLower = event.args?.tickLower as number;
   const tickUpper = event.args?.tickUpper as number;
   const amount = event.args?.amount as BigNumber;
+  const amm = event.amm as AMM;
 
   let notionalDelta = getNotionalFromLiquidity(
     amount,
@@ -45,5 +47,6 @@ export const parseMintOrBurnEvent = (chainId: number, event: ExtendedEvent, isBu
     rateOracle: event.amm.rateOracle.id,
     underlyingToken: event.amm.underlyingToken.id,
     marginEngineAddress: event.amm.marginEngineAddress,
+    amm
   };
 };

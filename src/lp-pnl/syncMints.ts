@@ -13,9 +13,9 @@ export const syncMints = async (
 ): Promise<void> => {
   const previousMintEvents = await getPreviousEvents(amms, ['mint'], fromBlock, toBlock);
 
-  const promises = Object.values(previousMintEvents).map(async ({ amm, events }) => {
+  const promises = Object.values(previousMintEvents).map(async ({ events }) => {
     for (const swapEvent of events) {
-      await processMintEvent(chainId, bigQuery, amm, swapEvent);
+      await processMintEvent(chainId, bigQuery, swapEvent);
     }
   });
 
