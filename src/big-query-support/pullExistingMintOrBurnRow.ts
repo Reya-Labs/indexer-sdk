@@ -4,7 +4,7 @@
 
 import { BigQuery } from '@google-cloud/bigquery';
 
-import { DATASET_ID, PROJECT_ID, MINTS_BURNS_TABLE_ID } from '../common';
+import { DATASET_ID, MINTS_BURNS_TABLE_ID,PROJECT_ID } from '../common';
 import { bqNumericToNumber, bqTimestampToUnixSeconds } from './utils';
 
 export type BigQueryMintOrBurnRow = {

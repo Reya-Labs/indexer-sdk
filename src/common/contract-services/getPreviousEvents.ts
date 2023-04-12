@@ -1,7 +1,7 @@
 import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
-import { ExtendedEvent } from '../types';
 
+import { ExtendedEvent } from '../types';
 import { generateVAMMContract } from './generateVAMMContract';
 
 export type VammEvents = {
@@ -35,22 +35,24 @@ export const getPreviousEvents = async (
   const promises = amms.map(async (amm): Promise<[AMM, ExtendedEvent[]]> => {
     const vammContract = generateVAMMContract(amm.id, amm.provider);
 
-    let allEvents = [];
-    
-    for (let i=0; i<eventTypes.length; i++) {
+    const allEvents = [];
+
+    for (let i = 0; i < eventTypes.length; i++) {
       const eventType: 'mint' | 'burn' | 'swap' = eventTypes[i];
       const eventFilter: ethers.EventFilter = getEventFilter(vammContract, eventType);
-      const events: ethers.Event[] = await vammContract.queryFilter(eventFilter, fromBlock, toBlock);
-      const extendedEvents: ExtendedEvent[] = events.map(
-        (event) => { 
-          const extendedEvent = {
-            ...event,
-            type: eventType, 
-            amm: amm
-          }
-          return extendedEvent;
-        }
-      )
+      const events: ethers.Event[] = await vammContract.queryFilter(
+        eventFilter,
+        fromBlock,
+        toBlock,
+      );
+      const extendedEvents: ExtendedEvent[] = events.map((event) => {
+        const extendedEvent = {
+          ...event,
+          type: eventType,
+          amm: amm,
+        };
+        return extendedEvent;
+      });
 
       allEvents.push(...extendedEvents);
     }

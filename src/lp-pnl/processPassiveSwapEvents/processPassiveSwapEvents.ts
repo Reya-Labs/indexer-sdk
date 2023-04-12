@@ -1,6 +1,4 @@
 import { BigQuery } from '@google-cloud/bigquery';
-import { AMM } from '@voltz-protocol/v1-sdk';
-import { ethers } from 'ethers';
 
 import {
   generateLpPositionUpdatesQuery,
@@ -31,7 +29,11 @@ export const processPassiveSwapEvents = async ({
   console.log(`Processing passive swap at ${new Date(eventTimestamp * 1000).toISOString()}`);
 
   // Retrieve all LPs
-  const existingLpPositionRows = await pullExistingLpPositionRows(bigQuery, event.amm.id, eventTimestamp);
+  const existingLpPositionRows = await pullExistingLpPositionRows(
+    bigQuery,
+    event.amm.id,
+    eventTimestamp,
+  );
 
   const { passiveSwapEvents, affectedLps } = await generatePassiveSwapEvents({
     existingLpPositionRows,

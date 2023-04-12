@@ -1,5 +1,4 @@
 import { BigQuery } from '@google-cloud/bigquery';
-import { AMM } from '@voltz-protocol/v1-sdk';
 
 import { BigQueryPositionRow } from '../../big-query-support';
 import { secondsToBqDate } from '../../big-query-support/utils';

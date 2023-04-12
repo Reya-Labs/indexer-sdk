@@ -1,7 +1,8 @@
 import { BigQuery } from '@google-cloud/bigquery';
+
 import { BigQueryMintOrBurnRow } from '../../big-query-support';
 import { secondsToBqDate } from '../../big-query-support/utils';
-import { DATASET_ID, PROJECT_ID, MINTS_BURNS_TABLE_ID } from '../../common';
+import { DATASET_ID, MINTS_BURNS_TABLE_ID,PROJECT_ID } from '../../common';
 import { MintOrBurnEventInfo } from '../../common/mints-and-burns/parseMintOrBurnEvent';
 import { generateMintOrBurnRow } from './generateMintOrBurnRow';
 
@@ -30,7 +31,6 @@ export const insertNewMintOrBurn = async (
     ${mintOrBurnRow.chainId}
   `;
 
-  
   // build and fire sql query
   const sqlTransactionQuery = `
     BEGIN 

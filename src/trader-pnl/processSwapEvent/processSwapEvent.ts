@@ -1,4 +1,5 @@
 import { BigQuery } from '@google-cloud/bigquery';
+
 import { pullExistingPositionRow, pullExistingSwapRow } from '../../big-query-support';
 import { parseSwapEvent } from '../../common/swaps/parseSwapEvent';
 import { ExtendedEvent } from '../../common/types';

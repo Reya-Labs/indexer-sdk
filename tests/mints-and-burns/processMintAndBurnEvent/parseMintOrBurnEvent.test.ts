@@ -1,10 +1,10 @@
 import { BigNumber, Event } from 'ethers';
+
 import { parseMintOrBurnEvent } from '../../../src/common/mints-and-burns/parseMintOrBurnEvent';
 import { mockedAMM } from '../../utils';
 
 describe('parse mint or burn event', () => {
   it('parse mint event', () => {
-
     const event = {
       blockHash: 'blockHash',
       transactionHash: 'transactionHash',
@@ -13,11 +13,11 @@ describe('parse mint or burn event', () => {
         owner: '0x0000',
         tickLower: -1200,
         tickUpper: 1200,
-        amount: BigNumber.from(10).pow(18).mul(10)
+        amount: BigNumber.from(10).pow(18).mul(10),
       },
     } as unknown as Event;
 
-    const eventInfo = parseMintOrBurnEvent(1, mockedAMM, event, false); 
+    const eventInfo = parseMintOrBurnEvent(1, mockedAMM, event, false);
 
     expect(eventInfo).toEqual({
       eventId: 'blockhash_transactionhash_1',
@@ -31,15 +31,9 @@ describe('parse mint or burn event', () => {
       underlyingToken: 'token',
       marginEngineAddress: 'margin-engine',
     });
-
-
-
-
-
   });
 
   it('parse burn event', () => {
-
     const event = {
       blockHash: 'blockHash',
       transactionHash: 'transactionHash',
@@ -48,11 +42,11 @@ describe('parse mint or burn event', () => {
         owner: '0x0000',
         tickLower: -1200,
         tickUpper: 1200,
-        amount: BigNumber.from(10).pow(18).mul(10)
+        amount: BigNumber.from(10).pow(18).mul(10),
       },
     } as unknown as Event;
 
-    const eventInfo = parseMintOrBurnEvent(1, mockedAMM, event, true); 
+    const eventInfo = parseMintOrBurnEvent(1, mockedAMM, event, true);
 
     expect(eventInfo).toEqual({
       eventId: 'blockhash_transactionhash_1',
@@ -66,7 +60,5 @@ describe('parse mint or burn event', () => {
       underlyingToken: 'token',
       marginEngineAddress: 'margin-engine',
     });
-
-
   });
 });
