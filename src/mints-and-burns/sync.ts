@@ -12,7 +12,7 @@ export const sync = async (
   toBlock: number,
 ): Promise<void> => {
   
-  const previousMintEvents = await getPreviousEvents(amms, 'mint', fromBlock, toBlock);
+  const previousMintEvents = await getPreviousEvents(amms, ['mint'], fromBlock, toBlock);
 
   const promises = Object.values(previousMintEvents).map(async ({ amm, events }) => {
     for (const event of events) {

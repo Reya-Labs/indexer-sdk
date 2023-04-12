@@ -12,7 +12,7 @@ export const syncPassiveSwaps = async (
   toBlock: number,
   minBlockInterval: number,
 ): Promise<void> => {
-  const previousSwapEvents = await getPreviousEvents(amms, 'swap', fromBlock, toBlock);
+  const previousSwapEvents = await getPreviousEvents(amms, ['swap'], fromBlock, toBlock);
 
   const promises = Object.values(previousSwapEvents).map(async ({ amm, events }) => {
     let lastProcessedBlock = fromBlock;

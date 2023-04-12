@@ -26,7 +26,7 @@ const getEventFilter = (vammContract: ethers.Contract, eventType: string): ether
 
 export const getPreviousEvents = async (
   amms: AMM[],
-  eventTypes: 'mint' | 'swap' | 'burn'[],
+  eventTypes: string[],
   fromBlock: number,
   toBlock: number,
 ): Promise<VammEvents> => {
