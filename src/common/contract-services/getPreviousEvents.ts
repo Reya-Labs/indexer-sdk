@@ -26,22 +26,33 @@ const getEventFilter = (vammContract: ethers.Contract, eventType: string): ether
 
 export const getPreviousEvents = async (
   amms: AMM[],
-  eventTypes: string[],
+  eventTypes: ('mint' | 'burn' | 'swap')[],
   fromBlock: number,
   toBlock: number,
 ): Promise<VammEvents> => {
   const totalEventsByVammAddress: VammEvents = {};
 
-  const promises = amms.map(async (amm): Promise<[AMM, ethers.Event[]]> => {
+  const promises = amms.map(async (amm): Promise<[AMM, ExtendedEvent[]]> => {
     const vammContract = generateVAMMContract(amm.id, amm.provider);
 
     let allEvents = [];
     
     for (let i=0; i<eventTypes.length; i++) {
-      const eventType = eventTypes[i];
-      const eventFilter = getEventFilter(vammContract, eventType);
-      const events = await vammContract.queryFilter(eventFilter, fromBlock, toBlock);
-      allEvents.push(...events);
+      const eventType: 'mint' | 'burn' | 'swap' = eventTypes[i];
+      const eventFilter: ethers.EventFilter = getEventFilter(vammContract, eventType);
+      const events: ethers.Event[] = await vammContract.queryFilter(eventFilter, fromBlock, toBlock);
+      const extendedEvents: ExtendedEvent[] = events.map(
+        (event) => { 
+          const extendedEvent = {
+            ...event,
+            type: eventType, 
+            amm: amm
+          }
+          return extendedEvent;
+        }
+      )
+
+      allEvents.push(...extendedEvents);
     }
 
     return [amm, allEvents];
@@ -63,7 +74,6 @@ export const getPreviousEvents = async (
 
       totalEventsByVammAddress[amm.id] = {
         events: sortedEvents,
-        amm,
       };
     } else {
       throw new Error(`Unable to retrieve events`);
