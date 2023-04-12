@@ -3,7 +3,7 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
 
 import { pullExistingPositionRow } from '../../big-query-support';
-import { parseMintEvent } from '../../common/mints/parseMintEvent';
+import { parseMintOrBurnEvent } from '../../common/mints-and-burns/parseMintOrBurnEvent';
 import { insertNewMintAndNewPosition } from './insertNewMintAndNewPosition';
 
 export const processMintEvent = async (
@@ -14,7 +14,7 @@ export const processMintEvent = async (
 ): Promise<void> => {
   console.log('Mint processing...');
 
-  const eventInfo = parseMintEvent(chainId, amm, event);
+  const eventInfo = parseMintOrBurnEvent(chainId, amm, event, false);
 
   const existingPosition = await pullExistingPositionRow(
     bigQuery,

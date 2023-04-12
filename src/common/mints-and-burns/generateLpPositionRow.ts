@@ -2,7 +2,7 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 
 import { BigQueryPositionRow } from '../../big-query-support';
 import { getTimestampInSeconds } from '..';
-import { MintEventInfo } from './parseMintEvent';
+import { MintEventInfo } from './parseMintOrBurnEvent';
 
 export const generateLpPositionRow = (
   amm: AMM,

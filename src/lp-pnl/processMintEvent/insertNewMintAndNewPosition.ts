@@ -4,8 +4,8 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 import { BigQueryPositionRow } from '../../big-query-support';
 import { secondsToBqDate } from '../../big-query-support/utils';
 import { DATASET_ID, POSITIONS_TABLE_ID, PROJECT_ID } from '../../common';
-import { generateLpPositionRow } from '../../common/mints/generateLpPositionRow';
-import { MintEventInfo } from '../../common/mints/parseMintEvent';
+import { generateLpPositionRow } from '../../common/mints-and-burns/generateLpPositionRow';
+import { MintEventInfo } from '../../common/mints-and-burns/parseMintOrBurnEvent';
 
 export const insertNewMintAndNewPosition = async (
   bigQuery: BigQuery,
