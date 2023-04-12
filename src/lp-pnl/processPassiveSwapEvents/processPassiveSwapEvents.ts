@@ -7,24 +7,23 @@ import {
   pullExistingLpPositionRows,
 } from '../../big-query-support';
 import { parseSwapEvent } from '../../common/swaps/parseSwapEvent';
+import { ExtendedEvent } from '../../common/types';
 import { generateLpPositionRowsFromPassiveSwaps } from './generateLpPositionRowsFromPassiveSwaps';
 import { generatePassiveSwapEvents } from './generatePassiveSwapEvents';
 
 export type ProcessPassiveSwapEventsArgs = {
   bigQuery: BigQuery;
-  amm: AMM;
-  event: ethers.Event;
+  event: ExtendedEvent;
   chainId: number;
 };
 
 export const processPassiveSwapEvents = async ({
   bigQuery,
-  amm,
   event,
   chainId,
 }: ProcessPassiveSwapEventsArgs): Promise<void> => {
   // Get information about root swap event
-  const rootEventInfo = parseSwapEvent(chainId, amm, event);
+  const rootEventInfo = parseSwapEvent(chainId, event.amm, event);
 
   // Retrieve the current timestamp
   const eventTimestamp = (await event.getBlock()).timestamp;
@@ -32,11 +31,11 @@ export const processPassiveSwapEvents = async ({
   console.log(`Processing passive swap at ${new Date(eventTimestamp * 1000).toISOString()}`);
 
   // Retrieve all LPs
-  const existingLpPositionRows = await pullExistingLpPositionRows(bigQuery, amm.id, eventTimestamp);
+  const existingLpPositionRows = await pullExistingLpPositionRows(bigQuery, event.amm.id, eventTimestamp);
 
   const { passiveSwapEvents, affectedLps } = await generatePassiveSwapEvents({
     existingLpPositionRows,
-    amm,
+    amm: event.amm,
     rootEventInfo,
     eventTimestamp,
   });
@@ -51,7 +50,7 @@ export const processPassiveSwapEvents = async ({
     affectedLps,
     bigQuery,
     chainId,
-    amm,
+    amm: event.amm,
     currentTimestamp: eventTimestamp,
   });
 

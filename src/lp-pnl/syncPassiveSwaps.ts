@@ -14,7 +14,7 @@ export const syncPassiveSwaps = async (
 ): Promise<void> => {
   const previousSwapEvents = await getPreviousEvents(amms, ['swap'], fromBlock, toBlock);
 
-  const promises = Object.values(previousSwapEvents).map(async ({ amm, events }) => {
+  const promises = Object.values(previousSwapEvents).map(async ({ events }) => {
     let lastProcessedBlock = fromBlock;
     for (let i = 0; i < events.length; i++) {
       const event = events[i];
@@ -22,7 +22,6 @@ export const syncPassiveSwaps = async (
       if (event.blockNumber >= lastProcessedBlock + minBlockInterval || i + 1 === events.length) {
         await processPassiveSwapEvents({
           bigQuery,
-          amm,
           event,
           chainId,
         });
