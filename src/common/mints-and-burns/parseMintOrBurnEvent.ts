@@ -2,6 +2,7 @@ import { AMM, getNotionalFromLiquidity } from '@voltz-protocol/v1-sdk';
 import { BigNumber, ethers } from 'ethers';
 
 export type MintOrBurnEventInfo = {
+  eventId: string;
   chainId: number;
   vammAddress: string;
   ownerAddress: string;
@@ -14,6 +15,7 @@ export type MintOrBurnEventInfo = {
 };
 
 export const parseMintOrBurnEvent = (chainId: number, amm: AMM, event: ethers.Event, isBurn: boolean): MintOrBurnEventInfo => {
+  const eventId = `${event.blockHash}_${event.transactionHash}_${event.logIndex}`;
   const tokenDecimals = amm.underlyingToken.decimals;
   const ownerAddress = event.args?.owner as string;
   const tickLower = event.args?.tickLower as number;
@@ -32,6 +34,7 @@ export const parseMintOrBurnEvent = (chainId: number, amm: AMM, event: ethers.Ev
   }
 
   return {
+    eventId,
     chainId,
     vammAddress: amm.id.toLowerCase(),
     ownerAddress: ownerAddress.toLowerCase(),
