@@ -18,6 +18,9 @@ const getEventFilter = (vammContract: ethers.Contract, eventType: string): ether
     case 'swap': {
       return vammContract.filters.Swap();
     }
+    case 'burn': {
+      return vammContract.filters.Burn();
+    }
     default: {
       throw new Error(`Unknown event type ${eventType}.`);
     }
