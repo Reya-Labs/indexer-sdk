@@ -1,7 +1,7 @@
 import { AMM } from '@voltz-protocol/v1-sdk';
 
 import { BigQueryPositionRow } from '../../big-query-support';
-import { getCashflowInfo, getTimestampInSeconds } from '..';
+import { getCashflowInfo, getTimestampInSeconds, getVariableFactor } from '..';
 import { SwapEventInfo } from './parseSwapEvent';
 
 export const generatePositionRow = async (
@@ -13,9 +13,12 @@ export const generatePositionRow = async (
   const rowLastUpdatedTimestamp = getTimestampInSeconds();
 
   if (existingPosition) {
-    const { scaled: variableFactor } = await amm.variableFactor(
-      existingPosition.lastUpdatedTimestamp * 1000,
-      eventTimestamp * 1000,
+    const variableFactor = await getVariableFactor(
+      amm.provider,
+      amm.rateOracle.id,
+      existingPosition.lastUpdatedTimestamp,
+      eventTimestamp,
+      eventInfo.eventBlockNumber,
     );
 
     const { netNotionalLocked, netFixedRateLocked, newCashflow, netTimestamp } = getCashflowInfo(

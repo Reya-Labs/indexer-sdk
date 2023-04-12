@@ -41,7 +41,7 @@ export const run = async (chainId: number) => {
 
     try {
       await sync(chainId, bigQuery, amms, previousBlockNumber, currentBlockNumber);
-      previousBlockNumber = currentBlockNumber;
+      previousBlockNumber = currentBlockNumber + 1;
     } catch (error) {
       console.log(`Loop has failed with message: ${(error as Error).message}.`);
       await sleep(60 * 1000); // sleep 60s

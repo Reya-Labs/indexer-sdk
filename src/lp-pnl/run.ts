@@ -1,7 +1,7 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import * as dotenv from 'dotenv';
 
-import { APR_2023_TIMESTAMP, getAmms, PROJECT_ID, sleep } from '../common';
+import { APR_2023_TIMESTAMP, getAmms, LP_PROCESSING_WINDOW, PROJECT_ID, sleep } from '../common';
 import { syncMints } from './syncMints';
 import { syncPassiveSwaps } from './syncPassiveSwaps';
 
@@ -29,6 +29,9 @@ export const run = async (chainId: number) => {
   // get provider from the first amm
   const provider = amms[0].provider;
 
+  // get min processing interval
+  const minBlockInterval = LP_PROCESSING_WINDOW[chainId];
+
   while (true) {
     const currentBlockNumber = await provider.getBlockNumber();
 
@@ -45,9 +48,16 @@ export const run = async (chainId: number) => {
       await syncMints(chainId, bigQuery, amms, previousBlockNumber, currentBlockNumber);
 
       console.log('Processing passive swaps...');
-      await syncPassiveSwaps(chainId, bigQuery, amms, previousBlockNumber, currentBlockNumber);
+      await syncPassiveSwaps(
+        chainId,
+        bigQuery,
+        amms,
+        previousBlockNumber,
+        currentBlockNumber,
+        minBlockInterval,
+      );
 
-      previousBlockNumber = currentBlockNumber;
+      previousBlockNumber = currentBlockNumber + 1;
     } catch (error) {
       console.log(`Loop has failed with message: ${(error as Error).message}.`);
       await sleep(60 * 1000); // sleep 60s

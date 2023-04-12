@@ -29,8 +29,10 @@ export const processPassiveSwapEvents = async ({
   // Retrieve the current timestamp
   const eventTimestamp = (await event.getBlock()).timestamp;
 
+  console.log(`Processing passive swap at ${new Date(eventTimestamp * 1000).toISOString()}`);
+
   // Retrieve all LPs
-  const existingLpPositionRows = await pullExistingLpPositionRows(bigQuery, eventTimestamp);
+  const existingLpPositionRows = await pullExistingLpPositionRows(bigQuery, amm.id, eventTimestamp);
 
   const { passiveSwapEvents, affectedLps } = await generatePassiveSwapEvents({
     existingLpPositionRows,
