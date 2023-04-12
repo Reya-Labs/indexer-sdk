@@ -27,6 +27,9 @@ export const pullExistingMintOrBurnRow = async (
   eventId: string,
 ): Promise<BigQueryMintOrBurnRow | null> => {
   const mintBurnTableId = `${PROJECT_ID}.${DATASET_ID}.${MINTS_BURNS_TABLE_ID}`;
+
+  console.log(mintBurnTableId);
+
   const sqlQuery = `SELECT * FROM \`${mintBurnTableId}\` WHERE eventId=\"${eventId}\"`;
 
   const options = {

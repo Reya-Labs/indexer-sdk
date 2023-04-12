@@ -44,8 +44,8 @@ export const parseMintOrBurnEvent = (
     tickLower,
     tickUpper,
     notionalDelta,
-    rateOracle: event.amm.rateOracle.id,
-    underlyingToken: event.amm.underlyingToken.id,
+    rateOracle: event.amm.rateOracle.protocol,
+    underlyingToken: event.amm.underlyingToken.name,
     marginEngineAddress: event.amm.marginEngineAddress,
     amm,
   };

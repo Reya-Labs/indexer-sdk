@@ -11,7 +11,7 @@ export const insertNewMintOrBurn = async (
   eventInfo: MintOrBurnEventInfo,
   eventTimestamp: number,
 ): Promise<void> => {
-  console.log('Inserting a new swap and a new position');
+  console.log('Inserting a new mint or burn');
   const mintOrBurnRow: BigQueryMintOrBurnRow = generateMintOrBurnRow(eventInfo, eventTimestamp);
 
   const mintOrBurnTableId = `${PROJECT_ID}.${DATASET_ID}.${MINTS_BURNS_TABLE_ID}`;
