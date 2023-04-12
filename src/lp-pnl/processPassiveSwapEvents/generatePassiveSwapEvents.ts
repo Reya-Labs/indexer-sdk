@@ -1,6 +1,7 @@
 import { AMM } from '@voltz-protocol/v1-sdk';
 
 import { BigQueryPositionRow } from '../../big-query-support';
+import { getVariableFactor } from '../../common';
 import { generateMarginEngineContract } from '../../common/contract-services/generateMarginEngineContract';
 import { SwapEventInfo } from '../../common/swaps/parseSwapEvent';
 import { generatePassiveSwapEvent } from './generatePassiveSwapEvent';
@@ -29,9 +30,13 @@ export const generatePassiveSwapEvents = async ({
   const tokenDecimals = amm.underlyingToken.decimals;
 
   // Get variable factor before start and event timestamp (for excess balance)
-  const variableFactorStartToCurrent = (
-    await amm.variableFactor(startTimestamp * 1000, eventTimestamp * 1000)
-  ).scaled;
+  const variableFactorStartToCurrent = await getVariableFactor(
+    amm.provider,
+    amm.rateOracle.id,
+    startTimestamp,
+    eventTimestamp,
+    rootEventInfo.eventBlockNumber,
+  );
 
   // Fetch the margin engine contract
   const marginEngineContract = generateMarginEngineContract(amm.marginEngineAddress, amm.provider);
@@ -40,7 +45,7 @@ export const generatePassiveSwapEvents = async ({
   const affectedLps: BigQueryPositionRow[] = [];
 
   for (const positionRow of existingLpPositionRows) {
-    if (positionRow.lastUpdatedTimestamp <= eventTimestamp) {
+    if (positionRow.lastUpdatedTimestamp < eventTimestamp) {
       // position is initialized before event timestamp
       const ownerAddress = positionRow.ownerAddress;
       const tickLower = positionRow.tickLower;
@@ -75,7 +80,11 @@ export const generatePassiveSwapEvents = async ({
           rootEventInfo,
         });
         passiveSwapEvents.push(passiveSwap);
-        affectedLps.push(positionRow);
+        affectedLps.push({
+          ...positionRow,
+          variableTokenBalance: onChainVariableTokenBalance,
+          fixedTokenBalance: onChainFixedTokenBalance,
+        });
       }
     } else {
       console.log(`This lp position was initialized in the future relative to event.`);

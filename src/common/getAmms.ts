@@ -14,14 +14,12 @@ export const getAmms = async (chainId: number, activeAtTimestamp: number): Promi
     throw new Error(`Couldn't fetch AMMs from voltz-SDK.`);
   }
 
-  // // Filter out the inactive pools
-  // const activeAmms = amms.filter((item) => {
-  //   return item.termEndTimestampInMS / 1000 > activeAtTimestamp;
-  // });
-
+  // Filter out the inactive pools
   const activeAmms = amms.filter((item) => {
-    return item.id.toLowerCase() === '0x9a37bcc8ff3055d7223b169bc9c9fe2157a1b60e'.toLowerCase();
+    return item.termEndTimestampInMS / 1000 <= activeAtTimestamp;
   });
+
+  // const activeAmms = amms.filter((item) => item.id.toLowerCase() === '0x943309c6D1fD572414A640C68F6F71Ef2113171c'.toLowerCase());
 
   return activeAmms;
 };

@@ -34,7 +34,7 @@ export const getOnChainFixedAndVariableTokenBalances = async ({
     ethers.utils.formatUnits(position.fixedTokenBalance, tokenDecimals),
   );
   const onChainVariableTokenBalance = Number(
-    ethers.utils.formatUnits(position.fixedTokenBalance, tokenDecimals),
+    ethers.utils.formatUnits(position.variableTokenBalance, tokenDecimals),
   );
 
   return { onChainVariableTokenBalance, onChainFixedTokenBalance };

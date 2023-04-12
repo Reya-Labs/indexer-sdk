@@ -10,6 +10,7 @@ import { bqNumericToNumber, bqTimestampToUnixSeconds, secondsToBqDate } from './
 
 export const pullExistingLpPositionRows = async (
   bigQuery: BigQuery,
+  vammAddress: string,
   currentTimestamp: number,
 ): Promise<BigQueryPositionRow[]> => {
   const currentTimestampBQ = secondsToBqDate(currentTimestamp);
@@ -20,7 +21,8 @@ export const pullExistingLpPositionRows = async (
     SELECT * FROM \`${positionTableId}\` 
       WHERE 
         notionalLiquidityProvided>0 AND 
-        positionInitializationTimestamp<\'${currentTimestampBQ}\'
+        positionInitializationTimestamp<\'${currentTimestampBQ}\' AND
+        vammAddress=\"${vammAddress}\"
     `;
 
   const options = {
