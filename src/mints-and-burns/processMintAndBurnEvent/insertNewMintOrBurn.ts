@@ -1,7 +1,6 @@
 import { BigQuery } from '@google-cloud/bigquery';
-import { AMM } from '@voltz-protocol/v1-sdk';
 import { secondsToBqDate } from '../../big-query-support/utils';
-import { DATASET_ID, POSITIONS_TABLE_ID, PROJECT_ID, MINTS_BURNS_TABLE_ID } from '../../common';
+import { DATASET_ID, PROJECT_ID, MINTS_BURNS_TABLE_ID } from '../../common';
 import { MintOrBurnEventInfo } from '../../common/mints-and-burns/parseMintOrBurnEvent';
 import { generateMintOrBurnRow } from './generateMintOrBurnRow';
 
