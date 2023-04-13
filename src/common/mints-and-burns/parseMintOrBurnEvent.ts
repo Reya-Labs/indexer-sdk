@@ -26,7 +26,7 @@ export const parseMintOrBurnEvent = (
   const tickLower = event.args?.tickLower as number;
   const tickUpper = event.args?.tickUpper as number;
   const amount = event.args?.amount as BigNumber;
-  const amm = event.amm ;
+  const amm = event.amm;
   const chainId = event.chainId;
 
   let notionalDelta = getNotionalFromLiquidity(amount, tickLower, tickUpper, tokenDecimals);

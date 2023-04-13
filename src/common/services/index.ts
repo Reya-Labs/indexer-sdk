@@ -3,3 +3,4 @@ export * from './getFixedRateLocked';
 export * from './getFixedRateLockedFromBalances';
 export * from './getRealizedPnlSinceLastSwap';
 export * from './getVariableFactor';
+export * from './redisService';
