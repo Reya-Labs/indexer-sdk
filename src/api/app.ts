@@ -14,6 +14,7 @@ import {
   SWAPS_TABLE_ID,
 } from '../common';
 import { getAmm, getBlockAtTimestamp } from './common';
+import { getChainLevelInformation } from './common/getChainLevelInformation';
 
 dotenv.config();
 
@@ -119,15 +120,23 @@ router.get('/positions/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper
     });
 });
 
-
-// // Get Chain Level Information
-
 router.get('/chains/:chainId', async (req, res) => {
     const chainId = Number(req.params.chainId);
-    const result = await getChainLevelInformation(chainId, SWAPS_TABLE_ID, MINTS_BURNS_TABLE_ID, GECKO_KEY);
+
+    if (GECKO_KEY === undefined) {
+      throw Error('Make sure Coingecko Key is provided');
+    }
+
+    const result = await getChainLevelInformation({
+      chainId,
+      activeSwapsTableId: SWAPS_TABLE_ID,
+      mintsAndBurnsTableId: MINTS_BURNS_TABLE_ID,
+      bigQuery: bigQuery,
+      geckoKey: GECKO_KEY
+    });
+
     return res.json(result);
 });
 
 
-// Add api prefix to all routes
 app.use(apiPrefix, router);
