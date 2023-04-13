@@ -1,7 +1,7 @@
 import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
-import { getFromBlock } from '../services';
 
+import { getFromBlock } from '../services';
 import { ExtendedEvent } from '../types';
 import { generateVAMMContract } from './generateVAMMContract';
 
@@ -11,30 +11,28 @@ export type VammEvents = {
   };
 };
 
-export const applyProcessingWindow = (events: ExtendedEvent[], blockWindow: number): ExtendedEvent[] =>  { 
+export const applyProcessingWindow = (
+  events: ExtendedEvent[],
+  blockWindow: number,
+): ExtendedEvent[] => {
+  if (events.length === 0) {
+    return [];
+  }
 
-    if (events.length===0) { 
-      return [];
+  const filteredEvents: ExtendedEvent[] = [];
+  const latestBlock = 0;
+
+  for (let i = 0; i < events.length; i++) {
+    const currentEvent = events[i];
+    const blocksSinceLatestEvent = currentEvent.blockNumber - latestBlock;
+
+    if (blocksSinceLatestEvent >= blockWindow) {
+      filteredEvents.push(currentEvent);
     }
-    
-    let filteredEvents: ExtendedEvent[] = [];
-    let latestBlock = 0; 
-  
-    for (let i=0; i < events.length; i++) { 
-
-      const currentEvent = events[i];
-      const blocksSinceLatestEvent = currentEvent.blockNumber - latestBlock;
-
-      if (blocksSinceLatestEvent >= blockWindow) {
-        filteredEvents.push(currentEvent);
-      }
-
-    }
+  }
 
   return filteredEvents;
-
-}
-
+};
 
 const getEventFilter = (vammContract: ethers.Contract, eventType: string): ethers.EventFilter => {
   switch (eventType) {
@@ -56,17 +54,16 @@ const getEventFilter = (vammContract: ethers.Contract, eventType: string): ether
 export const getPreviousEvents = async (
   tableId: string,
   amms: AMM[],
-  eventTypes: ('mint' | 'burn' | 'swap')[]
+  eventTypes: ('mint' | 'burn' | 'swap')[],
 ): Promise<VammEvents> => {
   const totalEventsByVammAddress: VammEvents = {};
 
   const promises = amms.map(async (amm): Promise<[AMM, ExtendedEvent[]]> => {
-
     const toBlock = await amm.provider.getBlockNumber();
     const chainId = (await amm.provider.getNetwork()).chainId;
 
     const fromBlock = await getFromBlock(tableId, chainId, amm.id);
-    
+
     const vammContract = generateVAMMContract(amm.id, amm.provider);
 
     const allEvents = [];
@@ -84,7 +81,7 @@ export const getPreviousEvents = async (
           ...event,
           type: eventType,
           amm: amm,
-          chainId: chainId
+          chainId: chainId,
         };
         return extendedEvent;
       });

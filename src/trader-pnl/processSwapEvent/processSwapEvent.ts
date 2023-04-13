@@ -6,10 +6,7 @@ import { ExtendedEvent } from '../../common/types';
 import { insertNewSwapAndNewPosition } from './insertNewSwapAndNewPosition';
 import { insertNewSwapAndUpdateExistingPosition } from './insertNewSwapAndUpdateExistingPosition';
 
-export const processSwapEvent = async (
-  bigQuery: BigQuery,
-  event: ExtendedEvent,
-): Promise<void> => {
+export const processSwapEvent = async (bigQuery: BigQuery, event: ExtendedEvent): Promise<void> => {
   const eventInfo = parseSwapEvent(event);
 
   const swapRow = await pullExistingSwapRow(bigQuery, eventInfo.eventId);

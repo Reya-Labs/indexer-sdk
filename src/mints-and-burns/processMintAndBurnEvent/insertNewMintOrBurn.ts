@@ -46,7 +46,5 @@ export const insertNewMintOrBurn = async (
 
   await bigQuery.query(options);
 
-  console.log(
-    `Inserted new mint or burn with eventId: ${eventInfo.eventId}`,
-  );
+  console.log(`Inserted new mint or burn with eventId: ${eventInfo.eventId}`);
 };

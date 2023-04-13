@@ -7,7 +7,7 @@ import { processMintEvent } from './processMintEvent';
 export const syncMints = async (
   tableId: string,
   bigQuery: BigQuery,
-  amms: AMM[]
+  amms: AMM[],
 ): Promise<void> => {
   const previousMintEvents = await getPreviousEvents(tableId, amms, ['mint']);
 

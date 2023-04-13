@@ -3,7 +3,6 @@ import { BigQueryPositionRow } from '.';
 import { secondsToBqDate } from './utils';
 
 export const generateLpPositionUpdatesQuery = (lpPositionRows: BigQueryPositionRow[]): string => {
-
   const query = lpPositionRows
     .map((positionRow) => {
       return `

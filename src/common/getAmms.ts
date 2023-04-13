@@ -4,18 +4,10 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 export const getAmms = async (chainIds: number[], activeAtTimestamp: number): Promise<AMM[]> => {
+  const allAmms: AMM[] = [];
 
-  let allAmms: AMM[] = [];
-
-  for (let i=0; i<chainIds.length; i++) {
-
+  for (let i = 0; i < chainIds.length; i++) {
     const chainId = chainIds[i];
-
-    let alchemyApiKey = process.env.ALCHEMY_MAINNET_KEY;
-
-    if (chainId === 42161) { 
-      alchemyApiKey = process.env.ALCHEMY_ARBITRUM_KEY;
-    }
 
     // Get AMMs
     const { amms, error } = await getAMMs({
@@ -33,9 +25,7 @@ export const getAmms = async (chainIds: number[], activeAtTimestamp: number): Pr
     });
 
     allAmms.push(...activeAmms);
-
   }
-
 
   return allAmms;
 };

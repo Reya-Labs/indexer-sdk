@@ -7,7 +7,7 @@ import { insertNewMintOrBurn } from './insertNewMintOrBurn';
 
 export const processMintOrBurnEvent = async (
   bigQuery: BigQuery,
-  event: ExtendedEvent
+  event: ExtendedEvent,
 ): Promise<void> => {
   console.log('Mint Or Burn processing...');
 

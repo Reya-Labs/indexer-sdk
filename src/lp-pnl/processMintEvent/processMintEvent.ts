@@ -5,10 +5,7 @@ import { parseMintOrBurnEvent } from '../../common/mints-and-burns/parseMintOrBu
 import { ExtendedEvent } from '../../common/types';
 import { insertNewMintAndNewPosition } from './insertNewMintAndNewPosition';
 
-export const processMintEvent = async (
-  bigQuery: BigQuery,
-  event: ExtendedEvent,
-): Promise<void> => {
+export const processMintEvent = async (bigQuery: BigQuery, event: ExtendedEvent): Promise<void> => {
   console.log('Mint processing...');
 
   const eventInfo = parseMintOrBurnEvent(event);

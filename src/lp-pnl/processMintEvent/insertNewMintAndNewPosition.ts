@@ -2,7 +2,7 @@ import { BigQuery } from '@google-cloud/bigquery';
 
 import { BigQueryPositionRow } from '../../big-query-support';
 import { secondsToBqDate } from '../../big-query-support/utils';
-import { DATASET_ID, POSITIONS_TABLE_ID, PROJECT_ID } from '../../common';
+import { POSITIONS_TABLE_ID } from '../../common';
 import { generateLpPositionRow } from '../../common/mints-and-burns/generateLpPositionRow';
 import { MintOrBurnEventInfo } from '../../common/mints-and-burns/parseMintOrBurnEvent';
 

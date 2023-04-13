@@ -1,4 +1,3 @@
-import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
 
 import { getFixedRateLocked } from '..';
