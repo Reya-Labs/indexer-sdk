@@ -4,8 +4,8 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 import { getPreviousEvents } from '../common';
 import { processSwapEvent } from './processSwapEvent';
 
-export const sync = async (tableId: string, bigQuery: BigQuery, amms: AMM[]): Promise<void> => {
-  const previousSwapEvents = await getPreviousEvents(tableId, amms, ['swap']);
+export const sync = async (bigQuery: BigQuery, amms: AMM[]): Promise<void> => {
+  const previousSwapEvents = await getPreviousEvents('active_swaps', amms, ['swap']);
 
   const promises = Object.values(previousSwapEvents).map(async ({ events }) => {
     for (const swapEvent of events) {

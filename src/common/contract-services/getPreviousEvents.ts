@@ -52,7 +52,7 @@ const getEventFilter = (vammContract: ethers.Contract, eventType: string): ether
 };
 
 export const getPreviousEvents = async (
-  tableId: string,
+  syncProcessName: 'active_swaps' | 'mints_lp' | 'passive_swaps_lp' | 'mint_burn',
   amms: AMM[],
   eventTypes: ('mint' | 'burn' | 'swap')[],
 ): Promise<VammEvents> => {
@@ -62,7 +62,7 @@ export const getPreviousEvents = async (
     const toBlock = await amm.provider.getBlockNumber();
     const chainId = (await amm.provider.getNetwork()).chainId;
 
-    const fromBlock = await getFromBlock(tableId, chainId, amm.id);
+    const fromBlock = await getFromBlock(syncProcessName, chainId, amm.id);
 
     const vammContract = generateVAMMContract(amm.id, amm.provider);
 

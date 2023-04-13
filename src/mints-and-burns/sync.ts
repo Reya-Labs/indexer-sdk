@@ -7,10 +7,8 @@ import { processMintOrBurnEvent } from './processMintAndBurnEvent';
 export const sync = async (
   bigQuery: BigQuery,
   amms: AMM[],
-  fromBlock: number,
-  toBlock: number,
 ): Promise<void> => {
-  const previousMintEvents = await getPreviousEvents(amms, ['mint', 'burn'], fromBlock, toBlock);
+  const previousMintEvents = await getPreviousEvents('mint_burn', amms, ['mint', 'burn']);
 
   const promises = Object.values(previousMintEvents).map(async ({ events }) => {
     for (const event of events) {

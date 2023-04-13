@@ -6,11 +6,10 @@ import { LP_PROCESSING_WINDOW } from '../common';
 import { processPassiveSwapEvents } from './processPassiveSwapEvents';
 
 export const syncPassiveSwaps = async (
-  tableId: string,
   bigQuery: BigQuery,
   amms: AMM[],
 ): Promise<void> => {
-  const previousSwapEvents = await getPreviousEvents(tableId, amms, ['swap']);
+  const previousSwapEvents = await getPreviousEvents('passive_swaps_lp', amms, ['swap']);
 
   const promises = Object.values(previousSwapEvents).map(async ({ events }) => {
     const chainId = events[0].chainId;

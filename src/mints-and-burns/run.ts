@@ -25,24 +25,10 @@ export const run = async (chainIds: number[]) => {
     return;
   }
 
-  // get provider from the first amm
-  const provider = amms[0].provider;
-
   while (true) {
-    const currentBlockNumber = await provider.getBlockNumber();
-
-    if (previousBlockNumber === currentBlockNumber) {
-      console.log('Block has not changed. Sleeping...');
-      await sleep(60 * 1000); // sleep 60s
-      continue;
-    }
-
-    console.log(`Processing blocks: ${previousBlockNumber}-${currentBlockNumber}`);
-
     try {
-      console.log('Processing mints...');
-      await sync(bigQuery, amms, previousBlockNumber, currentBlockNumber);
-      previousBlockNumber = currentBlockNumber + 1;
+      console.log('Processing mints and burns');
+      await sync(bigQuery, amms);
     } catch (error) {
       console.log(`Loop has failed with message: ${(error as Error).message}.`);
       await sleep(60 * 1000); // sleep 60s
