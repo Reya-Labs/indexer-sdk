@@ -1,7 +1,7 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
 
-import { getPreviousEvents } from '../common';
+import { getPreviousEvents, setFromBlock } from '../common';
 import { processMintEvent } from './processMintEvent';
 
 export const syncMints = async (
@@ -13,6 +13,7 @@ export const syncMints = async (
   const promises = Object.values(previousMintEvents).map(async ({ events }) => {
     for (const swapEvent of events) {
       await processMintEvent(bigQuery, swapEvent);
+      await setFromBlock('mint_lp', swapEvent.chainId, swapEvent.address, swapEvent.blockNumber);
     }
   });
 

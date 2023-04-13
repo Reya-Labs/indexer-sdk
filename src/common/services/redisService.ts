@@ -9,11 +9,11 @@ redis.on('connect', () => {
 });
 
 export const getFromBlock = async (
-  tableId: string,
+  syncProcessName: string,
   chainId: number,
   vammAddress: string,
 ): Promise<number> => {
-  const redisKey = `${tableId}_${chainId}_${vammAddress}`;
+  const redisKey = `${syncProcessName}_${chainId}_${vammAddress}`;
 
   const fromBlock = Number(await redis.get(redisKey));
 
@@ -21,12 +21,12 @@ export const getFromBlock = async (
 };
 
 export const setFromBlock = async (
-  tableId: string,
+  syncProcessName: string,
   chainId: number,
   vammAddress: string,
   value: number,
 ): Promise<void> => {
-  const redisKey = `${tableId}_${chainId}_${vammAddress}`;
+  const redisKey = `${syncProcessName}_${chainId}_${vammAddress}`;
 
   await redis.set(redisKey, value);
 };
