@@ -13,8 +13,8 @@ export type BigQuerySwapRow = {
   ownerAddress: string;
   tickLower: number;
   tickUpper: number;
-  notionalLocked: number;
-  fixedRateLocked: number;
+  variableTokenDelta: number;
+  fixedTokenDeltaUnbalanced: number;
   feePaidToLps: number;
   eventTimestamp: number;
   rowLastUpdatedTimestamp: number;
@@ -46,8 +46,8 @@ export const pullExistingSwapRow = async (
     ownerAddress: rows[0].ownerAddress,
     tickLower: rows[0].tickLower,
     tickUpper: rows[0].tickUpper,
-    notionalLocked: bqNumericToNumber(rows[0].notionalLocked),
-    fixedRateLocked: bqNumericToNumber(rows[0].fixedRateLocked),
+    variableTokenDelta: bqNumericToNumber(rows[0].notionalLocked),
+    fixedTokenDeltaUnbalanced: bqNumericToNumber(rows[0].fixedTokenDeltaUnbalanced),
     feePaidToLps: bqNumericToNumber(rows[0].feePaidToLps),
     eventTimestamp: bqTimestampToUnixSeconds(rows[0].eventTimestamp),
     rowLastUpdatedTimestamp: bqTimestampToUnixSeconds(rows[0].rowLastUpdatedTimestamp),

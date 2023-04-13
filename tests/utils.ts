@@ -20,7 +20,8 @@ const variableFactor = async (
 export const mockedAMM = {
   id: 'AMM-Test',
   underlyingToken: {
-    name: 'token',
+    id: 'token',
+    name: 'token-name',
     decimals: 18,
   },
   rateOracle: {

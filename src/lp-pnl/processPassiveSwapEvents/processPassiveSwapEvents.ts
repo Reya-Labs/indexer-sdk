@@ -24,8 +24,6 @@ export const processPassiveSwapEvents = async ({
   // Retrieve the current timestamp
   const eventTimestamp = (await event.getBlock()).timestamp;
 
-  console.log(`Processing passive swap at ${new Date(eventTimestamp * 1000).toISOString()}`);
-
   // Retrieve all LPs
   const existingLpPositionRows = await pullExistingLpPositionRows(
     bigQuery,
@@ -48,10 +46,10 @@ export const processPassiveSwapEvents = async ({
   const lpPositionRows = await generateLpPositionRowsFromPassiveSwaps({
     passiveSwapEvents,
     affectedLps,
-    bigQuery,
-    chainId: event.chainId,
-    amm: event.amm,
-    currentTimestamp: eventTimestamp,
+    chainId,
+    amm,
+    eventTimestamp,
+    eventBlockNumber: rootEventInfo.eventBlockNumber,
   });
 
   const sqlTransactionQuery = generateLpPositionUpdatesQuery(lpPositionRows);
@@ -64,5 +62,9 @@ export const processPassiveSwapEvents = async ({
 
   await bigQuery.query(options);
 
-  console.log(`Updated ${lpPositionRows.length} from passive swaps`);
+  console.log(
+    `Updated ${lpPositionRows.length} LP positions from passive swap at ${new Date(
+      eventTimestamp * 1000,
+    ).toISOString()}`,
+  );
 };

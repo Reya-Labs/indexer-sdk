@@ -59,6 +59,9 @@ export const pullExistingLpPositionRows = async (
       rateOracle: row.rateOracle,
       underlyingToken: row.underlyingToken,
       chainId: row.chainId,
+      cashflowLiFactor: bqNumericToNumber(row.cashflowLiFactor),
+      cashflowTimeFactor: bqNumericToNumber(row.cashflowTimeFactor),
+      cashflowFreeTerm: bqNumericToNumber(row.cashflowFreeTerm),
     };
   });
 

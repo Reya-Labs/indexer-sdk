@@ -28,7 +28,10 @@ export const generateLpPositionRow = (
     variableTokenBalance: 0,
     positionInitializationTimestamp: eventTimestamp,
     rateOracle: eventInfo.amm.rateOracle.id,
-    underlyingToken: eventInfo.amm.underlyingToken.id,
+    underlyingToken: eventInfo.amm.underlyingToken.name,
     chainId: eventInfo.chainId,
+    cashflowLiFactor: 0,
+    cashflowTimeFactor: 0,
+    cashflowFreeTerm: 0,
   };
 };

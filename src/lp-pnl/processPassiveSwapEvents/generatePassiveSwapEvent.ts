@@ -1,4 +1,4 @@
-import { getFixedRateLockedFromBalances } from '../../common/services';
+import { getFixedTokenDeltaUnbalanced } from '../../common/services';
 import { SwapEventInfo } from '../../common/swaps/parseSwapEvent';
 
 export type GeneratePassiveSwapEventArgs = {
@@ -30,7 +30,7 @@ export const generatePassiveSwapEvent = ({
   variableFactorStartToCurrent,
   rootEventInfo,
 }: GeneratePassiveSwapEventArgs): SwapEventInfo => {
-  const fixedRateLocked = getFixedRateLockedFromBalances({
+  const fixedTokenDeltaUnbalanced = getFixedTokenDeltaUnbalanced({
     variableTokenDelta,
     fixedTokenDelta,
     currentTimestamp: eventTimestamp,
@@ -50,8 +50,8 @@ export const generatePassiveSwapEvent = ({
     ownerAddress,
     tickLower,
     tickUpper,
-    notionalLocked: variableTokenDelta,
-    fixedRateLocked,
+    variableTokenDelta,
+    fixedTokenDeltaUnbalanced,
     feePaidToLps: 0, // does not apply to passive swaps
     rateOracle: rootEventInfo.rateOracle,
     underlyingToken: rootEventInfo.underlyingToken,

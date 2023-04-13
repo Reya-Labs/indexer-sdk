@@ -1,24 +1,24 @@
-import { getLockedInProfit } from './getLockedInProfit';
-import { getRealizedPnLSinceLastSwap } from './getRealizedPnlSinceLastSwap';
+import { SECONDS_IN_YEAR } from '../constants';
 
 export const getCashflowInfo = (
   net: {
     notional: number;
-    fixedRate: number;
-    timestamp: number; // in seconds
+    cashflowLiFactor: number;
+    cashflowTimeFactor: number;
+    cashflowFreeTerm: number;
   },
   incoming: {
     notional: number;
-    fixedRate: number;
-    timestamp: number; // in seconds
+    cashflowLiFactor: number;
+    cashflowTimeFactor: number;
+    cashflowFreeTerm: number;
   },
-  maturityTimestamp: number, // in seconds
-  variableFactorBetweenSwaps: number,
+  maturityTimestamp: number,
 ): {
-  netNotionalLocked: number;
-  netFixedRateLocked: number;
-  newCashflow: number;
-  netTimestamp: number;
+  notional: number;
+  cashflowLiFactor: number;
+  cashflowTimeFactor: number;
+  cashflowFreeTerm: number;
 } => {
   if (
     (net.notional >= 0 && incoming.notional >= 0) ||
@@ -26,23 +26,11 @@ export const getCashflowInfo = (
   ) {
     // doubling down exposure
 
-    const netFixedRateLocked =
-      (net.notional * net.fixedRate + incoming.notional * incoming.fixedRate) /
-      (net.notional + incoming.notional);
-
-    const cashflowBetweenSwaps = getRealizedPnLSinceLastSwap(
-      net.timestamp,
-      incoming.timestamp,
-      variableFactorBetweenSwaps,
-      net.fixedRate,
-      net.notional,
-    );
-
     return {
-      netFixedRateLocked,
-      newCashflow: cashflowBetweenSwaps,
-      netTimestamp: incoming.timestamp,
-      netNotionalLocked: net.notional + incoming.notional,
+      notional: net.notional + incoming.notional,
+      cashflowLiFactor: net.cashflowLiFactor + incoming.cashflowLiFactor,
+      cashflowTimeFactor: net.cashflowTimeFactor + incoming.cashflowTimeFactor,
+      cashflowFreeTerm: net.cashflowFreeTerm + incoming.cashflowFreeTerm,
     };
   }
 
@@ -52,27 +40,17 @@ export const getCashflowInfo = (
   ) {
     // partial unwind
 
-    const lockedInProfit = getLockedInProfit(
-      incoming.notional,
-      net.fixedRate,
-      incoming.fixedRate,
-      incoming.timestamp,
-      maturityTimestamp,
-    );
+    // from net position
+    const reducedTimeFactor = net.cashflowTimeFactor * (-incoming.notional / net.notional);
 
-    const cashflowBetweenSwaps = getRealizedPnLSinceLastSwap(
-      net.timestamp,
-      incoming.timestamp,
-      variableFactorBetweenSwaps,
-      net.fixedRate,
-      -incoming.notional,
-    );
+    const lockedInProfit =
+      ((reducedTimeFactor + incoming.cashflowTimeFactor) * maturityTimestamp) / SECONDS_IN_YEAR;
 
     return {
-      netFixedRateLocked: net.fixedRate,
-      newCashflow: lockedInProfit + cashflowBetweenSwaps,
-      netTimestamp: net.timestamp,
-      netNotionalLocked: net.notional + incoming.notional,
+      notional: net.notional + incoming.notional,
+      cashflowLiFactor: net.cashflowLiFactor + incoming.cashflowLiFactor,
+      cashflowTimeFactor: net.cashflowTimeFactor - reducedTimeFactor,
+      cashflowFreeTerm: net.cashflowFreeTerm + incoming.cashflowFreeTerm + lockedInProfit,
     };
   }
 
@@ -82,29 +60,19 @@ export const getCashflowInfo = (
   ) {
     // full unwind + take the other direction
 
-    const lockedInProfit = getLockedInProfit(
-      -net.notional,
-      net.fixedRate,
-      incoming.fixedRate,
-      incoming.timestamp,
-      maturityTimestamp,
-    );
+    // from incoming position
+    const reducedTimeFactor = incoming.cashflowTimeFactor * (-net.notional / incoming.notional);
 
-    const cashflowBetweenSwaps = getRealizedPnLSinceLastSwap(
-      net.timestamp,
-      incoming.timestamp,
-      variableFactorBetweenSwaps,
-      net.fixedRate,
-      net.notional,
-    );
+    const lockedInProfit =
+      ((net.cashflowTimeFactor + reducedTimeFactor) * maturityTimestamp) / SECONDS_IN_YEAR;
 
     return {
-      netFixedRateLocked: incoming.fixedRate,
-      newCashflow: lockedInProfit + cashflowBetweenSwaps,
-      netTimestamp: incoming.timestamp,
-      netNotionalLocked: net.notional + incoming.notional,
+      notional: net.notional + incoming.notional,
+      cashflowLiFactor: net.cashflowLiFactor + incoming.cashflowLiFactor,
+      cashflowTimeFactor: incoming.cashflowTimeFactor - reducedTimeFactor,
+      cashflowFreeTerm: net.cashflowFreeTerm + incoming.cashflowFreeTerm + lockedInProfit,
     };
   }
 
-  throw new Error(`Could not reach here`);
+  throw new Error(`Could not reach here ${net.notional}, ${incoming.notional}`);
 };

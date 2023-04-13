@@ -1,8 +1,8 @@
-import { getFixedRateLockedFromBalances } from '../../../../src/common';
+import { getFixedTokenDeltaUnbalanced } from '../../../../src/common';
 
 describe('fixed rate locked from balances', () => {
   it('variable tokens > 0, in the middle of 2-year pool', () => {
-    const fixedRateLocked = getFixedRateLockedFromBalances({
+    const fixedTokenDeltaUnbalanced = getFixedTokenDeltaUnbalanced({
       variableTokenDelta: 1000,
       fixedTokenDelta: -5000,
       startTimestamp: 0,
@@ -11,11 +11,11 @@ describe('fixed rate locked from balances', () => {
       variableFactorStartToCurrent: 0.03,
     });
 
-    expect(fixedRateLocked).toBeCloseTo(0.07);
+    expect(fixedTokenDeltaUnbalanced).toBeCloseTo(-7000);
   });
 
   it('variable tokens > 0, in the middle of 1-year pool', () => {
-    const fixedRateLocked = getFixedRateLockedFromBalances({
+    const fixedTokenDeltaUnbalanced = getFixedTokenDeltaUnbalanced({
       variableTokenDelta: 1000,
       fixedTokenDelta: -5000,
       startTimestamp: 0,
@@ -24,11 +24,11 @@ describe('fixed rate locked from balances', () => {
       variableFactorStartToCurrent: 0.03,
     });
 
-    expect(fixedRateLocked).toBeCloseTo(0.04);
+    expect(fixedTokenDeltaUnbalanced).toBeCloseTo(-4000);
   });
 
   it('variable tokens > 0, at the start', () => {
-    const fixedRateLocked = getFixedRateLockedFromBalances({
+    const fixedTokenDeltaUnbalanced = getFixedTokenDeltaUnbalanced({
       variableTokenDelta: 1000,
       fixedTokenDelta: -5000,
       startTimestamp: 0,
@@ -37,11 +37,11 @@ describe('fixed rate locked from balances', () => {
       variableFactorStartToCurrent: 0,
     });
 
-    expect(fixedRateLocked).toBeCloseTo(0.05);
+    expect(fixedTokenDeltaUnbalanced).toBeCloseTo(-5000);
   });
 
   it('variable tokens < 0, in the middle of 2-year pool', () => {
-    const fixedRateLocked = getFixedRateLockedFromBalances({
+    const fixedTokenDeltaUnbalanced = getFixedTokenDeltaUnbalanced({
       variableTokenDelta: -1000,
       fixedTokenDelta: 5000,
       startTimestamp: 0,
@@ -50,11 +50,11 @@ describe('fixed rate locked from balances', () => {
       variableFactorStartToCurrent: 0.03,
     });
 
-    expect(fixedRateLocked).toBeCloseTo(0.07);
+    expect(fixedTokenDeltaUnbalanced).toBeCloseTo(7000);
   });
 
   it('variable tokens < 0, in the middle of 1-year pool', () => {
-    const fixedRateLocked = getFixedRateLockedFromBalances({
+    const fixedTokenDeltaUnbalanced = getFixedTokenDeltaUnbalanced({
       variableTokenDelta: -1000,
       fixedTokenDelta: 5000,
       startTimestamp: 0,
@@ -63,6 +63,6 @@ describe('fixed rate locked from balances', () => {
       variableFactorStartToCurrent: 0.03,
     });
 
-    expect(fixedRateLocked).toBeCloseTo(0.04);
+    expect(fixedTokenDeltaUnbalanced).toBeCloseTo(4000);
   });
 });

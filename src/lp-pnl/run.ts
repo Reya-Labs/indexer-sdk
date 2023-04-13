@@ -26,8 +26,7 @@ export const run = async (chainIds: number[]) => {
       await syncMints(bigQuery, amms);
       await syncPassiveSwaps(bigQuery, amms);
     } catch (error) {
-      console.log(`Loop has failed with message: ${(error as Error).message}.`);
-      await sleep(60 * 1000); // sleep 60s
+      console.log(`Loop has failed with message: ${(error as Error).message}. It will retry...`);
     }
   }
 };

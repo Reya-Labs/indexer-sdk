@@ -29,10 +29,14 @@ export type BigQueryPositionRow = {
   rateOracle: string; // immutable
   underlyingToken: string; // immutable
   chainId: number; // immutable
+  cashflowLiFactor: number;
+  cashflowTimeFactor: number;
+  cashflowFreeTerm: number;
 };
 
 export const pullExistingPositionRow = async (
   bigQuery: BigQuery,
+  chainId: number,
   vammAddress: string,
   recipient: string,
   tickLower: number,
@@ -40,7 +44,8 @@ export const pullExistingPositionRow = async (
 ): Promise<BigQueryPositionRow | null> => {
   const sqlQuery = `
     SELECT * FROM \`${POSITIONS_TABLE_ID}\` 
-      WHERE vammAddress=\"${vammAddress}\" AND 
+      WHERE chainId=${chainId} AND
+            vammAddress=\"${vammAddress}\" AND 
             ownerAddress=\"${recipient}\" AND 
             tickLower=${tickLower} AND 
             tickUpper=${tickUpper}
@@ -80,5 +85,8 @@ export const pullExistingPositionRow = async (
     rateOracle: rows[0].rateOracle,
     underlyingToken: rows[0].underlyingToken,
     chainId: rows[0].chainId,
+    cashflowLiFactor: bqNumericToNumber(rows[0].cashflowLiFactor),
+    cashflowTimeFactor: bqNumericToNumber(rows[0].cashflowTimeFactor),
+    cashflowFreeTerm: bqNumericToNumber(rows[0].cashflowFreeTerm),
   };
 };

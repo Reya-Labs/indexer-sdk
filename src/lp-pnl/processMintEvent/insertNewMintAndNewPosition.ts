@@ -11,7 +11,7 @@ export const insertNewMintAndNewPosition = async (
   eventInfo: MintOrBurnEventInfo,
   eventTimestamp: number,
 ): Promise<void> => {
-  console.log('Inserting new position following a mint');
+  console.log('Inserting new LP position following a mint...');
 
   // generate position row
   const positionRow: BigQueryPositionRow = generateLpPositionRow(eventInfo, eventTimestamp);
@@ -37,17 +37,14 @@ export const insertNewMintAndNewPosition = async (
     \'${secondsToBqDate(positionRow.positionInitializationTimestamp)}\',
     \'${positionRow.rateOracle}\',
     \'${positionRow.underlyingToken}\',
-    ${positionRow.chainId}
+    ${positionRow.chainId},
+    ${positionRow.cashflowLiFactor},
+    ${positionRow.cashflowTimeFactor},
+    ${positionRow.cashflowFreeTerm}
   `;
 
   // build and fire sql query
-  const sqlTransactionQuery = `
-    BEGIN 
-      BEGIN TRANSACTION;
-        INSERT INTO \`${POSITIONS_TABLE_ID}\` VALUES(${rawPositionRow});          
-      COMMIT TRANSACTION;
-    END;
-  `;
+  const sqlTransactionQuery = `INSERT INTO \`${POSITIONS_TABLE_ID}\` VALUES(${rawPositionRow});`;
 
   const options = {
     query: sqlTransactionQuery,
@@ -57,5 +54,7 @@ export const insertNewMintAndNewPosition = async (
 
   await bigQuery.query(options);
 
-  console.log(`Inserted a new position for ${positionRow.ownerAddress}`);
+  console.log(
+    `Inserted a new LP position (${positionRow.ownerAddress},[${positionRow.tickLower},${positionRow.tickUpper}]) in AMM ${amm.id}, chain ID ${eventInfo.chainId}`,
+  );
 };

@@ -2,7 +2,11 @@ import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
 
 import { secondsToBqDate } from '../../big-query-support/utils';
-import { POSITIONS_TABLE_ID, SWAPS_TABLE_ID } from '../../common';
+import {
+  getLiquidityIndex,
+  POSITIONS_TABLE_ID,
+  SWAPS_TABLE_ID,
+} from '../../common';
 import { generatePositionRow } from '../../common/swaps/generatePositionRow';
 import { SwapEventInfo } from '../../common/swaps/parseSwapEvent';
 import { generateSwapRow } from './generateSwapRow';
@@ -13,7 +17,7 @@ export const insertNewSwapAndNewPosition = async (
   eventInfo: SwapEventInfo,
   eventTimestamp: number,
 ): Promise<void> => {
-  console.log('Inserting a new swap and a new position');
+  console.log('Inserting new active swap and new position following swap...');
 
   // generate swap row
   const swapRow = generateSwapRow(eventInfo, eventTimestamp);
@@ -24,8 +28,8 @@ export const insertNewSwapAndNewPosition = async (
     \"${swapRow.ownerAddress}\",
     ${swapRow.tickLower}, 
     ${swapRow.tickUpper}, 
-    ${swapRow.notionalLocked}, 
-    ${swapRow.fixedRateLocked},
+    ${swapRow.variableTokenDelta}, 
+    ${swapRow.fixedTokenDeltaUnbalanced},
     ${swapRow.feePaidToLps}, 
     \'${secondsToBqDate(swapRow.eventTimestamp)}\', 
     \'${secondsToBqDate(swapRow.rowLastUpdatedTimestamp)}\',
@@ -35,8 +39,21 @@ export const insertNewSwapAndNewPosition = async (
     ${swapRow.chainId}
   `;
 
+  const liquidityIndexAtRootEvent = await getLiquidityIndex(
+    eventInfo.chainId,
+    amm.provider,
+    amm.marginEngineAddress,
+    eventInfo.eventBlockNumber,
+  );
+
   // generate position row
-  const positionRow = await generatePositionRow(amm, eventInfo, eventTimestamp, null);
+  const positionRow = generatePositionRow(
+    amm,
+    eventInfo,
+    eventTimestamp,
+    null,
+    liquidityIndexAtRootEvent,
+  );
 
   const rawPositionRow = `
     \"${positionRow.marginEngineAddress}\",
@@ -59,17 +76,16 @@ export const insertNewSwapAndNewPosition = async (
     \'${secondsToBqDate(positionRow.positionInitializationTimestamp)}\',
     \'${positionRow.rateOracle}\',
     \'${positionRow.underlyingToken}\',
-    ${positionRow.chainId}
+    ${positionRow.chainId},
+    ${positionRow.cashflowLiFactor},
+    ${positionRow.cashflowTimeFactor},
+    ${positionRow.cashflowFreeTerm}
   `;
 
   // build and fire sql query
   const sqlTransactionQuery = `
-    BEGIN 
-      BEGIN TRANSACTION;
-        INSERT INTO \`${SWAPS_TABLE_ID}\` VALUES (${rawSwapRow});
-        INSERT INTO \`${POSITIONS_TABLE_ID}\` VALUES(${rawPositionRow});          
-      COMMIT TRANSACTION;
-    END;
+    INSERT INTO \`${SWAPS_TABLE_ID}\` VALUES (${rawSwapRow});
+    INSERT INTO \`${POSITIONS_TABLE_ID}\` VALUES(${rawPositionRow});          
   `;
 
   const options = {
@@ -81,6 +97,6 @@ export const insertNewSwapAndNewPosition = async (
   await bigQuery.query(options);
 
   console.log(
-    `Inserted new swap with eventId: ${eventInfo.eventId} and inserted a new position for ${swapRow.ownerAddress}`,
+    `Inserted new swap with eventId ${eventInfo.eventId} and inserted a new LP position (${positionRow.ownerAddress},[${positionRow.tickLower},${positionRow.tickUpper}]) in AMM ${amm.id}, chain ID ${eventInfo.chainId}`,
   );
 };

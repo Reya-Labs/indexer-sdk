@@ -1,10 +1,7 @@
 import { ethers } from 'ethers';
-
-import { getFixedRateLocked } from '..';
 import { ExtendedEvent } from '../types';
 
 export type SwapEventInfo = {
-  // todo: we should store the event timestamp in this object
   eventId: string;
   eventBlockNumber: number;
 
@@ -14,8 +11,8 @@ export type SwapEventInfo = {
   tickLower: number;
   tickUpper: number;
 
-  notionalLocked: number;
-  fixedRateLocked: number;
+  variableTokenDelta: number;
+  fixedTokenDeltaUnbalanced: number;
   feePaidToLps: number;
 
   rateOracle: string;
@@ -53,8 +50,8 @@ export const parseSwapEvent = (event: ExtendedEvent): SwapEventInfo => {
     ownerAddress: ownerAddress.toLowerCase(),
     tickLower,
     tickUpper,
-    notionalLocked: variableTokenDelta,
-    fixedRateLocked: getFixedRateLocked(variableTokenDelta, fixedTokenDeltaUnbalanced),
+    variableTokenDelta,
+    fixedTokenDeltaUnbalanced,
     feePaidToLps: cumulativeFeeIncurred,
     rateOracle: event.amm.rateOracle.protocol,
     underlyingToken: event.amm.underlyingToken.name,
