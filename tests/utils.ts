@@ -20,11 +20,11 @@ const variableFactor = async (
 export const mockedAMM = {
   id: 'AMM-Test',
   underlyingToken: {
-    id: 'token',
+    name: 'token',
     decimals: 18,
   },
   rateOracle: {
-    id: 'rate-oracle',
+    protocol: 'rate-oracle',
     protocolId: 1,
   },
   marginEngineAddress: 'margin-engine',

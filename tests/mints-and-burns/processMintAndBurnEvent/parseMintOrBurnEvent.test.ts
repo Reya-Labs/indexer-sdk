@@ -1,6 +1,7 @@
 import { BigNumber, Event } from 'ethers';
 
 import { parseMintOrBurnEvent } from '../../../src/common/mints-and-burns/parseMintOrBurnEvent';
+import { ExtendedEvent } from '../../../src/common/types';
 import { mockedAMM } from '../../utils';
 
 describe('parse mint or burn event', () => {
@@ -17,7 +18,14 @@ describe('parse mint or burn event', () => {
       },
     } as unknown as Event;
 
-    const eventInfo = parseMintOrBurnEvent(1, mockedAMM, event, false);
+    const extendedEvent: ExtendedEvent = {
+      ...event,
+      type: 'mint',
+      amm: mockedAMM,
+      chainId: 1
+    }
+
+    const eventInfo = parseMintOrBurnEvent(extendedEvent);
 
     expect(eventInfo).toEqual({
       eventId: 'blockhash_transactionhash_1',
@@ -46,7 +54,14 @@ describe('parse mint or burn event', () => {
       },
     } as unknown as Event;
 
-    const eventInfo = parseMintOrBurnEvent(1, mockedAMM, event, true);
+    const extendedEvent: ExtendedEvent = {
+      ...event,
+      type: 'mint',
+      amm: mockedAMM,
+      chainId: 1
+    }
+
+    const eventInfo = parseMintOrBurnEvent(extendedEvent);
 
     expect(eventInfo).toEqual({
       eventId: 'blockhash_transactionhash_1',
