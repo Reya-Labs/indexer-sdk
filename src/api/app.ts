@@ -120,22 +120,36 @@ router.get('/positions/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper
     });
 });
 
-router.get('/chains/:chainId', async (req, res) => {
+router.get('/chains/:chainId', (req, res) => {
   const chainId = Number(req.params.chainId);
 
-  if (GECKO_KEY === undefined) {
-    throw Error('Make sure Coingecko Key is provided');
-  }
+  const process = async () => {
+    if (GECKO_KEY === undefined) {
+      throw Error('Make sure Coingecko Key is provided');
+    }
+    const result: ChainLevelInformation = await getChainLevelInformation({
+      chainId,
+      activeSwapsTableId: SWAPS_TABLE_ID,
+      mintsAndBurnsTableId: MINTS_BURNS_TABLE_ID,
+      bigQuery: bigQuery,
+      geckoKey: GECKO_KEY,
+    });
+    res.json({
+      ...result
+    });
+  };
 
-  const result: ChainLevelInformation = await getChainLevelInformation({
-    chainId,
-    activeSwapsTableId: SWAPS_TABLE_ID,
-    mintsAndBurnsTableId: MINTS_BURNS_TABLE_ID,
-    bigQuery: bigQuery,
-    geckoKey: GECKO_KEY,
-  });
-
-  return res.json(result);
+  process()
+    .then(
+      (result) => {
+        res.json(result);
+      }
+    )
+    .catch(
+      (error) => {
+        console.log(`There is an error with message: ${(error as Error).message}`);
+      }
+    );
 });
 
 app.use(apiPrefix, router);
