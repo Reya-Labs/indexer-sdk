@@ -1,7 +1,7 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
 
-import { getPreviousEvents } from '../common';
+import { getPreviousEvents, setFromBlock } from '../common';
 import { processMintOrBurnEvent } from './processMintAndBurnEvent';
 
 export const sync = async (
@@ -13,6 +13,7 @@ export const sync = async (
   const promises = Object.values(previousMintEvents).map(async ({ events }) => {
     for (const event of events) {
       await processMintOrBurnEvent(bigQuery, event);
+      await setFromBlock('mint_burn', event.chainId, event.address, event.blockNumber);
     }
   });
 

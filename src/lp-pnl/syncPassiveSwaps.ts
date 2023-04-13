@@ -1,7 +1,7 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
 
-import { applyProcessingWindow, getPreviousEvents } from '../common';
+import { applyProcessingWindow, getPreviousEvents, setFromBlock } from '../common';
 import { LP_PROCESSING_WINDOW } from '../common';
 import { processPassiveSwapEvents } from './processPassiveSwapEvents';
 
@@ -15,14 +15,12 @@ export const syncPassiveSwaps = async (
     const chainId = events[0].chainId;
     const minBlockInterval = LP_PROCESSING_WINDOW[chainId];
     const eventsWithInterval = applyProcessingWindow(events, minBlockInterval);
-
-    for (let i = 0; i < eventsWithInterval.length; i++) {
-      const event = eventsWithInterval[i];
-
+    for (const event of eventsWithInterval) {
       await processPassiveSwapEvents({
         bigQuery,
         event,
       });
+      await setFromBlock('passive_swaps_lp', event.chainId, event.address, event.blockNumber);
     }
   });
 
