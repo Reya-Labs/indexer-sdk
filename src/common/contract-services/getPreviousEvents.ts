@@ -11,6 +11,31 @@ export type VammEvents = {
   };
 };
 
+const applyProcessingWindow = (events: ExtendedEvent[], blockWindow: number): ExtendedEvent[] =>  { 
+
+    if (events.length===0) { 
+      return [];
+    }
+    
+    let filteredEvents: ExtendedEvent[] = [];
+    let latestBlock = 0; 
+  
+    for (let i=0; i < events.length; i++) { 
+
+      const currentEvent = events[i];
+      const blocksSinceLatestEvent = currentEvent.blockNumber - latestBlock;
+
+      if (blocksSinceLatestEvent >= blockWindow) {
+        filteredEvents.push(currentEvent);
+      }
+
+    }
+
+  return filteredEvents;
+
+}
+
+
 const getEventFilter = (vammContract: ethers.Contract, eventType: string): ethers.EventFilter => {
   switch (eventType) {
     case 'mint': {

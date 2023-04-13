@@ -3,7 +3,7 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 
 import { getPreviousEvents } from '../common';
 import { processPassiveSwapEvents } from './processPassiveSwapEvents';
-import { LP_PROCESSING_WINDOW, sleep } from '../common';
+import { LP_PROCESSING_WINDOW } from '../common';
 
 export const syncPassiveSwaps = async (
   tableId: string,
@@ -15,8 +15,12 @@ export const syncPassiveSwaps = async (
 
   const promises = Object.values(previousSwapEvents).map(async ({ events }) => {
 
-    for (let i = 0; i < events.length; i++) {
-      const event = events[i];
+    const chainId = events[0].chainId;
+    const minBlockInterval = LP_PROCESSING_WINDOW[chainId];
+    const eventsWithInterval = applyProcessingWindow(events, minBlockInterval);
+
+    for (let i = 0; i < eventsWithInterval.length; i++) {
+      const event = eventsWithInterval[i];
 
       await processPassiveSwapEvents({
         bigQuery,
