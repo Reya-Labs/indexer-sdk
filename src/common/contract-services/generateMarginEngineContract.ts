@@ -18,6 +18,7 @@ export const generateMarginEngineContract = (
             uint256 accumulatedFees
         )
         `,
+    `function rateOracle() external view returns (address)`,
   ];
 
   const contract = new ethers.Contract(address, abi, provider);

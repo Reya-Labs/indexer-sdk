@@ -1,12 +1,13 @@
 import { BigNumber, Event } from 'ethers';
 
-import { parseSwapEvent } from '../../../src/common/swaps/parseSwapEvent';
+import { parseSwapEvent, SwapEventInfo } from '../../../src/common/swaps/parseSwapEvent';
 import { mockedAMM } from './utils';
 
 describe('parse swap event', () => {
   it('parse swap event', () => {
     const event = {
       blockHash: 'blockHash',
+      blockNumber: 100,
       transactionHash: 'transactionHash',
       logIndex: 1,
       args: {
@@ -21,21 +22,24 @@ describe('parse swap event', () => {
 
     const eventInfo = parseSwapEvent(1, mockedAMM, event);
 
-    expect(eventInfo).toEqual({
+    const expectedEventInfo: SwapEventInfo = {
       eventId: 'blockhash_transactionhash_1',
       chainId: 1,
       vammAddress: 'amm-test',
       ownerAddress: '0x0000',
       tickLower: -1200,
       tickUpper: 1200,
+      eventBlockNumber: 100,
 
-      notionalLocked: 10,
-      fixedRateLocked: 0.05,
+      variableTokenDelta: 10,
+      fixedTokenDeltaUnbalanced: -50,
       feePaidToLps: 1,
 
       rateOracle: 'rate-oracle',
       underlyingToken: 'token',
       marginEngineAddress: 'margin-engine',
-    });
+    };
+
+    expect(eventInfo).toEqual(expectedEventInfo);
   });
 });

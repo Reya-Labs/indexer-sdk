@@ -1,7 +1,6 @@
 import { getTimeInYearsBetweenTimestamps } from '../utils';
-import { getFixedRateLocked } from './getFixedRateLocked';
 
-type GetFixedRateLockedFromBalancesArgs = {
+type getFixedTokenDeltaUnbalancedArgs = {
   variableTokenDelta: number;
   fixedTokenDelta: number;
   startTimestamp: number;
@@ -10,14 +9,14 @@ type GetFixedRateLockedFromBalancesArgs = {
   variableFactorStartToCurrent: number;
 };
 
-export const getFixedRateLockedFromBalances = ({
+export const getFixedTokenDeltaUnbalanced = ({
   variableTokenDelta,
   fixedTokenDelta,
   startTimestamp,
   currentTimestamp,
   maturityTimestamp,
   variableFactorStartToCurrent,
-}: GetFixedRateLockedFromBalancesArgs): number => {
+}: getFixedTokenDeltaUnbalancedArgs): number => {
   const fixedFactorStartToMaturity =
     getTimeInYearsBetweenTimestamps(startTimestamp, maturityTimestamp) * 0.01;
 
@@ -29,7 +28,5 @@ export const getFixedRateLockedFromBalances = ({
       variableTokenDelta * variableFactorStartToCurrent) /
     fixedFactorCurrentToMaturity;
 
-  const fixedRateLocked = getFixedRateLocked(variableTokenDelta, fixedTokenDeltaUnbalanced);
-
-  return fixedRateLocked;
+  return fixedTokenDeltaUnbalanced;
 };

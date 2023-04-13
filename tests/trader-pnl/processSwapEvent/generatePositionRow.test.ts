@@ -7,31 +7,32 @@ import { SwapEventInfo } from '../../../src/common/swaps/parseSwapEvent';
 import { mockedAMM } from './utils';
 
 jest.useFakeTimers().setSystemTime(1640995200000); // 01.01.2022
-jest.mock('../../../src/common/services/getVariableFactor.ts', () => {
+jest.mock('../../../src/common/services/getLiquidityIndex.ts', () => {
   return {
-    getVariableFactor: jest.fn(() => {
-      return 0.03;
+    getLiquidityIndex: jest.fn(() => {
+      return 1.5;
     }),
   };
 });
 
 describe('generate position row', () => {
-  const eventInfo = {
+  const eventInfo: SwapEventInfo = {
     eventId: 'blockhash_transactionhash_1',
     chainId: 1,
     vammAddress: 'amm-test',
     ownerAddress: '0x0000',
     tickLower: -1200,
     tickUpper: 1200,
+    eventBlockNumber: 100,
 
-    notionalLocked: 10,
-    fixedRateLocked: 0.05,
+    variableTokenDelta: 10,
+    fixedTokenDeltaUnbalanced: 0.05,
     feePaidToLps: 1,
 
     rateOracle: 'rate-oracle',
     underlyingToken: 'token',
     marginEngineAddress: 'margin-engine',
-  } as unknown as SwapEventInfo;
+  };
 
   it('non-existing position', async () => {
     const positionRow = await generatePositionRow(mockedAMM, eventInfo, 1609459200, null);
@@ -82,6 +83,9 @@ describe('generate position row', () => {
       rateOracle: 'rate-oracle-immutable',
       underlyingToken: 'token-immutable',
       chainId: 1,
+      cashflowLiFactor: 0,
+      cashflowTimeFactor: 0,
+      cashflowFreeTerm: 0,
     };
 
     const positionRow = await generatePositionRow(

@@ -1,8 +1,6 @@
 import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
 
-import { getFixedRateLocked } from '..';
-
 export type SwapEventInfo = {
   // todo: we should store the event timestamp in this object
   eventId: string;
@@ -14,8 +12,8 @@ export type SwapEventInfo = {
   tickLower: number;
   tickUpper: number;
 
-  notionalLocked: number;
-  fixedRateLocked: number;
+  variableTokenDelta: number;
+  fixedTokenDeltaUnbalanced: number;
   feePaidToLps: number;
 
   rateOracle: string;
@@ -53,8 +51,8 @@ export const parseSwapEvent = (chainId: number, amm: AMM, event: ethers.Event): 
     ownerAddress: ownerAddress.toLowerCase(),
     tickLower,
     tickUpper,
-    notionalLocked: variableTokenDelta,
-    fixedRateLocked: getFixedRateLocked(variableTokenDelta, fixedTokenDeltaUnbalanced),
+    variableTokenDelta,
+    fixedTokenDeltaUnbalanced,
     feePaidToLps: cumulativeFeeIncurred,
     rateOracle: amm.rateOracle.id,
     underlyingToken: amm.underlyingToken.id,

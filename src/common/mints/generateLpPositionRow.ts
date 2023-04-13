@@ -33,5 +33,8 @@ export const generateLpPositionRow = (
     rateOracle: amm.rateOracle.id,
     underlyingToken: amm.underlyingToken.id,
     chainId: eventInfo.chainId,
+    cashflowLiFactor: 0,
+    cashflowTimeFactor: 0,
+    cashflowFreeTerm: 0,
   };
 };

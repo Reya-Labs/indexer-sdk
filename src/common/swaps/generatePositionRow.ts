@@ -1,7 +1,13 @@
 import { AMM } from '@voltz-protocol/v1-sdk';
 
 import { BigQueryPositionRow } from '../../big-query-support';
-import { getCashflowInfo, getTimestampInSeconds, getVariableFactor } from '..';
+import {
+  getCashflowInfo,
+  getFixedRateLocked,
+  getLiquidityIndex,
+  getTimestampInSeconds,
+  SECONDS_IN_YEAR,
+} from '..';
 import { SwapEventInfo } from './parseSwapEvent';
 
 export const generatePositionRow = async (
@@ -12,68 +18,64 @@ export const generatePositionRow = async (
 ): Promise<BigQueryPositionRow> => {
   const rowLastUpdatedTimestamp = getTimestampInSeconds();
 
-  if (existingPosition) {
-    const variableFactor = await getVariableFactor(
-      amm.provider,
-      amm.rateOracle.id,
-      existingPosition.lastUpdatedTimestamp,
-      eventTimestamp,
-      eventInfo.eventBlockNumber,
-    );
+  const liquidityIndexAtEvent = await getLiquidityIndex(
+    eventInfo.chainId,
+    amm.provider,
+    amm.marginEngineAddress,
+    eventInfo.eventBlockNumber,
+  );
+  const unbalancedFixedTokenDelta = eventInfo.fixedTokenDeltaUnbalanced;
 
-    const { netNotionalLocked, netFixedRateLocked, newCashflow, netTimestamp } = getCashflowInfo(
-      {
-        notional: existingPosition.netNotionalLocked,
-        fixedRate: existingPosition.netFixedRateLocked,
-        timestamp: existingPosition.lastUpdatedTimestamp,
-      },
-      {
-        notional: eventInfo.notionalLocked,
-        fixedRate: eventInfo.fixedRateLocked,
-        timestamp: eventTimestamp,
-      },
-      Math.floor(amm.termEndTimestampInMS / 1000),
-      variableFactor,
-    );
+  const fixedRateLocked = getFixedRateLocked(
+    eventInfo.variableTokenDelta,
+    eventInfo.fixedTokenDeltaUnbalanced,
+  );
 
-    const realizedPnLFromSwaps = existingPosition.realizedPnLFromSwaps + newCashflow;
+  const incomingCashflowLiFactor = eventInfo.variableTokenDelta / liquidityIndexAtEvent;
+  const incomingCashflowTimeFactor = unbalancedFixedTokenDelta * 0.01;
+  const incomingCashflowFreeTerm =
+    -eventInfo.variableTokenDelta -
+    (unbalancedFixedTokenDelta * 0.01 * eventTimestamp) / SECONDS_IN_YEAR;
 
-    const realizedPnLFromFeesPaid =
-      eventInfo.feePaidToLps + existingPosition.realizedPnLFromFeesPaid;
-
-    return {
-      ...existingPosition,
-      realizedPnLFromSwaps,
-      realizedPnLFromFeesPaid,
-      netNotionalLocked,
-      netFixedRateLocked,
-      lastUpdatedTimestamp: netTimestamp,
-      rowLastUpdatedTimestamp,
-    };
-  }
+  const { netNotionalLocked, netFixedRateLocked } = getCashflowInfo(
+    {
+      notional: existingPosition?.netNotionalLocked || 0,
+      fixedRate: existingPosition?.netFixedRateLocked || 0,
+    },
+    {
+      notional: eventInfo.variableTokenDelta,
+      fixedRate: fixedRateLocked,
+    },
+  );
 
   // todo: add empty entries
   return {
-    marginEngineAddress: amm.marginEngineAddress.toLowerCase(),
-    vammAddress: eventInfo.vammAddress,
-    ownerAddress: eventInfo.ownerAddress,
-    tickLower: eventInfo.tickLower,
-    tickUpper: eventInfo.tickUpper,
-    realizedPnLFromSwaps: 0,
-    realizedPnLFromFeesPaid: eventInfo.feePaidToLps,
-    netNotionalLocked: eventInfo.notionalLocked,
-    netFixedRateLocked: eventInfo.fixedRateLocked,
-    lastUpdatedTimestamp: eventTimestamp,
-    notionalLiquidityProvided: 0,
-    realizedPnLFromFeesCollected: 0,
-    netMarginDeposited: 0,
-    rateOracleIndex: amm.rateOracle.protocolId,
-    rowLastUpdatedTimestamp: rowLastUpdatedTimestamp,
-    fixedTokenBalance: 0,
-    variableTokenBalance: 0,
-    positionInitializationTimestamp: eventTimestamp,
-    rateOracle: amm.rateOracle.id,
-    underlyingToken: amm.underlyingToken.id,
     chainId: eventInfo.chainId,
+    marginEngineAddress:
+      existingPosition?.marginEngineAddress || amm.marginEngineAddress.toLowerCase(),
+    vammAddress: existingPosition?.vammAddress || eventInfo.vammAddress,
+    ownerAddress: existingPosition?.ownerAddress || eventInfo.ownerAddress,
+    tickLower: existingPosition?.tickLower || eventInfo.tickLower,
+    tickUpper: existingPosition?.tickUpper || eventInfo.tickUpper,
+    realizedPnLFromSwaps: 0, // todo: deprecate
+    realizedPnLFromFeesPaid:
+      (existingPosition?.realizedPnLFromFeesPaid || 0) - eventInfo.feePaidToLps,
+    netNotionalLocked,
+    netFixedRateLocked,
+    lastUpdatedTimestamp: eventTimestamp,
+    notionalLiquidityProvided: existingPosition?.notionalLiquidityProvided || 0, // todo: track
+    realizedPnLFromFeesCollected: existingPosition?.realizedPnLFromFeesCollected || 0, // todo: track
+    netMarginDeposited: existingPosition?.netMarginDeposited || 0, // todo: track
+    rateOracleIndex: existingPosition?.rateOracleIndex || amm.rateOracle.protocolId,
+    rowLastUpdatedTimestamp: rowLastUpdatedTimestamp,
+    fixedTokenBalance: existingPosition?.fixedTokenBalance || 0, // todo: track
+    variableTokenBalance: existingPosition?.variableTokenBalance || 0, // todo: track
+    positionInitializationTimestamp:
+      existingPosition?.positionInitializationTimestamp || eventTimestamp,
+    rateOracle: existingPosition?.rateOracle || amm.rateOracle.id,
+    underlyingToken: existingPosition?.underlyingToken || amm.underlyingToken.name,
+    cashflowLiFactor: (existingPosition?.cashflowLiFactor || 0) + incomingCashflowLiFactor,
+    cashflowTimeFactor: (existingPosition?.cashflowTimeFactor || 0) + incomingCashflowTimeFactor,
+    cashflowFreeTerm: (existingPosition?.cashflowFreeTerm || 0) + incomingCashflowFreeTerm,
   };
 };

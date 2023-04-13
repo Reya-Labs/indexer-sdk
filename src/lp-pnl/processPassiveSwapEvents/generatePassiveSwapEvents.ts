@@ -32,7 +32,7 @@ export const generatePassiveSwapEvents = async ({
   // Get variable factor before start and event timestamp (for excess balance)
   const variableFactorStartToCurrent = await getVariableFactor(
     amm.provider,
-    amm.rateOracle.id,
+    amm.marginEngineAddress,
     startTimestamp,
     eventTimestamp,
     rootEventInfo.eventBlockNumber,
