@@ -1,5 +1,5 @@
-import { ethers } from 'ethers';
 import { AMM } from '@voltz-protocol/v1-sdk';
+import { ethers } from 'ethers';
 
 import { ExtendedEvent } from '../types';
 
@@ -61,6 +61,6 @@ export const parseSwapEvent = (event: ExtendedEvent): SwapEventInfo => {
     rateOracle: event.amm.rateOracle.protocol,
     underlyingToken: event.amm.underlyingToken.name,
     marginEngineAddress: event.amm.marginEngineAddress,
-    amm
+    amm,
   };
 };

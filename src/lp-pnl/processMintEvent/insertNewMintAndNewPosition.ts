@@ -55,6 +55,6 @@ export const insertNewMintAndNewPosition = async (
   await bigQuery.query(options);
 
   console.log(
-    `Inserted a new LP position (${positionRow.ownerAddress},[${positionRow.tickLower},${positionRow.tickUpper}]) in AMM ${amm.id}, chain ID ${eventInfo.chainId}`,
+    `Inserted a new LP position (${positionRow.ownerAddress},[${positionRow.tickLower},${positionRow.tickUpper}]) in AMM ${eventInfo.amm.id}, chain ID ${eventInfo.chainId}`,
   );
 };
