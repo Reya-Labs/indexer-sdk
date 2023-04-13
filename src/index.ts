@@ -14,16 +14,14 @@ async function authenticateImplicitWithAdc() {
   await storage.getBuckets();
 }
 
-const chainIds = [1];
-// const chainIds = [1, 42161];
+// const chainIds = [1];
+const chainIds = [1, 42161];
 
 const main = async () => {
   await authenticateImplicitWithAdc();
 
   let promises: Promise<void>[] = [];
-  // promises = promises.concat(chainIds.map((chainId) => runTraders(chainId)));
-  // promises = promises.concat(chainIds.map((chainId) => runLPs(chainId)));
-  promises = promises.concat(chainIds.map((chainId) => runMintsAndBurns(chainId)));
+  promises = promises.concat(runMintsAndBurns(chainIds));
   console.log(`Number of parallel calls ${promises.length}`);
 
   await Promise.allSettled(promises);
