@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+import { AMM } from '@voltz-protocol/v1-sdk';
 
 import { ExtendedEvent } from '../types';
 
@@ -19,6 +20,7 @@ export type SwapEventInfo = {
   rateOracle: string;
   underlyingToken: string;
   marginEngineAddress: string;
+  amm: AMM;
 };
 
 export const parseSwapEvent = (event: ExtendedEvent): SwapEventInfo => {
@@ -43,6 +45,8 @@ export const parseSwapEvent = (event: ExtendedEvent): SwapEventInfo => {
     ethers.utils.formatUnits(event.args?.cumulativeFeeIncurred as ethers.BigNumber, tokenDecimals),
   );
 
+  const amm = event.amm;
+
   return {
     eventId: eventId.toLowerCase(),
     eventBlockNumber: event.blockNumber,
@@ -57,5 +61,6 @@ export const parseSwapEvent = (event: ExtendedEvent): SwapEventInfo => {
     rateOracle: event.amm.rateOracle.protocol,
     underlyingToken: event.amm.underlyingToken.name,
     marginEngineAddress: event.amm.marginEngineAddress,
+    amm
   };
 };
