@@ -5,7 +5,6 @@ import { getPreviousEvents } from '../common';
 import { processMintOrBurnEvent } from './processMintAndBurnEvent';
 
 export const sync = async (
-  chainId: number,
   bigQuery: BigQuery,
   amms: AMM[],
   fromBlock: number,
@@ -17,9 +16,9 @@ export const sync = async (
     for (const event of events) {
 
       if (event.type === 'mint') { 
-        await processMintOrBurnEvent(chainId, bigQuery, event, false);
+        await processMintOrBurnEvent(bigQuery, event, false);
       } else {
-        processMintOrBurnEvent(chainId, bigQuery, event, false);
+        processMintOrBurnEvent(bigQuery, event, false);
       }
        
     }

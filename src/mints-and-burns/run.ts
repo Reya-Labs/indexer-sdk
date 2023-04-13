@@ -41,7 +41,7 @@ export const run = async (chainIds: number[]) => {
 
     try {
       console.log('Processing mints...');
-      await sync(chainId, bigQuery, amms, previousBlockNumber, currentBlockNumber);
+      await sync(bigQuery, amms, previousBlockNumber, currentBlockNumber);
       previousBlockNumber = currentBlockNumber + 1;
     } catch (error) {
       console.log(`Loop has failed with message: ${(error as Error).message}.`);

@@ -36,6 +36,9 @@ export const getPreviousEvents = async (
   const totalEventsByVammAddress: VammEvents = {};
 
   const promises = amms.map(async (amm): Promise<[AMM, ExtendedEvent[]]> => {
+    
+    const chainId = (await amm.provider.getNetwork()).chainId;
+    
     const vammContract = generateVAMMContract(amm.id, amm.provider);
 
     const allEvents = [];
@@ -53,6 +56,7 @@ export const getPreviousEvents = async (
           ...event,
           type: eventType,
           amm: amm,
+          chainId: chainId
         };
         return extendedEvent;
       });
