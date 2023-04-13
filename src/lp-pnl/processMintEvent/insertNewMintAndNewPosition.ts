@@ -40,7 +40,10 @@ export const insertNewMintAndNewPosition = async (
     \'${secondsToBqDate(positionRow.positionInitializationTimestamp)}\',
     \'${positionRow.rateOracle}\',
     \'${positionRow.underlyingToken}\',
-    ${positionRow.chainId}
+    ${positionRow.chainId},
+    ${positionRow.cashflowLiFactor},
+    ${positionRow.cashflowTimeFactor},
+    ${positionRow.cashflowFreeTerm}
   `;
 
   // build and fire sql query

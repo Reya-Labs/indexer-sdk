@@ -26,8 +26,8 @@ export const insertNewSwapAndNewPosition = async (
     \"${swapRow.ownerAddress}\",
     ${swapRow.tickLower}, 
     ${swapRow.tickUpper}, 
-    ${swapRow.notionalLocked}, 
-    ${swapRow.fixedRateLocked},
+    ${swapRow.variableTokenDelta}, 
+    ${swapRow.fixedTokenDeltaUnbalanced},
     ${swapRow.feePaidToLps}, 
     \'${secondsToBqDate(swapRow.eventTimestamp)}\', 
     \'${secondsToBqDate(swapRow.rowLastUpdatedTimestamp)}\',
@@ -63,7 +63,10 @@ export const insertNewSwapAndNewPosition = async (
     \'${secondsToBqDate(positionRow.positionInitializationTimestamp)}\',
     \'${positionRow.rateOracle}\',
     \'${positionRow.underlyingToken}\',
-    ${positionRow.chainId}
+    ${positionRow.chainId},
+    ${positionRow.cashflowLiFactor},
+    ${positionRow.cashflowTimeFactor},
+    ${positionRow.cashflowFreeTerm}
   `;
 
   // build and fire sql query

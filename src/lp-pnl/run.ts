@@ -18,6 +18,15 @@ export const run = async (chainId: number) => {
     projectId: PROJECT_ID,
   });
 
+  // Clear testing db -- todo: to be removed for prod
+  const options = {
+    query: `DELETE FROM \`risk-monitoring-361911.voltz_v1_positions.Voltz V1 Positions Staging LP\` WHERE chainId=${chainId}`,
+    timeoutMs: 100000,
+    useLegacySql: false,
+  };
+
+  await bigQuery.query(options);
+
   // fetch AMMs
   const amms = await getAmms(chainId, APR_2023_TIMESTAMP);
 
@@ -35,7 +44,7 @@ export const run = async (chainId: number) => {
   while (true) {
     const currentBlockNumber = await provider.getBlockNumber();
 
-    if (previousBlockNumber === currentBlockNumber) {
+    if (previousBlockNumber >= currentBlockNumber) {
       console.log('Block has not changed. Sleeping...');
       await sleep(60 * 1000); // sleep 60s
       continue;

@@ -15,6 +15,14 @@ export const syncMints = async (
 
   const promises = Object.values(previousMintEvents).map(async ({ amm, events }) => {
     for (const swapEvent of events) {
+      if (
+        !(
+          (swapEvent.args?.owner as string).toLowerCase() ===
+          '0xb527e950fc7c4f581160768f48b3bfa66a7de1f0'.toLowerCase()
+        )
+      ) {
+        continue;
+      }
       await processMintEvent(chainId, bigQuery, amm, swapEvent);
     }
   });

@@ -29,6 +29,9 @@ export type BigQueryPositionRow = {
   rateOracle: string; // immutable
   underlyingToken: string; // immutable
   chainId: number; // immutable
+  cashflowLiFactor: number;
+  cashflowTimeFactor: number;
+  cashflowFreeTerm: number;
 };
 
 export const pullExistingPositionRow = async (
@@ -81,5 +84,8 @@ export const pullExistingPositionRow = async (
     rateOracle: rows[0].rateOracle,
     underlyingToken: rows[0].underlyingToken,
     chainId: rows[0].chainId,
+    cashflowLiFactor: bqNumericToNumber(rows[0].cashflowLiFactor),
+    cashflowTimeFactor: bqNumericToNumber(rows[0].cashflowTimeFactor),
+    cashflowFreeTerm: bqNumericToNumber(rows[0].cashflowFreeTerm),
   };
 };

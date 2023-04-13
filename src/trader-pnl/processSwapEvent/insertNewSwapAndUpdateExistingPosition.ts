@@ -28,8 +28,8 @@ export const insertNewSwapAndUpdateExistingPosition = async (
     \"${swapRow.ownerAddress}\",
     ${swapRow.tickLower}, 
     ${swapRow.tickUpper}, 
-    ${swapRow.notionalLocked}, 
-    ${swapRow.fixedRateLocked},
+    ${swapRow.variableTokenDelta}, 
+    ${swapRow.fixedTokenDeltaUnbalanced},
     ${swapRow.feePaidToLps}, 
     \'${secondsToBqDate(swapRow.eventTimestamp)}\', 
     \'${secondsToBqDate(swapRow.rowLastUpdatedTimestamp)}\',
@@ -38,6 +38,13 @@ export const insertNewSwapAndUpdateExistingPosition = async (
     \'${swapRow.marginEngineAddress}\',
     ${swapRow.chainId}
   `;
+
+  console.log(
+    'positionRow to update:',
+    positionRow.cashflowLiFactor,
+    positionRow.cashflowTimeFactor,
+    positionRow.cashflowFreeTerm,
+  );
 
   const positionTableId = `${PROJECT_ID}.${DATASET_ID}.${POSITIONS_TABLE_ID}`;
 
@@ -57,7 +64,10 @@ export const insertNewSwapAndUpdateExistingPosition = async (
               netMarginDeposited=${positionRow.netMarginDeposited},
               rowLastUpdatedTimestamp=\'${secondsToBqDate(positionRow.rowLastUpdatedTimestamp)}\',
               fixedTokenBalance=${positionRow.fixedTokenBalance},
-              variableTokenBalance=${positionRow.variableTokenBalance}
+              variableTokenBalance=${positionRow.variableTokenBalance},
+              cashflowLiFactor=${positionRow.cashflowLiFactor},
+              cashflowTimeFactor=${positionRow.cashflowTimeFactor},
+              cashflowFreeTerm=${positionRow.cashflowFreeTerm}
               WHERE chainId=${positionRow.chainId} AND 
                     vammAddress=\"${positionRow.vammAddress}\" AND 
                     ownerAddress=\"${positionRow.ownerAddress}\" AND 
