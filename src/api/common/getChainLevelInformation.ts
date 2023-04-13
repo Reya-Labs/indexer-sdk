@@ -1,7 +1,6 @@
 import { BigQuery } from "@google-cloud/bigquery";
 import { pullRows } from "../../big-query-support/pullRows";
-
-
+import { dollarAggregate } from "./dollarAggregate";
 
 export type GetChainLevelInformationArgs = {
     chainId: number;
@@ -11,18 +10,21 @@ export type GetChainLevelInformationArgs = {
     geckoKey: string;
 }
 
+export type GetChainLevelInformationReturn = {
+    volume30Day: number | null,
+    totalLiquidity: number | null
+}
+
 /**
  Get chain level information
  */
- export async function getChainLevelInformation({
+ export const getChainLevelInformation = async ({
     chainId,
     activeSwapsTableId,
     mintsAndBurnsTableId,
     bigQuery,
     geckoKey
- }: GetChainLevelInformationArgs) {
-
-    // queries
+ }: GetChainLevelInformationArgs): Promise<GetChainLevelInformationReturn> => {
 
     const volumeQuery = `
         SELECT underlyingToken, sum(abs(notionalLocked)) as amount
