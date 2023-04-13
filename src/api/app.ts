@@ -5,10 +5,13 @@ import express from 'express';
 
 import { pullExistingPositionRow } from '../big-query-support';
 import {
+  GECKO_KEY,
   getLiquidityIndex,
   getTimeInYearsBetweenTimestamps,
+  MINTS_BURNS_TABLE_ID,
   PROJECT_ID,
   SECONDS_IN_YEAR,
+  SWAPS_TABLE_ID,
 } from '../common';
 import { getAmm, getBlockAtTimestamp } from './common';
 
@@ -116,22 +119,15 @@ router.get('/positions/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper
     });
 });
 
-// // Get Amm Level Information
-
-// router.get('/amms/:chainId/:vammAddress', async (req, res) => {
-//     const chainId = Number(req.params.chainId);
-//     const vammAddress = req.params.vammAddress;
-//     const result = await getPoolLevelInformation(chainId, vammAddress, ACTIVE_SWAPS_TABLE_ID, MINTS_BURNS_TABLE_ID, bigquery);
-//     return res.json(result);
-// });
 
 // // Get Chain Level Information
 
-// router.get('/chains/:chainId', async (req, res) => {
-//     const chainId = Number(req.params.chainId);
-//     const result = await getChainLevelInformation(chainId, ACTIVE_SWAPS_TABLE_ID, MINTS_BURNS_TABLE_ID, bigquery, GECKO_KEY);
-//     return res.json(result);
-// });
+router.get('/chains/:chainId', async (req, res) => {
+    const chainId = Number(req.params.chainId);
+    const result = await getChainLevelInformation(chainId, SWAPS_TABLE_ID, MINTS_BURNS_TABLE_ID, GECKO_KEY);
+    return res.json(result);
+});
+
 
 // Add api prefix to all routes
 app.use(apiPrefix, router);
