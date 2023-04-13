@@ -1,11 +1,12 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
+import { Redis } from 'ioredis';
 
 import { applyProcessingWindow, getPreviousEvents, setFromBlock } from '../common';
 import { LP_PROCESSING_WINDOW } from '../common';
 import { processPassiveSwapEvents } from './processPassiveSwapEvents';
 
-export const syncPassiveSwaps = async (bigQuery: BigQuery, amms: AMM[]): Promise<void> => {
+export const syncPassiveSwaps = async (bigQuery: BigQuery, amms: AMM[], redisClient?: Redis): Promise<void> => {
   const previousSwapEvents = await getPreviousEvents('passive_swaps_lp', amms, ['swap']);
 
   const promises = Object.values(previousSwapEvents).map(async ({ events }) => {
@@ -17,7 +18,11 @@ export const syncPassiveSwaps = async (bigQuery: BigQuery, amms: AMM[]): Promise
         bigQuery,
         event,
       });
-      await setFromBlock('passive_swaps_lp', event.chainId, event.address, event.blockNumber);
+
+      if (redisClient !== undefined) { 
+        await setFromBlock('passive_swaps_lp', event.chainId, event.address, event.blockNumber, redisClient);
+      }
+
     }
   });
 

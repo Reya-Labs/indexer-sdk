@@ -1,16 +1,18 @@
 import { Storage } from '@google-cloud/storage';
 
-import { PROJECT_ID } from './common';
+import { PROJECT_ID, REDISHOST, REDISPORT } from './common';
 import { run as runLPs } from './lp-pnl/run';
 import { run as runMintsAndBurns } from './mints-and-burns/run';
 import { run as runTraders } from './trader-pnl/run';
 
 import { Redis } from 'ioredis';
-
-
-
 const redis = new Redis(REDISPORT, REDISHOST);
-let isRedisConnected = false;
+let redisConnected = false;
+
+redis.on('connect', () => {
+  console.log('successfully connected to redis');
+  redisConnected = true;
+}); 
 
 
 async function authenticateImplicitWithAdc() {
@@ -28,9 +30,15 @@ const main = async () => {
 
   let promises: Promise<void>[] = [];
 
-  promises = promises.concat(runMintsAndBurns(chainIds));
-  promises = promises.concat(runTraders(chainIds));
-  promises = promises.concat(runLPs(chainIds));
+  if (redisConnected) { 
+    promises = promises.concat(runMintsAndBurns(chainIds, redis));
+    promises = promises.concat(runTraders(chainIds, redis));
+    promises = promises.concat(runLPs(chainIds, redis));
+  } else { 
+    promises = promises.concat(runMintsAndBurns(chainIds));
+    promises = promises.concat(runTraders(chainIds));
+    promises = promises.concat(runLPs(chainIds));
+  }
 
   console.log(`Number of parallel calls ${promises.length}`);
 

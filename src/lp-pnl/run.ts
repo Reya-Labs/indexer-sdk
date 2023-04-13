@@ -1,6 +1,7 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
 import * as dotenv from 'dotenv';
+import { Redis } from 'ioredis';
 
 import { APR_2023_TIMESTAMP, getAmms, PROJECT_ID } from '../common';
 import { syncMints } from './syncMints';
@@ -8,7 +9,7 @@ import { syncPassiveSwaps } from './syncPassiveSwaps';
 
 dotenv.config();
 
-export const run = async (chainIds: number[]) => {
+export const run = async (chainIds: number[], redisClient?: Redis) => {
   const bigQuery = new BigQuery({
     projectId: PROJECT_ID,
   });
@@ -22,8 +23,8 @@ export const run = async (chainIds: number[]) => {
 
   while (true) {
     try {
-      await syncMints(bigQuery, amms);
-      await syncPassiveSwaps(bigQuery, amms);
+      await syncMints(bigQuery, amms, redisClient);
+      await syncPassiveSwaps(bigQuery, amms, redisClient);
     } catch (error) {
       console.log(`Loop has failed with message: ${(error as Error).message}. It will retry...`);
     }

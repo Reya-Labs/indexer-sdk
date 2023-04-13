@@ -1,21 +1,27 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
+import { Redis } from 'ioredis';
 
 import { getPreviousEvents, setFromBlock } from '../common';
 import { processSwapEvent } from './processSwapEvent';
 
-export const sync = async (bigQuery: BigQuery, amms: AMM[]): Promise<void> => {
+export const syncActiveSwaps = async (bigQuery: BigQuery, amms: AMM[], redisClient?: Redis): Promise<void> => {
   const previousSwapEvents = await getPreviousEvents('active_swaps', amms, ['swap']);
 
   const promises = Object.values(previousSwapEvents).map(async ({ events }) => {
     for (const swapEvent of events) {
       await processSwapEvent(bigQuery, swapEvent);
-      await setFromBlock(
-        'active_swaps',
-        swapEvent.chainId,
-        swapEvent.address,
-        swapEvent.blockNumber,
-      );
+
+      if (redisClient !== undefined) {
+        await setFromBlock(
+          'active_swaps',
+          swapEvent.chainId,
+          swapEvent.address,
+          swapEvent.blockNumber,
+          redisClient
+        );
+      }
+      
     }
   });
 

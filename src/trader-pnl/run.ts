@@ -1,12 +1,13 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import * as dotenv from 'dotenv';
+import Redis from 'ioredis';
 
 import { APR_2023_TIMESTAMP, getAmms, PROJECT_ID } from '../common';
-import { sync } from './syncActiveSwaps';
+import { syncActiveSwaps } from './syncActiveSwaps';
 
 dotenv.config();
 
-export const run = async (chainIds: number[]) => {
+export const run = async (chainIds: number[], redisClient?: Redis) => {
   const bigQuery = new BigQuery({
     projectId: PROJECT_ID,
   });
@@ -20,7 +21,7 @@ export const run = async (chainIds: number[]) => {
 
   while (true) {
     try {
-      await sync(bigQuery, amms);
+      await syncActiveSwaps(bigQuery, amms, redisClient);
     } catch (error) {
       console.log(`Loop has failed with message: ${(error as Error).message}.`);
     }
