@@ -11,7 +11,7 @@ export type VammEvents = {
   };
 };
 
-const applyProcessingWindow = (events: ExtendedEvent[], blockWindow: number): ExtendedEvent[] =>  { 
+export const applyProcessingWindow = (events: ExtendedEvent[], blockWindow: number): ExtendedEvent[] =>  { 
 
     if (events.length===0) { 
       return [];

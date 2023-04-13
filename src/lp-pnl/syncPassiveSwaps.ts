@@ -1,7 +1,7 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
 
-import { getPreviousEvents } from '../common';
+import { applyProcessingWindow, getPreviousEvents } from '../common';
 import { processPassiveSwapEvents } from './processPassiveSwapEvents';
 import { LP_PROCESSING_WINDOW } from '../common';
 
