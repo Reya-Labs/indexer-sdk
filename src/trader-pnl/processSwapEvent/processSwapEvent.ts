@@ -11,7 +11,7 @@ export const processSwapEvent = async (
   bigQuery: BigQuery,
   event: ExtendedEvent,
 ): Promise<void> => {
-  const eventInfo = parseSwapEvent(chainId, event.amm, event);
+  const eventInfo = parseSwapEvent(event);
 
   const swapRow = await pullExistingSwapRow(bigQuery, eventInfo.eventId);
 
