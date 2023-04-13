@@ -1,5 +1,6 @@
 import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
+import { getFromBlock } from '../services';
 
 import { ExtendedEvent } from '../types';
 import { generateVAMMContract } from './generateVAMMContract';
@@ -28,6 +29,7 @@ const getEventFilter = (vammContract: ethers.Contract, eventType: string): ether
 };
 
 export const getPreviousEvents = async (
+  tableId: string,
   amms: AMM[],
   eventTypes: ('mint' | 'burn' | 'swap')[]
 ): Promise<VammEvents> => {
@@ -38,7 +40,7 @@ export const getPreviousEvents = async (
     const toBlock = await amm.provider.getBlockNumber();
     const chainId = (await amm.provider.getNetwork()).chainId;
 
-    const fromBlock = await getFromBlock(chainId, amm.id);
+    const fromBlock = await getFromBlock(tableId, chainId, amm.id);
     
     const vammContract = generateVAMMContract(amm.id, amm.provider);
 

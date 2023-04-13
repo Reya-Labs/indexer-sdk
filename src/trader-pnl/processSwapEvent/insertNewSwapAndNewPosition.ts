@@ -2,7 +2,7 @@ import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
 
 import { secondsToBqDate } from '../../big-query-support/utils';
-import { DATASET_ID, POSITIONS_TABLE_ID, PROJECT_ID, SWAPS_TABLE_ID } from '../../common';
+import { POSITIONS_TABLE_ID, SWAPS_TABLE_ID } from '../../common';
 import { generatePositionRow } from '../../common/swaps/generatePositionRow';
 import { SwapEventInfo } from '../../common/swaps/parseSwapEvent';
 import { generateSwapRow } from './generateSwapRow';
@@ -17,8 +17,6 @@ export const insertNewSwapAndNewPosition = async (
 
   // generate swap row
   const swapRow = generateSwapRow(eventInfo, eventTimestamp);
-
-  const swapTableId = `${PROJECT_ID}.${DATASET_ID}.${SWAPS_TABLE_ID}`;
 
   const rawSwapRow = `
     \"${swapRow.eventId}\",
@@ -39,8 +37,6 @@ export const insertNewSwapAndNewPosition = async (
 
   // generate position row
   const positionRow = await generatePositionRow(amm, eventInfo, eventTimestamp, null);
-
-  const positionTableId = `${PROJECT_ID}.${DATASET_ID}.${POSITIONS_TABLE_ID}`;
 
   const rawPositionRow = `
     \"${positionRow.marginEngineAddress}\",
@@ -70,8 +66,8 @@ export const insertNewSwapAndNewPosition = async (
   const sqlTransactionQuery = `
     BEGIN 
       BEGIN TRANSACTION;
-        INSERT INTO \`${swapTableId}\` VALUES (${rawSwapRow});
-        INSERT INTO \`${positionTableId}\` VALUES(${rawPositionRow});          
+        INSERT INTO \`${SWAPS_TABLE_ID}\` VALUES (${rawSwapRow});
+        INSERT INTO \`${POSITIONS_TABLE_ID}\` VALUES(${rawPositionRow});          
       COMMIT TRANSACTION;
     END;
   `;

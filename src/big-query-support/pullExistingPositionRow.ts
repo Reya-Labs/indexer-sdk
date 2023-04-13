@@ -4,7 +4,7 @@
 
 import { BigQuery } from '@google-cloud/bigquery';
 
-import { DATASET_ID, POSITIONS_TABLE_ID, PROJECT_ID } from '../common';
+import { POSITIONS_TABLE_ID } from '../common';
 import { bqNumericToNumber, bqTimestampToUnixSeconds } from './utils';
 
 export type BigQueryPositionRow = {
@@ -38,9 +38,8 @@ export const pullExistingPositionRow = async (
   tickLower: number,
   tickUpper: number,
 ): Promise<BigQueryPositionRow | null> => {
-  const positionTableId = `${PROJECT_ID}.${DATASET_ID}.${POSITIONS_TABLE_ID}`;
   const sqlQuery = `
-    SELECT * FROM \`${positionTableId}\` 
+    SELECT * FROM \`${POSITIONS_TABLE_ID}\` 
       WHERE vammAddress=\"${vammAddress}\" AND 
             ownerAddress=\"${recipient}\" AND 
             tickLower=${tickLower} AND 

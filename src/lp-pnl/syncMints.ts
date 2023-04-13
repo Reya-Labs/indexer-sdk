@@ -6,11 +6,9 @@ import { processMintEvent } from './processMintEvent';
 
 export const syncMints = async (
   bigQuery: BigQuery,
-  amms: AMM[],
-  fromBlock: number,
-  toBlock: number,
+  amms: AMM[]
 ): Promise<void> => {
-  const previousMintEvents = await getPreviousEvents(amms, ['mint'], fromBlock, toBlock);
+  const previousMintEvents = await getPreviousEvents(amms, ['mint']);
 
   const promises = Object.values(previousMintEvents).map(async ({ events }) => {
     for (const swapEvent of events) {

@@ -7,7 +7,6 @@ redis.on('error', err => console.error('ERR:REDIS:', err));
 redis.on('connect',() => {console.log('connected to redis successfully!');});
 
 
-
 export const getFromBlock = async (
     tableId: string,
     chainId: number,

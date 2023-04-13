@@ -1,14 +1,13 @@
-import { DATASET_ID, POSITIONS_TABLE_ID, PROJECT_ID } from '../common';
+import { POSITIONS_TABLE_ID } from '../common';
 import { BigQueryPositionRow } from '.';
 import { secondsToBqDate } from './utils';
 
 export const generateLpPositionUpdatesQuery = (lpPositionRows: BigQueryPositionRow[]): string => {
-  const positionTableId = `${PROJECT_ID}.${DATASET_ID}.${POSITIONS_TABLE_ID}`;
 
   const query = lpPositionRows
     .map((positionRow) => {
       return `
-      UPDATE \`${positionTableId}\`
+      UPDATE \`${POSITIONS_TABLE_ID}\`
         SET marginEngineAddress=\"${positionRow.marginEngineAddress}\",
             realizedPnLFromSwaps=${positionRow.realizedPnLFromSwaps},
             realizedPnLFromFeesPaid=${positionRow.realizedPnLFromFeesPaid},

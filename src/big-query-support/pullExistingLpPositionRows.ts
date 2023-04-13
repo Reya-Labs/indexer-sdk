@@ -4,7 +4,7 @@
 
 import { BigQuery } from '@google-cloud/bigquery';
 
-import { DATASET_ID, POSITIONS_TABLE_ID, PROJECT_ID } from '../common';
+import { POSITIONS_TABLE_ID } from '../common';
 import { BigQueryPositionRow } from './pullExistingPositionRow';
 import { bqNumericToNumber, bqTimestampToUnixSeconds, secondsToBqDate } from './utils';
 
@@ -14,11 +14,10 @@ export const pullExistingLpPositionRows = async (
   currentTimestamp: number,
 ): Promise<BigQueryPositionRow[]> => {
   const currentTimestampBQ = secondsToBqDate(currentTimestamp);
-  const positionTableId = `${PROJECT_ID}.${DATASET_ID}.${POSITIONS_TABLE_ID}`;
 
   // note, since we're doing time based indexing of passive swaps, can't rely on extra details from the swap event
   const sqlQuery = `
-    SELECT * FROM \`${positionTableId}\` 
+    SELECT * FROM \`${POSITIONS_TABLE_ID}\` 
       WHERE 
         notionalLiquidityProvided>0 AND 
         positionInitializationTimestamp<\'${currentTimestampBQ}\' AND

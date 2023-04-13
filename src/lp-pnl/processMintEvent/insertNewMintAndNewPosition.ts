@@ -16,7 +16,6 @@ export const insertNewMintAndNewPosition = async (
   // generate position row
   const positionRow: BigQueryPositionRow = generateLpPositionRow(eventInfo, eventTimestamp);
 
-  const positionTableId = `${PROJECT_ID}.${DATASET_ID}.${POSITIONS_TABLE_ID}`;
   const rawPositionRow = `
     \"${positionRow.marginEngineAddress}\",
     \"${positionRow.vammAddress}\",
@@ -45,7 +44,7 @@ export const insertNewMintAndNewPosition = async (
   const sqlTransactionQuery = `
     BEGIN 
       BEGIN TRANSACTION;
-        INSERT INTO \`${positionTableId}\` VALUES(${rawPositionRow});          
+        INSERT INTO \`${POSITIONS_TABLE_ID}\` VALUES(${rawPositionRow});          
       COMMIT TRANSACTION;
     END;
   `;

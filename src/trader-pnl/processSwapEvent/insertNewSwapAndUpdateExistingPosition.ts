@@ -3,7 +3,7 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 
 import { BigQueryPositionRow } from '../../big-query-support';
 import { secondsToBqDate } from '../../big-query-support/utils';
-import { DATASET_ID, POSITIONS_TABLE_ID, PROJECT_ID, SWAPS_TABLE_ID } from '../../common';
+import { POSITIONS_TABLE_ID, SWAPS_TABLE_ID } from '../../common';
 import { generatePositionRow } from '../../common/swaps/generatePositionRow';
 import { SwapEventInfo } from '../../common/swaps/parseSwapEvent';
 import { generateSwapRow } from './generateSwapRow';
@@ -21,7 +21,6 @@ export const insertNewSwapAndUpdateExistingPosition = async (
 
   const positionRow = await generatePositionRow(amm, eventInfo, eventTimestamp, existingPosition);
 
-  const swapTableId = `${PROJECT_ID}.${DATASET_ID}.${SWAPS_TABLE_ID}`;
   const rawSwapRow = `
     \"${swapRow.eventId}\",
     \"${swapRow.vammAddress}\",
@@ -39,14 +38,12 @@ export const insertNewSwapAndUpdateExistingPosition = async (
     ${swapRow.chainId}
   `;
 
-  const positionTableId = `${PROJECT_ID}.${DATASET_ID}.${POSITIONS_TABLE_ID}`;
-
   const sqlTransactionQuery = `
     BEGIN 
       BEGIN TRANSACTION;
-        INSERT INTO \`${swapTableId}\` VALUES (${rawSwapRow});
+        INSERT INTO \`${SWAPS_TABLE_ID}\` VALUES (${rawSwapRow});
                 
-        UPDATE \`${positionTableId}\`
+        UPDATE \`${POSITIONS_TABLE_ID}\`
           SET realizedPnLFromSwaps=${positionRow.realizedPnLFromSwaps},
               realizedPnLFromFeesPaid=${positionRow.realizedPnLFromFeesPaid},
               netNotionalLocked=${positionRow.netNotionalLocked},

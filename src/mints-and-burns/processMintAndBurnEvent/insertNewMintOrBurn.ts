@@ -2,7 +2,7 @@ import { BigQuery } from '@google-cloud/bigquery';
 
 import { BigQueryMintOrBurnRow } from '../../big-query-support';
 import { secondsToBqDate } from '../../big-query-support/utils';
-import { DATASET_ID, MINTS_BURNS_TABLE_ID,PROJECT_ID } from '../../common';
+import { MINTS_BURNS_TABLE_ID } from '../../common';
 import { MintOrBurnEventInfo } from '../../common/mints-and-burns/parseMintOrBurnEvent';
 import { generateMintOrBurnRow } from './generateMintOrBurnRow';
 
@@ -13,8 +13,6 @@ export const insertNewMintOrBurn = async (
 ): Promise<void> => {
   console.log('Inserting a new mint or burn');
   const mintOrBurnRow: BigQueryMintOrBurnRow = generateMintOrBurnRow(eventInfo, eventTimestamp);
-
-  const mintOrBurnTableId = `${PROJECT_ID}.${DATASET_ID}.${MINTS_BURNS_TABLE_ID}`;
 
   const rawMintOrBurnRow = `
     \"${mintOrBurnRow.eventId}\",
@@ -35,7 +33,7 @@ export const insertNewMintOrBurn = async (
   const sqlTransactionQuery = `
     BEGIN 
       BEGIN TRANSACTION;
-        INSERT INTO \`${mintOrBurnTableId}\` VALUES (${rawMintOrBurnRow});   
+        INSERT INTO \`${MINTS_BURNS_TABLE_ID}\` VALUES (${rawMintOrBurnRow});   
       COMMIT TRANSACTION;
     END;
   `;
