@@ -2,7 +2,6 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
 
 export type SwapEventInfo = {
-  // todo: we should store the event timestamp in this object
   eventId: string;
   eventBlockNumber: number;
 
@@ -55,7 +54,7 @@ export const parseSwapEvent = (chainId: number, amm: AMM, event: ethers.Event): 
     fixedTokenDeltaUnbalanced,
     feePaidToLps: cumulativeFeeIncurred,
     rateOracle: amm.rateOracle.id,
-    underlyingToken: amm.underlyingToken.id,
+    underlyingToken: amm.underlyingToken.name,
     marginEngineAddress: amm.marginEngineAddress,
   };
 };

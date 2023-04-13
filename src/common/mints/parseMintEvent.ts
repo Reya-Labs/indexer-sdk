@@ -35,7 +35,7 @@ export const parseMintEvent = (chainId: number, amm: AMM, event: ethers.Event): 
     tickUpper,
     notionalLiquidityProvided,
     rateOracle: amm.rateOracle.id,
-    underlyingToken: amm.underlyingToken.id,
+    underlyingToken: amm.underlyingToken.name,
     marginEngineAddress: amm.marginEngineAddress,
   };
 };

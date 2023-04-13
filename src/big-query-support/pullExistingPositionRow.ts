@@ -43,7 +43,6 @@ export const pullExistingPositionRow = async (
   tickUpper: number,
 ): Promise<BigQueryPositionRow | null> => {
   const positionTableId = `${PROJECT_ID}.${DATASET_ID}.${POSITIONS_TABLE_ID}`;
-  // todo: add chain id
   const sqlQuery = `
     SELECT * FROM \`${positionTableId}\` 
       WHERE chainId=${chainId} AND

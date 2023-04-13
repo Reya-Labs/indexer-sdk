@@ -36,7 +36,7 @@ describe('parse swap event', () => {
       feePaidToLps: 1,
 
       rateOracle: 'rate-oracle',
-      underlyingToken: 'token',
+      underlyingToken: 'token-name',
       marginEngineAddress: 'margin-engine',
     };
 

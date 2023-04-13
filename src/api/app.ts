@@ -10,7 +10,7 @@ import {
   PROJECT_ID,
   SECONDS_IN_YEAR,
 } from '../common';
-import { getAmm , getBlockAtTimestamp } from './common';
+import { getAmm, getBlockAtTimestamp } from './common';
 
 dotenv.config();
 
@@ -24,7 +24,6 @@ const apiPrefix = '/api';
 // create app and setup middleware
 export const app = express();
 
-// todo: investigate this
 app.use(cors());
 
 // Configure routes
@@ -71,15 +70,14 @@ router.get('/positions/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper
         amm.provider,
         amm.marginEngineAddress,
       );
-    }
-    else {
+    } else {
       const blockAtSettlement = await getBlockAtTimestamp(amm.provider, maturityTimestamp);
 
       currentLiquidityIndex = await getLiquidityIndex(
         chainId,
         amm.provider,
         amm.marginEngineAddress,
-        blockAtSettlement
+        blockAtSettlement,
       );
 
       currentTimestamp = maturityTimestamp;

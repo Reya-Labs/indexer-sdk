@@ -14,7 +14,6 @@ export const getAmms = async (chainId: number, activeAtTimestamp: number): Promi
     throw new Error(`Couldn't fetch AMMs from voltz-SDK.`);
   }
 
-  // todo: change this
   // Filter out the inactive pools
   return amms.filter((item) => {
     return item.termEndTimestampInMS > activeAtTimestamp * 1000;
