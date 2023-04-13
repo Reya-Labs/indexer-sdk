@@ -1,6 +1,7 @@
 import { BigQuery } from "@google-cloud/bigquery";
 
 export async function pullRows(sqlQuery: string, bigQuery: BigQuery) {
+    
     const options = {
       query: sqlQuery,
     };

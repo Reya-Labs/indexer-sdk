@@ -1,4 +1,5 @@
 import { BigQuery } from "@google-cloud/bigquery";
+import { pullRows } from "../../big-query-support/pullRows";
 
 
 
@@ -13,7 +14,7 @@ export type GetChainLevelInformationArgs = {
 /**
  Get chain level information
  */
- async function getChainLevelInformation({
+ export async function getChainLevelInformation({
     chainId,
     activeSwapsTableId,
     mintsAndBurnsTableId,
@@ -42,16 +43,11 @@ export type GetChainLevelInformationArgs = {
         GROUP BY underlyingToken
     `;
 
-    // rows
-
-    volumeByUnderlyingRows = await pullRows(volumeQuery, bigquery);
-    liquidityByUnderlyingRows = await pullRows(liquidityQuery, bigquery);
+    const volumeByUnderlyingRows = await pullRows(volumeQuery, bigQuery);
+    const liquidityByUnderlyingRows = await pullRows(liquidityQuery, bigQuery);
 
     let volume30DayInDollars = null;
     let totalLiquidityInDollars = null;
-
-    console.log(`volumeByUnderlyingRows ${volumeByUnderlyingRows}`);
-    console.log(`liquidityByUnderlyingRows ${liquidityByUnderlyingRows}`);
 
     if (volumeByUnderlyingRows !== null) { 
         volume30DayInDollars = await dollarAggregate(volumeByUnderlyingRows, geckoKey);
