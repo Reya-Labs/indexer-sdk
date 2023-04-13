@@ -21,6 +21,7 @@ export const mockedAMM = {
   id: 'AMM-Test',
   underlyingToken: {
     id: 'token',
+    name: 'token-name',
     decimals: 18,
   },
   rateOracle: {

@@ -14,7 +14,6 @@ export const getAmm = async (chainId: number, vammAddress: string): Promise<AMM>
     throw new Error(`Couldn't fetch AMMs from voltz-SDK.`);
   }
 
-  // todo: change this
   // Filter out the inactive pools
   const amm = amms.find((item) => item.id.toLowerCase() === vammAddress.toLowerCase());
 

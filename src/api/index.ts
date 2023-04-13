@@ -20,7 +20,9 @@ const main = async () => {
 
   const PORT = process.env.PORT || 8080;
   console.log('PORT:', PORT);
-  app.listen(PORT, () => {console.log('Listening...')});
+  app.listen(PORT, () => {
+    console.log('Listening...');
+  });
 };
 
 main()
