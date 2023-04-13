@@ -135,21 +135,17 @@ router.get('/chains/:chainId', (req, res) => {
       geckoKey: GECKO_KEY,
     });
     res.json({
-      ...result
+      ...result,
     });
   };
 
   process()
-    .then(
-      (result) => {
-        res.json(result);
-      }
-    )
-    .catch(
-      (error) => {
-        console.log(`There is an error with message: ${(error as Error).message}`);
-      }
-    );
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((error) => {
+      console.log(`There is an error with message: ${(error as Error).message}`);
+    });
 });
 
 app.use(apiPrefix, router);
