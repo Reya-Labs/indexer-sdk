@@ -7,14 +7,20 @@ export const getFromBlock = async (
   syncProcessName: string,
   chainId: number,
   vammAddress: string,
-  redisClient: Redis
+  redisClient?: Redis
 ): Promise<number> => {  
 
-    const redisKey = `${syncProcessName}_${chainId}_${vammAddress}`;
+    if (redisClient === undefined) {
+      return 0;
+    } else {
 
-    const fromBlock = Number(await redisClient.get(redisKey));
+      const redisKey = `${syncProcessName}_${chainId}_${vammAddress}`;
 
-    return fromBlock;
+      const fromBlock = Number(await redisClient.get(redisKey));
+  
+      return fromBlock;
+    }
+
 };
 
 export const setFromBlock = async (
