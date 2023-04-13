@@ -14,13 +14,7 @@ export const sync = async (
 
   const promises = Object.values(previousMintEvents).map(async ({ events }) => {
     for (const event of events) {
-
-      if (event.type === 'mint') { 
-        await processMintOrBurnEvent(bigQuery, event, false);
-      } else {
-        processMintOrBurnEvent(bigQuery, event, false);
-      }
-       
+      await processMintOrBurnEvent(bigQuery, event);       
     }
   });
 

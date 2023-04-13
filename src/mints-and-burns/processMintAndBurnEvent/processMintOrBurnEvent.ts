@@ -6,14 +6,12 @@ import { ExtendedEvent } from '../../common/types';
 import { insertNewMintOrBurn } from './insertNewMintOrBurn';
 
 export const processMintOrBurnEvent = async (
-  chainId: number,
   bigQuery: BigQuery,
-  event: ExtendedEvent,
-  isBurn: boolean,
+  event: ExtendedEvent
 ): Promise<void> => {
   console.log('Mint Or Burn processing...');
 
-  const eventInfo = parseMintOrBurnEvent(chainId, event, isBurn);
+  const eventInfo = parseMintOrBurnEvent(event);
 
   const eventTimestamp = (await event.getBlock()).timestamp;
 
