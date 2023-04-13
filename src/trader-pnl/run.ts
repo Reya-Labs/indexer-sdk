@@ -6,11 +6,7 @@ import { sync } from './sync';
 
 dotenv.config();
 
-let previousBlockNumber = 0;
-
 export const run = async (chainIds: number[]) => {
-  // authenticate to GCloud
-  // await authenticateImplicitWithAdc();
 
   // retrieve BigQuery object for the given project
   const bigQuery = new BigQuery({
@@ -25,23 +21,9 @@ export const run = async (chainIds: number[]) => {
     return;
   }
 
-  // get provider from the first amm
-  const provider = amms[0].provider;
-
   while (true) {
-    const currentBlockNumber = await provider.getBlockNumber();
-
-    if (previousBlockNumber === currentBlockNumber) {
-      console.log('Block has not changed. Sleeping...');
-      await sleep(60 * 1000); // sleep 60s
-      continue;
-    }
-
-    console.log(`Processing blocks: ${previousBlockNumber}-${currentBlockNumber}`);
-
     try {
-      await sync(bigQuery, amms, previousBlockNumber, currentBlockNumber);
-      previousBlockNumber = currentBlockNumber + 1;
+      await sync(bigQuery, amms);
     } catch (error) {
       console.log(`Loop has failed with message: ${(error as Error).message}.`);
       await sleep(60 * 1000); // sleep 60s

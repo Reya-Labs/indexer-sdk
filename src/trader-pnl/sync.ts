@@ -5,12 +5,11 @@ import { getPreviousEvents } from '../common';
 import { processSwapEvent } from './processSwapEvent';
 
 export const sync = async (
+  tableId: string,
   bigQuery: BigQuery,
-  amms: AMM[],
-  fromBlock: number,
-  toBlock: number,
+  amms: AMM[]
 ): Promise<void> => {
-  const previousSwapEvents = await getPreviousEvents(amms, ['swap'], fromBlock, toBlock);
+  const previousSwapEvents = await getPreviousEvents(tableId, amms, ['swap']);
 
   const promises = Object.values(previousSwapEvents).map(async ({ events }) => {
     for (const swapEvent of events) {
