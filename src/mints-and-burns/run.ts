@@ -6,18 +6,12 @@ import { sync } from './sync';
 
 dotenv.config();
 
-let previousBlockNumber = 0;
-
 export const run = async (chainIds: number[]) => {
-  // authenticate to GCloud
-  // await authenticateImplicitWithAdc();
 
-  // retrieve BigQuery object for the given project
   const bigQuery = new BigQuery({
     projectId: PROJECT_ID,
   });
 
-  // fetch AMMs
   const amms = await getAmms(chainIds, APR_2023_TIMESTAMP);
 
   if (amms.length === 0) {
