@@ -8,7 +8,7 @@ dotenv.config();
 
 let previousBlockNumber = 0;
 
-export const run = async (chainId: number) => {
+export const run = async (chainIds: number[]) => {
   // authenticate to GCloud
   // await authenticateImplicitWithAdc();
 
@@ -18,7 +18,7 @@ export const run = async (chainId: number) => {
   });
 
   // fetch AMMs
-  const amms = await getAmms(chainId, APR_2023_TIMESTAMP);
+  const amms = await getAmms(chainIds, APR_2023_TIMESTAMP);
 
   if (amms.length === 0) {
     console.log('Skipping processing because the list of AMMs is empty.');
