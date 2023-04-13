@@ -49,6 +49,6 @@ export const insertNewMintOrBurn = async (
   await bigQuery.query(options);
 
   console.log(
-    `Inserted new swap with eventId: ${eventInfo.eventId} and inserted a new position for ${mintOrBurnRow.ownerAddress}`,
+    `Inserted new mint or burn with eventId: ${eventInfo.eventId}`,
   );
 };
