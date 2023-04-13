@@ -5,10 +5,11 @@ import { getPreviousEvents } from '../common';
 import { processMintEvent } from './processMintEvent';
 
 export const syncMints = async (
+  tableId: string,
   bigQuery: BigQuery,
   amms: AMM[]
 ): Promise<void> => {
-  const previousMintEvents = await getPreviousEvents(amms, ['mint']);
+  const previousMintEvents = await getPreviousEvents(tableId, amms, ['mint']);
 
   const promises = Object.values(previousMintEvents).map(async ({ events }) => {
     for (const swapEvent of events) {
