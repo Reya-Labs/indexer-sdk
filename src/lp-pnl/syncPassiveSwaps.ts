@@ -1,6 +1,7 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
 
+import { getLastProcessedBlock, setLastProcessedBlock } from '../big-query-support';
 import { getPreviousEvents } from '../common';
 import { processPassiveSwapEvents } from './processPassiveSwapEvents';
 
@@ -8,18 +9,27 @@ export const syncPassiveSwaps = async (
   chainId: number,
   bigQuery: BigQuery,
   amms: AMM[],
-  fromBlock: number,
   toBlock: number,
   minBlockInterval: number,
 ): Promise<void> => {
-  const previousSwapEvents = await getPreviousEvents(amms, 'swap', fromBlock, toBlock);
+  const promises = amms.map(async (amm) => {
+    const processId = `passive_swap_sync_${chainId}_${amm.id}`;
+    let lastProcessedBlock = await getLastProcessedBlock(bigQuery, processId);
 
-  const promises = Object.values(previousSwapEvents).map(async ({ amm, events }) => {
-    let lastProcessedBlock = fromBlock;
-    for (let i = 0; i < events.length; i++) {
-      const event = events[i];
+    const events = await getPreviousEvents(amm, 'swap', lastProcessedBlock + 1, toBlock);
 
-      if (event.blockNumber >= lastProcessedBlock + minBlockInterval || i + 1 === events.length) {
+    if (events.length === 0) {
+      return;
+    }
+
+    console.log(
+      `Processing passive swaps for AMM ${amm.id} between blocks: ${
+        lastProcessedBlock + 1
+      }-${toBlock}...`,
+    );
+
+    for (const event of events) {
+      if (event.blockNumber >= lastProcessedBlock + minBlockInterval) {
         await processPassiveSwapEvents({
           bigQuery,
           amm,
@@ -30,6 +40,8 @@ export const syncPassiveSwaps = async (
         lastProcessedBlock = event.blockNumber;
       }
     }
+
+    await setLastProcessedBlock(bigQuery, processId, lastProcessedBlock);
   });
 
   const output = await Promise.allSettled(promises);

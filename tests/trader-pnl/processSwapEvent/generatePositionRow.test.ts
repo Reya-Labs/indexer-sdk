@@ -35,7 +35,7 @@ describe('generate position row', () => {
   };
 
   it('non-existing position', async () => {
-    const positionRow = await generatePositionRow(mockedAMM, eventInfo, 1609459200, null);
+    const positionRow = generatePositionRow(mockedAMM, eventInfo, 1609459200, null, 1.5);
 
     expect(positionRow.marginEngineAddress).toBe('margin-engine');
     expect(positionRow.vammAddress).toBe('amm-test');
@@ -88,11 +88,12 @@ describe('generate position row', () => {
       cashflowFreeTerm: 0,
     };
 
-    const positionRow = await generatePositionRow(
+    const positionRow = generatePositionRow(
       mockedAMM,
       eventInfo,
       1640995200,
       existingPositionRow,
+      1.5,
     );
 
     expect(positionRow.marginEngineAddress).toBe('margin-engine-immutable');

@@ -17,14 +17,12 @@ const getAaveLendingLiquidityIndex = async (
   ];
   const aaveLendingPoolAddress = (await rateOracleContract.aaveLendingPool()) as string;
 
-  console.log('lending pool:', aaveLendingPoolAddress);
-
   const aaveLendingPoolContract = new ethers.Contract(
     aaveLendingPoolAddress,
     aaveLendingPoolABI,
     provider,
   );
-  
+
   const token = (await rateOracleContract.underlying()) as string;
 
   const liquidityIndexRay = (await aaveLendingPoolContract.getReserveNormalizedIncome(token, {
@@ -33,7 +31,6 @@ const getAaveLendingLiquidityIndex = async (
 
   const liquidityIndex = Number(ethers.utils.formatUnits(liquidityIndexRay, 27));
 
-  console.log(`Special case(Aave): liquidity index: ${liquidityIndex}`);
   return liquidityIndex;
 };
 
@@ -44,23 +41,18 @@ const getCompoundLendingLiquidityIndex = async (
 ): Promise<number> => {
   const rateOracleContract = generateRateOracleContract(rateOracleId, provider);
 
-  console.log('Fetching Compound LI');
-
   const cTokenABI = [`function exchangeRateStored() external view returns (uint256)`];
-  const cTokenAddress = (await rateOracleContract.cToken()) as string;
-
-  console.log(`Ctoken address fetched: ${cTokenAddress}`);
+  const cTokenAddress = (await rateOracleContract.ctoken()) as string;
 
   const cTokenContract = new ethers.Contract(cTokenAddress, cTokenABI, provider);
 
-  const liquidityIndexRay = (await cTokenContract.exchangeRateStored({blockTag})) as ethers.BigNumber;
-
-  console.log(`raw li fetched: ${liquidityIndexRay.toString()}`);
+  const liquidityIndexRay = (await cTokenContract.exchangeRateStored({
+    blockTag,
+  })) as ethers.BigNumber;
 
   // todo: 28 is for DAI, generalise for all tokens
   const liquidityIndex = Number(ethers.utils.formatUnits(liquidityIndexRay, 28));
 
-  console.log(`Special case(Compound): liquidity index: ${liquidityIndex}`);
   return liquidityIndex;
 };
 
@@ -70,15 +62,10 @@ export const getLiquidityIndex = async (
   marginEngineAddress: string,
   blockTag: number,
 ): Promise<number> => {
-  console.log(`Fetching normal LI with marginEngineAddress: ${marginEngineAddress}`);
-
   const marginEngineContract = generateMarginEngineContract(marginEngineAddress, provider);
-  // const rateOracleId = (await marginEngineContract.rateOracle({
-  //   blockTag,
-  // })) as string;
-  const rateOracleId = (await marginEngineContract.rateOracle()) as string;
-
-  console.log('here?', rateOracleId);
+  const rateOracleId = (await marginEngineContract.rateOracle({
+    blockTag,
+  })) as string;
 
   // Check for inconsistent rate oracles
   if (
@@ -92,7 +79,6 @@ export const getLiquidityIndex = async (
     chainId === 1 &&
     rateOracleId.toLowerCase() === '0x65F5139977C608C6C2640c088D7fD07fA17A0614'.toLowerCase()
   ) {
-    console.log('here?');
     return getAaveLendingLiquidityIndex(provider, rateOracleId, blockTag);
   }
 
@@ -111,8 +97,6 @@ export const getLiquidityIndex = async (
   })) as ethers.BigNumber;
 
   const liquidityIndex = Number(ethers.utils.formatUnits(liquidityIndexRay, 27));
-
-  console.log(`Liquidity index at block ${blockTag} is: ${liquidityIndex}`);
 
   return liquidityIndex;
 };

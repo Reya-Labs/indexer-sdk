@@ -1,6 +1,9 @@
 import { BigQuery, BigQueryInt, BigQueryTimestamp } from '@google-cloud/bigquery';
 
 export const bqNumericToNumber = (bqNumeric: BigQueryInt): number => {
+  if (!bqNumeric) {
+    console.log('Bq numberic undefined!!!!');
+  }
   return Number(bqNumeric.toString());
 };
 

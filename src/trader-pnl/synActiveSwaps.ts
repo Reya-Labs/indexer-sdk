@@ -3,24 +3,24 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 
 import { getLastProcessedBlock, setLastProcessedBlock } from '../big-query-support';
 import { getPreviousEvents, isTestingAccount } from '../common';
-import { processMintEvent } from './processMintEvent';
+import { processSwapEvent } from './processSwapEvent';
 
-export const syncMints = async (
+export const syncActiveSwaps = async (
   chainId: number,
   bigQuery: BigQuery,
   amms: AMM[],
   toBlock: number,
 ): Promise<void> => {
   const promises = amms.map(async (amm) => {
-    const processId = `mint_sync_${chainId}_${amm.id}`;
+    const processId = `active_swap_sync_${chainId}_${amm.id}`;
     const lastProcessedBlock = await getLastProcessedBlock(bigQuery, processId);
 
-    const events = (await getPreviousEvents(amm, 'mint', lastProcessedBlock + 1, toBlock)).filter(
-      (mintEvent) => isTestingAccount(mintEvent.args?.owner as string),
+    const events = (await getPreviousEvents(amm, 'swap', lastProcessedBlock + 1, toBlock)).filter(
+      (swapEvent) => isTestingAccount(swapEvent.args?.recipient as string),
     );
 
     console.log(
-      `Processing ${events.length} mints for AMM ${amm.id} between blocks: ${
+      `Processing ${events.length} active swaps for AMM ${amm.id} between blocks: ${
         lastProcessedBlock + 1
       }-${toBlock}...`,
     );
@@ -28,7 +28,7 @@ export const syncMints = async (
     for (let i = 0; i < events.length; i++) {
       const swapEvent = events[i];
 
-      await processMintEvent(chainId, bigQuery, amm, swapEvent);
+      await processSwapEvent(chainId, bigQuery, amm, swapEvent);
 
       if (i + 1 === events.length) {
         await setLastProcessedBlock(bigQuery, processId, swapEvent.blockNumber);
