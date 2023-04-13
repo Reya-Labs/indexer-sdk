@@ -1,52 +1,49 @@
 import { AMM } from '@voltz-protocol/v1-sdk';
 
 import { BigQueryPositionRow } from '../../big-query-support';
-import {
-  getCashflowInfo,
-  getFixedRateLocked,
-  getLiquidityIndex,
-  getTimestampInSeconds,
-  SECONDS_IN_YEAR,
-} from '..';
+import { getCashflowInfo, getTimestampInSeconds, SECONDS_IN_YEAR } from '..';
 import { SwapEventInfo } from './parseSwapEvent';
 
-export const generatePositionRow = async (
+export const generatePositionRow = (
   amm: AMM,
   eventInfo: SwapEventInfo,
   eventTimestamp: number,
   existingPosition: BigQueryPositionRow | null,
-): Promise<BigQueryPositionRow> => {
+  liquidityIndexAtRootEvent: number,
+): BigQueryPositionRow => {
   const rowLastUpdatedTimestamp = getTimestampInSeconds();
 
-  const liquidityIndexAtEvent = await getLiquidityIndex(
-    eventInfo.chainId,
-    amm.provider,
-    amm.marginEngineAddress,
-    eventInfo.eventBlockNumber,
-  );
   const unbalancedFixedTokenDelta = eventInfo.fixedTokenDeltaUnbalanced;
 
-  const fixedRateLocked = getFixedRateLocked(
-    eventInfo.variableTokenDelta,
-    eventInfo.fixedTokenDeltaUnbalanced,
-  );
-
-  const incomingCashflowLiFactor = eventInfo.variableTokenDelta / liquidityIndexAtEvent;
+  const incomingCashflowLiFactor = eventInfo.variableTokenDelta / liquidityIndexAtRootEvent;
   const incomingCashflowTimeFactor = unbalancedFixedTokenDelta * 0.01;
   const incomingCashflowFreeTerm =
     -eventInfo.variableTokenDelta -
     (unbalancedFixedTokenDelta * 0.01 * eventTimestamp) / SECONDS_IN_YEAR;
 
-  const { netNotionalLocked, netFixedRateLocked } = getCashflowInfo(
+  const {
+    notional: netNotionalLocked,
+    cashflowLiFactor,
+    cashflowTimeFactor,
+    cashflowFreeTerm,
+  } = getCashflowInfo(
     {
       notional: existingPosition?.netNotionalLocked || 0,
-      fixedRate: existingPosition?.netFixedRateLocked || 0,
+      cashflowLiFactor: existingPosition?.cashflowLiFactor || 0,
+      cashflowTimeFactor: existingPosition?.cashflowTimeFactor || 0,
+      cashflowFreeTerm: existingPosition?.cashflowFreeTerm || 0,
     },
     {
       notional: eventInfo.variableTokenDelta,
-      fixedRate: fixedRateLocked,
+      cashflowLiFactor: incomingCashflowLiFactor,
+      cashflowTimeFactor: incomingCashflowTimeFactor,
+      cashflowFreeTerm: incomingCashflowFreeTerm,
     },
+    Math.floor(amm.termEndTimestampInMS / 1000),
   );
+
+  const netFixedRateLocked =
+    netNotionalLocked === 0 ? 0 : Math.abs(cashflowTimeFactor / netNotionalLocked);
 
   // todo: add empty entries
   return {
@@ -74,8 +71,8 @@ export const generatePositionRow = async (
       existingPosition?.positionInitializationTimestamp || eventTimestamp,
     rateOracle: existingPosition?.rateOracle || amm.rateOracle.id,
     underlyingToken: existingPosition?.underlyingToken || amm.underlyingToken.name,
-    cashflowLiFactor: (existingPosition?.cashflowLiFactor || 0) + incomingCashflowLiFactor,
-    cashflowTimeFactor: (existingPosition?.cashflowTimeFactor || 0) + incomingCashflowTimeFactor,
-    cashflowFreeTerm: (existingPosition?.cashflowFreeTerm || 0) + incomingCashflowFreeTerm,
+    cashflowLiFactor,
+    cashflowTimeFactor,
+    cashflowFreeTerm,
   };
 };
