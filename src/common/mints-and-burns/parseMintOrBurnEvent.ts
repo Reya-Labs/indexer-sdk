@@ -18,9 +18,7 @@ export type MintOrBurnEventInfo = {
 };
 
 export const parseMintOrBurnEvent = (
-  chainId: number,
   event: ExtendedEvent,
-  isBurn: boolean,
 ): MintOrBurnEventInfo => {
   const eventId = `${event.blockHash}_${event.transactionHash}_${event.logIndex}`.toLowerCase();
   const tokenDecimals = event.amm.underlyingToken.decimals;
@@ -29,10 +27,11 @@ export const parseMintOrBurnEvent = (
   const tickUpper = event.args?.tickUpper as number;
   const amount = event.args?.amount as BigNumber;
   const amm = event.amm ;
+  const chainId = event.chainId;
 
   let notionalDelta = getNotionalFromLiquidity(amount, tickLower, tickUpper, tokenDecimals);
 
-  if (isBurn) {
+  if (event.type === 'burn') {
     notionalDelta = -1.0 * notionalDelta;
   }
 
