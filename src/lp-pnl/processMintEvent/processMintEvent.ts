@@ -6,13 +6,12 @@ import { ExtendedEvent } from '../../common/types';
 import { insertNewMintAndNewPosition } from './insertNewMintAndNewPosition';
 
 export const processMintEvent = async (
-  chainId: number,
   bigQuery: BigQuery,
   event: ExtendedEvent,
 ): Promise<void> => {
   console.log('Mint processing...');
 
-  const eventInfo = parseMintOrBurnEvent(chainId, event, false);
+  const eventInfo = parseMintOrBurnEvent(event);
 
   const existingPosition = await pullExistingPositionRow(
     bigQuery,
@@ -23,7 +22,7 @@ export const processMintEvent = async (
   );
 
   if (existingPosition) {
-    // this position has already performed a swap
+    // this position has already performed a mint
     return;
   } else {
     // to keep things simple, we just need mints to make sure we capture and don't miss any lps
