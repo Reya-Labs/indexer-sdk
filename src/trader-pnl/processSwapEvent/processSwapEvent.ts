@@ -7,7 +7,6 @@ import { insertNewSwapAndNewPosition } from './insertNewSwapAndNewPosition';
 import { insertNewSwapAndUpdateExistingPosition } from './insertNewSwapAndUpdateExistingPosition';
 
 export const processSwapEvent = async (
-  chainId: number,
   bigQuery: BigQuery,
   event: ExtendedEvent,
 ): Promise<void> => {

@@ -5,7 +5,6 @@ import { getPreviousEvents } from '../common';
 import { processSwapEvent } from './processSwapEvent';
 
 export const sync = async (
-  chainId: number,
   bigQuery: BigQuery,
   amms: AMM[],
   fromBlock: number,
@@ -15,7 +14,7 @@ export const sync = async (
 
   const promises = Object.values(previousSwapEvents).map(async ({ events }) => {
     for (const swapEvent of events) {
-      await processSwapEvent(chainId, bigQuery, swapEvent);
+      await processSwapEvent(bigQuery, swapEvent);
     }
   });
 
