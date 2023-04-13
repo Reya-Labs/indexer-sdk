@@ -8,7 +8,7 @@ import { generateRateOracleContract } from '../contract-services/generateRateOra
 const getAaveLendingLiquidityIndex = async (
   provider: ethers.providers.Provider,
   rateOracleId: string,
-  blockTag: number,
+  blockTag?: number,
 ): Promise<number> => {
   const rateOracleContract = generateRateOracleContract(rateOracleId, provider);
 
@@ -37,7 +37,7 @@ const getAaveLendingLiquidityIndex = async (
 const getCompoundLendingLiquidityIndex = async (
   provider: ethers.providers.Provider,
   rateOracleId: string,
-  blockTag: number,
+  blockTag?: number,
 ): Promise<number> => {
   const rateOracleContract = generateRateOracleContract(rateOracleId, provider);
 
@@ -60,7 +60,7 @@ export const getLiquidityIndex = async (
   chainId: number,
   provider: ethers.providers.Provider,
   marginEngineAddress: string,
-  blockTag: number,
+  blockTag?: number,
 ): Promise<number> => {
   const marginEngineContract = generateMarginEngineContract(marginEngineAddress, provider);
   const rateOracleId = (await marginEngineContract.rateOracle({

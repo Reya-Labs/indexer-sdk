@@ -16,6 +16,7 @@ export const processMintEvent = async (
 
   const existingPosition = await pullExistingPositionRow(
     bigQuery,
+    chainId,
     eventInfo.vammAddress,
     eventInfo.ownerAddress,
     eventInfo.tickLower,

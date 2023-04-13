@@ -36,15 +36,18 @@ export type BigQueryPositionRow = {
 
 export const pullExistingPositionRow = async (
   bigQuery: BigQuery,
+  chainId: number,
   vammAddress: string,
   recipient: string,
   tickLower: number,
   tickUpper: number,
 ): Promise<BigQueryPositionRow | null> => {
   const positionTableId = `${PROJECT_ID}.${DATASET_ID}.${POSITIONS_TABLE_ID}`;
+  // todo: add chain id
   const sqlQuery = `
     SELECT * FROM \`${positionTableId}\` 
-      WHERE vammAddress=\"${vammAddress}\" AND 
+      WHERE chainId=${chainId} AND
+            vammAddress=\"${vammAddress}\" AND 
             ownerAddress=\"${recipient}\" AND 
             tickLower=${tickLower} AND 
             tickUpper=${tickUpper}
