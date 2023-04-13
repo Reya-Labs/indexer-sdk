@@ -28,6 +28,7 @@ export const processSwapEvent = async (
   // check if a position already exists in the positions table
   const existingPosition = await pullExistingPositionRow(
     bigQuery,
+    chainId,
     eventInfo.vammAddress,
     eventInfo.ownerAddress,
     eventInfo.tickLower,
