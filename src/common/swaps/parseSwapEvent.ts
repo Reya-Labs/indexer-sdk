@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+
 import { ExtendedEvent } from '../types';
 
 export type SwapEventInfo = {

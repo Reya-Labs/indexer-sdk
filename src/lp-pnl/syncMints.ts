@@ -4,10 +4,7 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 import { getPreviousEvents, setFromBlock } from '../common';
 import { processMintEvent } from './processMintEvent';
 
-export const syncMints = async (
-  bigQuery: BigQuery,
-  amms: AMM[],
-): Promise<void> => {
+export const syncMints = async (bigQuery: BigQuery, amms: AMM[]): Promise<void> => {
   const previousMintEvents = await getPreviousEvents('mints_lp', amms, ['mint']);
 
   const promises = Object.values(previousMintEvents).map(async ({ events }) => {

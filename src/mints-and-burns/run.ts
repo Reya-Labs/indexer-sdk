@@ -7,7 +7,6 @@ import { sync } from './sync';
 dotenv.config();
 
 export const run = async (chainIds: number[]) => {
-
   const bigQuery = new BigQuery({
     projectId: PROJECT_ID,
   });

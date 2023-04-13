@@ -2,7 +2,7 @@ import { BigQuery } from '@google-cloud/bigquery';
 import * as dotenv from 'dotenv';
 
 import { APR_2023_TIMESTAMP, getAmms, PROJECT_ID } from '../common';
-import { sync } from  './sync';
+import { sync } from './sync';
 
 dotenv.config();
 

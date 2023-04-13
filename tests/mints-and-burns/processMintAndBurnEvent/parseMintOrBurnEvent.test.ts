@@ -22,8 +22,8 @@ describe('parse mint or burn event', () => {
       ...event,
       type: 'mint',
       amm: mockedAMM,
-      chainId: 1
-    }
+      chainId: 1,
+    };
 
     const eventInfo = parseMintOrBurnEvent(extendedEvent);
 
@@ -38,7 +38,7 @@ describe('parse mint or burn event', () => {
       rateOracle: 'rate-oracle',
       underlyingToken: 'token',
       marginEngineAddress: 'margin-engine',
-      amm: mockedAMM
+      amm: mockedAMM,
     });
   });
 
@@ -59,12 +59,12 @@ describe('parse mint or burn event', () => {
       ...event,
       type: 'burn',
       amm: mockedAMM,
-      chainId: 1
-    }
+      chainId: 1,
+    };
 
     const eventInfo = parseMintOrBurnEvent(extendedEvent);
 
-    console.log(eventInfo)
+    console.log(eventInfo);
 
     expect(eventInfo).toEqual({
       eventId: 'blockhash_transactionhash_1',
@@ -77,7 +77,7 @@ describe('parse mint or burn event', () => {
       rateOracle: 'rate-oracle',
       underlyingToken: 'token',
       marginEngineAddress: 'margin-engine',
-      amm: mockedAMM
+      amm: mockedAMM,
     });
   });
 });

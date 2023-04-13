@@ -10,7 +10,12 @@ export const sync = async (bigQuery: BigQuery, amms: AMM[]): Promise<void> => {
   const promises = Object.values(previousSwapEvents).map(async ({ events }) => {
     for (const swapEvent of events) {
       await processSwapEvent(bigQuery, swapEvent);
-      await setFromBlock('active_swaps', swapEvent.chainId, swapEvent.address, swapEvent.blockNumber);
+      await setFromBlock(
+        'active_swaps',
+        swapEvent.chainId,
+        swapEvent.address,
+        swapEvent.blockNumber,
+      );
     }
   });
 

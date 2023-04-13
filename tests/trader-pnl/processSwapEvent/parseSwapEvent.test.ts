@@ -1,11 +1,11 @@
 import { BigNumber, Event } from 'ethers';
+
+import { parseSwapEvent, SwapEventInfo } from '../../../src/common/swaps/parseSwapEvent';
 import { ExtendedEvent } from '../../../src/common/types';
 import { mockedAMM } from '../../utils';
-import { parseSwapEvent, SwapEventInfo } from '../../../src/common/swaps/parseSwapEvent';
 
 describe('parse swap event', () => {
   it('parse swap event', () => {
-    
     const event = {
       blockHash: 'blockHash',
       blockNumber: 20,
@@ -25,8 +25,8 @@ describe('parse swap event', () => {
       ...event,
       type: 'swap',
       amm: mockedAMM,
-      chainId: 1
-    }
+      chainId: 1,
+    };
 
     const eventInfo = parseSwapEvent(extendedEvent);
 

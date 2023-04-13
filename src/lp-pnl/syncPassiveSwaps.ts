@@ -5,10 +5,7 @@ import { applyProcessingWindow, getPreviousEvents, setFromBlock } from '../commo
 import { LP_PROCESSING_WINDOW } from '../common';
 import { processPassiveSwapEvents } from './processPassiveSwapEvents';
 
-export const syncPassiveSwaps = async (
-  bigQuery: BigQuery,
-  amms: AMM[],
-): Promise<void> => {
+export const syncPassiveSwaps = async (bigQuery: BigQuery, amms: AMM[]): Promise<void> => {
   const previousSwapEvents = await getPreviousEvents('passive_swaps_lp', amms, ['swap']);
 
   const promises = Object.values(previousSwapEvents).map(async ({ events }) => {
