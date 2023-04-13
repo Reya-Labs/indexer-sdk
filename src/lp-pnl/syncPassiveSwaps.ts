@@ -5,7 +5,6 @@ import { getPreviousEvents } from '../common';
 import { processPassiveSwapEvents } from './processPassiveSwapEvents';
 
 export const syncPassiveSwaps = async (
-  chainId: number,
   bigQuery: BigQuery,
   amms: AMM[],
   fromBlock: number,
@@ -23,7 +22,6 @@ export const syncPassiveSwaps = async (
         await processPassiveSwapEvents({
           bigQuery,
           event,
-          chainId,
         });
 
         lastProcessedBlock = event.blockNumber;

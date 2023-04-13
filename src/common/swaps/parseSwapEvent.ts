@@ -2,6 +2,7 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
 
 import { getFixedRateLocked } from '..';
+import { ExtendedEvent } from '../types';
 
 export type SwapEventInfo = {
   // todo: we should store the event timestamp in this object
@@ -23,10 +24,10 @@ export type SwapEventInfo = {
   marginEngineAddress: string;
 };
 
-export const parseSwapEvent = (chainId: number, amm: AMM, event: ethers.Event): SwapEventInfo => {
+export const parseSwapEvent = (event: ExtendedEvent): SwapEventInfo => {
   const eventId = `${event.blockHash}_${event.transactionHash}_${event.logIndex}`;
 
-  const tokenDecimals = amm.underlyingToken.decimals;
+  const tokenDecimals = event.amm.underlyingToken.decimals;
 
   const ownerAddress = event.args?.recipient as string;
   const tickLower = event.args?.tickLower as number;
@@ -48,16 +49,16 @@ export const parseSwapEvent = (chainId: number, amm: AMM, event: ethers.Event): 
   return {
     eventId: eventId.toLowerCase(),
     eventBlockNumber: event.blockNumber,
-    chainId,
-    vammAddress: amm.id.toLowerCase(),
+    chainId: event.chainId,
+    vammAddress: event.amm.id.toLowerCase(),
     ownerAddress: ownerAddress.toLowerCase(),
     tickLower,
     tickUpper,
     notionalLocked: variableTokenDelta,
     fixedRateLocked: getFixedRateLocked(variableTokenDelta, fixedTokenDeltaUnbalanced),
     feePaidToLps: cumulativeFeeIncurred,
-    rateOracle: amm.rateOracle.id,
-    underlyingToken: amm.underlyingToken.id,
-    marginEngineAddress: amm.marginEngineAddress,
+    rateOracle: event.amm.rateOracle.id,
+    underlyingToken: event.amm.underlyingToken.id,
+    marginEngineAddress: event.amm.marginEngineAddress,
   };
 };

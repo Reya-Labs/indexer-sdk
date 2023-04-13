@@ -12,16 +12,14 @@ import { generatePassiveSwapEvents } from './generatePassiveSwapEvents';
 export type ProcessPassiveSwapEventsArgs = {
   bigQuery: BigQuery;
   event: ExtendedEvent;
-  chainId: number;
 };
 
 export const processPassiveSwapEvents = async ({
   bigQuery,
   event,
-  chainId,
 }: ProcessPassiveSwapEventsArgs): Promise<void> => {
   // Get information about root swap event
-  const rootEventInfo = parseSwapEvent(chainId, event.amm, event);
+  const rootEventInfo = parseSwapEvent(event);
 
   // Retrieve the current timestamp
   const eventTimestamp = (await event.getBlock()).timestamp;
@@ -51,7 +49,7 @@ export const processPassiveSwapEvents = async ({
     passiveSwapEvents,
     affectedLps,
     bigQuery,
-    chainId,
+    chainId: event.chainId,
     amm: event.amm,
     currentTimestamp: eventTimestamp,
   });
