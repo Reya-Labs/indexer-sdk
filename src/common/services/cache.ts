@@ -1,6 +1,8 @@
 import { BigQuery } from "@google-cloud/bigquery";
 import { Redis } from "ioredis";
+import { getLastProcessedBlock } from "../../big-query-support/getLastProcessedBlock";
 import { setLastProcessedBlock } from "../../big-query-support/setLastProcessedBlock";
+import { getRedis, setRedis } from "./redisService";
 
 
 export const getFromBlock = async (
@@ -8,13 +10,21 @@ export const getFromBlock = async (
   chainId: number,
   vammAddress: string,
   redisClient?: Redis,
+  bigQuery?: BigQuery
 ): Promise<number> => {
 
-    if (redisClient === undefined) {
-        // bq
-    } else {
-        // redis
+    const processId =`${syncProcessName}_${chainId}_${vammAddress}`;
+
+    if (bigQuery !== undefined) {
+        return (await getLastProcessedBlock(bigQuery, processId));
     }
+
+    if (redisClient !== undefined) {
+        return (await getRedis(processId, redisClient));
+    }
+
+    return 0;
+
 };
 
 export const setFromBlock = async (
@@ -33,7 +43,7 @@ export const setFromBlock = async (
     }
 
     if (redisClient !== undefined) { 
-
+        await setRedis(processId, lastBlock, redisClient);
     }
 
 };
