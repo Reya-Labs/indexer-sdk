@@ -2,31 +2,17 @@ import { Redis } from 'ioredis';
 export const REDISHOST = process.env.REDISHOST || 'localhost';
 export const REDISPORT: number = Number(process.env.REDISPORT) || 6379;
 
-export const getFromBlock = async (
-  syncProcessName: string,
-  chainId: number,
-  vammAddress: string,
-  redisClient?: Redis,
-): Promise<number> => {
-  if (redisClient === undefined) {
-    return 0;
-  } else {
-    const redisKey = `${syncProcessName}_${chainId}_${vammAddress}`;
+export const getRedis = async (
+  key: string,
+  redisClient: Redis,
+): Promise<number> => {    
+  return Number(await redisClient.get(key));
+}
 
-    const fromBlock = Number(await redisClient.get(redisKey));
-
-    return fromBlock;
-  }
-};
-
-export const setFromBlock = async (
-  syncProcessName: string,
-  chainId: number,
-  vammAddress: string,
+export const setRedis = async (
+  key: string,
   value: number,
   redisClient: Redis,
 ): Promise<void> => {
-  const redisKey = `${syncProcessName}_${chainId}_${vammAddress}`;
-
-  await redisClient.set(redisKey, value);
+  await redisClient.set(key, value);
 };
