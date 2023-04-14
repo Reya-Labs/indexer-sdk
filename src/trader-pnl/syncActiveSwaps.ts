@@ -10,7 +10,7 @@ export const syncActiveSwaps = async (
   amms: AMM[],
   redisClient?: Redis,
 ): Promise<void> => {
-  const previousSwapEvents = await getPreviousEvents('active_swaps', amms, ['swap']);
+  const previousSwapEvents = await getPreviousEvents('active_swaps', amms, ['swap'], bigQuery);
 
   const promises = Object.values(previousSwapEvents).map(async ({ events }) => {
     for (const swapEvent of events) {

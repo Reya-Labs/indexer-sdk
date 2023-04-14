@@ -5,12 +5,18 @@ import { setLastProcessedBlock } from "../../big-query-support/setLastProcessedB
 import { getRedis, setRedis } from "./redisService";
 
 
+export type GetFromBlockArgs = {
+    syncProcessName: string,
+    chainId: number,
+    vammAddress: string,
+    redisClient?: Redis,
+    bigQuery?: BigQuery
+}
+
 export const getFromBlock = async (
-  syncProcessName: string,
-  chainId: number,
-  vammAddress: string,
-  redisClient?: Redis,
-  bigQuery?: BigQuery
+  {
+    syncProcessName, chainId, vammAddress, redisClient, bigQuery
+  }: GetFromBlockArgs
 ): Promise<number> => {
 
     const processId =`${syncProcessName}_${chainId}_${vammAddress}`;
@@ -27,13 +33,19 @@ export const getFromBlock = async (
 
 };
 
+export type SetFromBlockArgs = {
+    syncProcessName: string,
+    chainId: number,
+    vammAddress: string,
+    lastBlock: number,
+    redisClient?: Redis,
+    bigQuery?: BigQuery
+}
+
 export const setFromBlock = async (
-  syncProcessName: string,
-  chainId: number,
-  vammAddress: string,
-  lastBlock: number,
-  redisClient?: Redis,
-  bigQuery?: BigQuery
+  {
+    syncProcessName, chainId, vammAddress, lastBlock, redisClient, bigQuery
+  }: SetFromBlockArgs
 ): Promise<void> => {
 
     const processId =`${syncProcessName}_${chainId}_${vammAddress}`;

@@ -10,7 +10,7 @@ export const syncMints = async (
   amms: AMM[],
   redisClient?: Redis,
 ): Promise<void> => {
-  const previousMintEvents = await getPreviousEvents('mints_lp', amms, ['mint']);
+  const previousMintEvents = await getPreviousEvents('mints_lp', amms, ['mint'], bigQuery);
 
   const promises = Object.values(previousMintEvents).map(async ({ events }) => {
     for (const swapEvent of events) {

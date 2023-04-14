@@ -11,7 +11,7 @@ export const syncPassiveSwaps = async (
   amms: AMM[],
   redisClient?: Redis,
 ): Promise<void> => {
-  const previousSwapEvents = await getPreviousEvents('passive_swaps_lp', amms, ['swap']);
+  const previousSwapEvents = await getPreviousEvents('passive_swaps_lp', amms, ['swap'], bigQuery);
 
   const promises = Object.values(previousSwapEvents).map(async ({ events }) => {
     const chainId = events[0].chainId;
@@ -24,12 +24,15 @@ export const syncPassiveSwaps = async (
       });
       
         await setFromBlock(
-          'passive_swaps_lp',
-          event.chainId,
-          event.address,
-          event.blockNumber,
-          redisClient,
-          bigQuery
+          {
+            syncProcessName: 'passive_swaps_lp',
+            chainId: event.chainId,
+            vammAddress: event.address,
+            lastBlock: event.blockNumber,
+            redisClient: redisClient,
+            bigQuery: bigQuery
+
+          }
         );
       
     }

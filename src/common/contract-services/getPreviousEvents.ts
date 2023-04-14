@@ -1,3 +1,4 @@
+import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
 
@@ -11,6 +12,7 @@ export type VammEvents = {
   };
 };
 
+// todo: test
 export const applyProcessingWindow = (
   events: ExtendedEvent[],
   blockWindow: number,
@@ -51,10 +53,12 @@ const getEventFilter = (vammContract: ethers.Contract, eventType: string): ether
   }
 };
 
+// todo: test and break down
 export const getPreviousEvents = async (
   syncProcessName: 'active_swaps' | 'mints_lp' | 'passive_swaps_lp' | 'mint_burn',
   amms: AMM[],
   eventTypes: ('mint' | 'burn' | 'swap')[],
+  bigQuery: BigQuery
 ): Promise<VammEvents> => {
   const totalEventsByVammAddress: VammEvents = {};
 
@@ -62,7 +66,12 @@ export const getPreviousEvents = async (
     const toBlock = await amm.provider.getBlockNumber();
     const chainId = (await amm.provider.getNetwork()).chainId;
 
-    const fromBlock = await getFromBlock(syncProcessName, chainId, amm.id);
+    const fromBlock = await getFromBlock({
+      syncProcessName, 
+      chainId,
+      vammAddress: amm.id,
+      bigQuery: bigQuery
+    });
 
     const vammContract = generateVAMMContract(amm.id, amm.provider);
 

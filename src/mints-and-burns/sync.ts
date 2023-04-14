@@ -6,7 +6,7 @@ import { getPreviousEvents, setFromBlock } from '../common';
 import { processMintOrBurnEvent } from './processMintAndBurnEvent';
 
 export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient?: Redis): Promise<void> => {
-  const previousMintEvents = await getPreviousEvents('mint_burn', amms, ['mint', 'burn']);
+  const previousMintEvents = await getPreviousEvents('mint_burn', amms, ['mint', 'burn'], bigQuery);
 
   const promises = Object.values(previousMintEvents).map(async ({ events }) => {
     for (const event of events) {
