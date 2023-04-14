@@ -28,16 +28,7 @@ const apiPrefix = '/api';
 // create app and setup middleware
 export const app = express();
 
-app.use(
-  cors({
-    origin: "*",
-  })
-);
-
-app.use(function (req, res, next) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  next();
-});
+app.use(cors());
 
 // Configure routes
 const router = express.Router();
@@ -133,6 +124,8 @@ router.get('/positions/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper
 });
 
 router.get('/chains/:chainId', (req, res) => {
+
+  console.log(`Requesting information about a chain`);
 
   const chainId = Number(req.params.chainId);
 
