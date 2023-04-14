@@ -46,7 +46,6 @@ const router = express.Router();
 router.get('/positions/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper', (req, res) => {
 
   console.log(`Requesting information about a position`);
-  res.header('Access-Control-Allow-Origin', '*');
 
   const chainId = Number(req.params.chainId);
   const vammAddress = req.params.vammAddress;
@@ -126,7 +125,6 @@ router.get('/positions/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper
 
   process()
     .then((result) => {
-      res.header('Access-Control-Allow-Origin', '*');
       res.json(result);
     })
     .catch((error) => {
@@ -135,8 +133,6 @@ router.get('/positions/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper
 });
 
 router.get('/chains/:chainId', (req, res) => {
-
-  res.header('Access-Control-Allow-Origin', '*');
 
   const chainId = Number(req.params.chainId);
 
@@ -158,8 +154,6 @@ router.get('/chains/:chainId', (req, res) => {
 
   process()
     .then((result) => {
-      console.log(`Requesting information about chain id`);
-      res.header('Access-Control-Allow-Origin', '*');
       res.json(result);
     })
     .catch((error) => {
