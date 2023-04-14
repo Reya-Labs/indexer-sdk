@@ -15,16 +15,14 @@ export const syncActiveSwaps = async (
   const promises = Object.values(previousSwapEvents).map(async ({ events }) => {
     for (const swapEvent of events) {
       await processSwapEvent(bigQuery, swapEvent);
-
-      if (redisClient !== undefined) {
         await setFromBlock(
           'active_swaps',
           swapEvent.chainId,
           swapEvent.address,
           swapEvent.blockNumber,
           redisClient,
+          bigQuery
         );
-      }
     }
   });
 

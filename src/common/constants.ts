@@ -2,6 +2,8 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
+export const cache: string | undefined = process.env.CACHE;
+
 export const APR_2023_TIMESTAMP = 1680337863;
 
 export const GECKO_KEY = process.env.COINGECKO_API_KEY;

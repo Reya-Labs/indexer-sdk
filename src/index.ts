@@ -1,22 +1,21 @@
 import { Storage } from '@google-cloud/storage';
-import { Redis } from 'ioredis';
 
-import { PROJECT_ID, REDISHOST, REDISPORT } from './common';
+import { PROJECT_ID } from './common';
 import { run as runLPs } from './lp-pnl/run';
 import { run as runMintsAndBurns } from './mints-and-burns/run';
 import { run as runTraders } from './trader-pnl/run';
 
-let redisConnected = false;
-let redisClient: Redis | undefined;
+// let redisConnected = false;
+// let redisClient: Redis | undefined;
 
-if (REDISHOST !== undefined && REDISPORT !== undefined) {
-  redisClient = new Redis(REDISPORT, REDISHOST);
+// if (REDISHOST !== undefined && REDISPORT !== undefined) {
+//   redisClient = new Redis(REDISPORT, REDISHOST);
 
-  redisClient.on('connect', () => {
-    console.log('successfully connected to redis');
-    redisConnected = true;
-  });
-}
+//   redisClient.on('connect', () => {
+//     console.log('successfully connected to redis');
+//     redisConnected = true;
+//   });
+// }
 
 async function authenticateImplicitWithAdc() {
   const storage = new Storage({
@@ -33,15 +32,9 @@ const main = async () => {
 
   let promises: Promise<void>[] = [];
 
-  if (redisConnected) {
-    promises = promises.concat(runMintsAndBurns(chainIds, redisClient));
-    promises = promises.concat(runTraders(chainIds, redisClient));
-    promises = promises.concat(runLPs(chainIds, redisClient));
-  } else {
-    promises = promises.concat(runMintsAndBurns(chainIds));
-    promises = promises.concat(runTraders(chainIds));
-    promises = promises.concat(runLPs(chainIds));
-  }
+  promises = promises.concat(runMintsAndBurns(chainIds));
+  promises = promises.concat(runTraders(chainIds));
+  promises = promises.concat(runLPs(chainIds));
 
   console.log(`Number of parallel calls ${promises.length}`);
 

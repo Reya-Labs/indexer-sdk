@@ -22,16 +22,16 @@ export const syncPassiveSwaps = async (
         bigQuery,
         event,
       });
-
-      if (redisClient !== undefined) {
+      
         await setFromBlock(
           'passive_swaps_lp',
           event.chainId,
           event.address,
           event.blockNumber,
           redisClient,
+          bigQuery
         );
-      }
+      
     }
   });
 

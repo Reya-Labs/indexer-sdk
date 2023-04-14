@@ -11,16 +11,16 @@ export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient?: Redis)
   const promises = Object.values(previousMintEvents).map(async ({ events }) => {
     for (const event of events) {
       await processMintOrBurnEvent(bigQuery, event);
-
-      if (redisClient !== undefined) {
+      
         await setFromBlock(
           'mint_burn',
           event.chainId,
           event.address,
           event.blockNumber,
           redisClient,
+          bigQuery
         );
-      }
+      
     }
   });
 

@@ -15,15 +15,16 @@ export const syncMints = async (
   const promises = Object.values(previousMintEvents).map(async ({ events }) => {
     for (const swapEvent of events) {
       await processMintEvent(bigQuery, swapEvent);
-      if (redisClient !== undefined) {
+      
         await setFromBlock(
           'mint_lp',
           swapEvent.chainId,
           swapEvent.address,
           swapEvent.blockNumber,
           redisClient,
+          bigQuery
         );
-      }
+      
     }
   });
 
