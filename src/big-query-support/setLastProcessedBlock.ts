@@ -43,12 +43,12 @@ export const setLastProcessedBlock = async (
   
     await bigQuery.query(options);
   
-    console.log(`Updated last processed block of ${processId} to ${lastBlock}`);
+    // console.log(`Updated last processed block of ${processId} to ${lastBlock}`);
 
     return true;
 
   } catch (error) {
-    console.log(`Setting last processed block in bq cache has failed with error: ${(error as Error).message}.`);
+    // console.log(`Setting last processed block in bq cache has failed with error: ${(error as Error).message}.`);
     return false;
   }
 

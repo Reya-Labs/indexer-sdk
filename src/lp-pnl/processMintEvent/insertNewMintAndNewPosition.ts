@@ -11,7 +11,7 @@ export const insertNewMintAndNewPosition = async (
   eventInfo: MintOrBurnEventInfo,
   eventTimestamp: number,
 ): Promise<void> => {
-  console.log('Inserting new LP position following a mint...');
+  // console.log('Inserting new LP position following a mint...');
 
   // generate position row
   const positionRow: BigQueryPositionRow = generateLpPositionRow(eventInfo, eventTimestamp);
@@ -54,7 +54,7 @@ export const insertNewMintAndNewPosition = async (
 
   await bigQuery.query(options);
 
-  console.log(
-    `Inserted a new LP position (${positionRow.ownerAddress},[${positionRow.tickLower},${positionRow.tickUpper}]) in AMM ${eventInfo.amm.id}, chain ID ${eventInfo.chainId}`,
-  );
+  // console.log(
+  //   `Inserted a new LP position (${positionRow.ownerAddress},[${positionRow.tickLower},${positionRow.tickUpper}]) in AMM ${eventInfo.amm.id}, chain ID ${eventInfo.chainId}`,
+  // );
 };

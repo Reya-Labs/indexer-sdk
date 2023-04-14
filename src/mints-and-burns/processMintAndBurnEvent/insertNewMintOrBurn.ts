@@ -11,7 +11,7 @@ export const insertNewMintOrBurn = async (
   eventInfo: MintOrBurnEventInfo,
   eventTimestamp: number,
 ): Promise<void> => {
-  console.log('Inserting a new mint or burn');
+  // console.log('Inserting a new mint or burn');
   const mintOrBurnRow: BigQueryMintOrBurnRow = generateMintOrBurnRow(eventInfo, eventTimestamp);
 
   const rawMintOrBurnRow = `
@@ -46,5 +46,5 @@ export const insertNewMintOrBurn = async (
 
   await bigQuery.query(options);
 
-  console.log(`Inserted new mint or burn with eventId: ${eventInfo.eventId}`);
+  // console.log(`Inserted new mint or burn with eventId: ${eventInfo.eventId}`);
 };

@@ -19,7 +19,7 @@ export const setRedis = async (
     await redisClient.set(key, value);
     return true;
   } catch (error) {
-    console.log(`Setting last processed block in redis cache has failed with error: ${(error as Error).message}.`);
+    // console.log(`Setting last processed block in redis cache has failed with error: ${(error as Error).message}.`);
     return false;
   }
 

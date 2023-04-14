@@ -9,7 +9,7 @@ export const processMintOrBurnEvent = async (
   bigQuery: BigQuery,
   event: ExtendedEvent,
 ): Promise<void> => {
-  console.log('Mint Or Burn processing...');
+  // console.log('Mint Or Burn processing...');
 
   const eventInfo = parseMintOrBurnEvent(event);
 
@@ -18,7 +18,7 @@ export const processMintOrBurnEvent = async (
   const existingMintOrBurnEvent = await pullExistingMintOrBurnRow(bigQuery, eventInfo.eventId);
 
   if (existingMintOrBurnEvent) { 
-    console.log('Mint or Burn already processed. Skipped.');
+    // console.log('Mint or Burn already processed. Skipped.');
     return;
   }
 

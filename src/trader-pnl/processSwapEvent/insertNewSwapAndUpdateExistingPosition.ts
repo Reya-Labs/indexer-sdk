@@ -15,7 +15,7 @@ export const insertNewSwapAndUpdateExistingPosition = async (
   eventTimestamp: number,
   existingPosition: BigQueryPositionRow,
 ): Promise<void> => {
-  console.log('Inserting new active swap and updating position following swap...');
+  // console.log('Inserting new active swap and updating position following swap...');
 
   const swapRow = generateSwapRow(eventInfo, eventTimestamp);
 
@@ -84,7 +84,7 @@ export const insertNewSwapAndUpdateExistingPosition = async (
 
   await bigQuery.query(options);
 
-  console.log(
-    `Inserted new swap with eventId ${eventInfo.eventId} and updated LP position (${positionRow.ownerAddress},[${positionRow.tickLower},${positionRow.tickUpper}]) in AMM ${amm.id}, chain ID ${eventInfo.chainId}`,
-  );
+  // console.log(
+  //   `Inserted new swap with eventId ${eventInfo.eventId} and updated LP position (${positionRow.ownerAddress},[${positionRow.tickLower},${positionRow.tickUpper}]) in AMM ${amm.id}, chain ID ${eventInfo.chainId}`,
+  // );
 };

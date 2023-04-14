@@ -13,7 +13,7 @@ export const insertNewSwapAndNewPosition = async (
   eventInfo: SwapEventInfo,
   eventTimestamp: number,
 ): Promise<void> => {
-  console.log('Inserting new active swap and new position following swap...');
+  // console.log('Inserting new active swap and new position following swap...');
 
   // generate swap row
   const swapRow = generateSwapRow(eventInfo, eventTimestamp);
@@ -92,7 +92,7 @@ export const insertNewSwapAndNewPosition = async (
 
   await bigQuery.query(options);
 
-  console.log(
-    `Inserted new swap with eventId ${eventInfo.eventId} and inserted a new LP position (${positionRow.ownerAddress},[${positionRow.tickLower},${positionRow.tickUpper}]) in AMM ${amm.id}, chain ID ${eventInfo.chainId}`,
-  );
+  // console.log(
+  //   `Inserted new swap with eventId ${eventInfo.eventId} and inserted a new LP position (${positionRow.ownerAddress},[${positionRow.tickLower},${positionRow.tickUpper}]) in AMM ${amm.id}, chain ID ${eventInfo.chainId}`,
+  // );
 };
