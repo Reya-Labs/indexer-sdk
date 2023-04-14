@@ -46,16 +46,18 @@ export const setFromBlock = async (
   {
     syncProcessName, chainId, vammAddress, lastBlock, redisClient, bigQuery
   }: SetFromBlockArgs
-): Promise<void> => {
+): Promise<boolean> => {
 
     const processId =`${syncProcessName}_${chainId}_${vammAddress}`;
 
     if (bigQuery !== undefined) {
-        await setLastProcessedBlock(bigQuery, processId, lastBlock);
+        return await setLastProcessedBlock(bigQuery, processId, lastBlock);
     }
 
     if (redisClient !== undefined) { 
-        await setRedis(processId, lastBlock, redisClient);
+        return await setRedis(processId, lastBlock, redisClient);
     }
+
+    return false;
 
 };

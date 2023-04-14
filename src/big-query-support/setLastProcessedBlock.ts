@@ -21,7 +21,7 @@ export const setLastProcessedBlock = async (
   bigQuery: BigQuery,
   processId: string,
   lastBlock: number,
-): Promise<void> => {
+): Promise<boolean> => {
 
   // todo: find a way to dynamically understand if the queue is full
   // do batched mutations vs. for loops -> P1 or consider using a different db
@@ -45,8 +45,11 @@ export const setLastProcessedBlock = async (
   
     console.log(`Updated last processed block of ${processId} to ${lastBlock}`);
 
+    return true;
+
   } catch (error) {
     console.log(`Setting last processed block in bq cache has failed with error: ${(error as Error).message}.`);
+    return false;
   }
 
 };

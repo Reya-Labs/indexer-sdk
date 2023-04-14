@@ -21,7 +21,7 @@ export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient?: Redis)
       const currentWindow = currentBlock - latestCachedBlock;
       if (currentWindow > cacheSetWindow) {
 
-        await setFromBlock(
+        const isSet = await setFromBlock(
           {
             syncProcessName: 'mint_burn',
             chainId: event.chainId,
@@ -32,7 +32,7 @@ export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient?: Redis)
           }
         );
 
-        latestCachedBlock = event.blockNumber;
+        latestCachedBlock = isSet ? event.blockNumber : latestCachedBlock;
 
       }      
     }
