@@ -2,6 +2,7 @@ import { BigQuery } from '@google-cloud/bigquery';
 import cors from 'cors';
 import * as dotenv from 'dotenv';
 import express from 'express';
+import { Request } from "express";
 
 import { pullExistingPositionRow } from '../big-query-support';
 import {
@@ -27,8 +28,7 @@ const apiPrefix = '/api';
 
 // create app and setup middleware
 export const app = express();
-
-app.use(cors());
+app.use(cors<Request>());
 
 // Configure routes
 const router = express.Router();
