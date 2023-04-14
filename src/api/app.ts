@@ -28,11 +28,16 @@ const apiPrefix = '/api';
 // create app and setup middleware
 export const app = express();
 
-app.use(cors(
-  {
-    origin: '*'
-  }
-));
+app.use(
+  cors({
+    origin: "*",
+  })
+);
+
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  next();
+});
 
 // Configure routes
 const router = express.Router();
@@ -41,7 +46,7 @@ const router = express.Router();
 router.get('/positions/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper', (req, res) => {
 
   console.log(`Requesting information about a position`);
-  res.set('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Origin', '*');
 
   const chainId = Number(req.params.chainId);
   const vammAddress = req.params.vammAddress;
@@ -121,7 +126,7 @@ router.get('/positions/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper
 
   process()
     .then((result) => {
-      res.set('Access-Control-Allow-Origin', '*');
+      res.header('Access-Control-Allow-Origin', '*');
       res.json(result);
     })
     .catch((error) => {
@@ -131,7 +136,7 @@ router.get('/positions/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper
 
 router.get('/chains/:chainId', (req, res) => {
 
-  res.set('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Origin', '*');
 
   const chainId = Number(req.params.chainId);
 
@@ -154,7 +159,7 @@ router.get('/chains/:chainId', (req, res) => {
   process()
     .then((result) => {
       console.log(`Requesting information about chain id`);
-      res.set('Access-Control-Allow-Origin', '*');
+      res.header('Access-Control-Allow-Origin', '*');
       res.json(result);
     })
     .catch((error) => {
