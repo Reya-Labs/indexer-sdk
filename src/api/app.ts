@@ -28,6 +28,7 @@ const apiPrefix = '/api';
 
 // create app and setup middleware
 export const app = express();
+
 app.use((req, res, next) => { next(); }, cors({maxAge: 84600}));
 
 // Configure routes
@@ -35,6 +36,9 @@ const router = express.Router();
 
 // Get realized & unrealized pnl of a position (then layer in lps through the same route)
 router.get('/positions/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper', (req, res) => {
+
+  res.set('Access-Control-Allow-Origin', 'https://app.voltz.xyz');
+
   const chainId = Number(req.params.chainId);
   const vammAddress = req.params.vammAddress;
   const ownerAddress = req.params.ownerAddress;
