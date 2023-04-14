@@ -9,6 +9,7 @@ echo ${PROJECTID}
 # [START startup]
 REPOSITORY="github_voltzprotocol_indexer-sdk-forked"
 
+
 # Install logging monitor. The monitor will automatically pick up logs sent to
 # syslog.
 curl -s "https://storage.googleapis.com/signals-agents/logging/google-fluentd-install.sh" | bash
@@ -38,9 +39,12 @@ export HOME=/root
 git config --global credential.helper gcloud.sh
 git clone https://source.developers.google.com/p/${PROJECTID}/r/${REPOSITORY} /opt/app/github_voltzprotocol_indexer-sdk-forked
 
+# permission
+sudo chown -R $USER /opt/app/github_voltzprotocol_indexer-sdk-forked/
+
 # Install app dependencies
 cd /opt/app/github_voltzprotocol_indexer-sdk-forked
-yarn install
+sudo yarn install
 
 # Create a nodeapp user. The application will run as this user.
 useradd -m -d /home/nodeapp nodeapp
