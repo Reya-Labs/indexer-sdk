@@ -29,7 +29,11 @@ const apiPrefix = '/api';
 // create app and setup middleware
 export const app = express();
 
-app.use((req, res, next) => { next(); }, cors({maxAge: 84600}));
+app.use(cors(
+  {
+    origin: 'https://app.voltz.xyz/'
+  }
+));
 
 // Configure routes
 const router = express.Router();
@@ -118,6 +122,7 @@ router.get('/positions/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper
 
   process()
     .then((result) => {
+      res.set('Access-Control-Allow-Origin', '*');
       res.json(result);
     })
     .catch((error) => {
