@@ -17,7 +17,11 @@ export const processMintOrBurnEvent = async (
 
   const existingMintOrBurnEvent = await pullExistingMintOrBurnRow(bigQuery, eventInfo.eventId);
 
-  if (existingMintOrBurnEvent === null) {
-    await insertNewMintOrBurn(bigQuery, eventInfo, eventTimestamp);
+  if (existingMintOrBurnEvent) { 
+    console.log('Mint or Burn already processed. Skipped.');
+    return;
   }
+
+  await insertNewMintOrBurn(bigQuery, eventInfo, eventTimestamp);
+  
 };

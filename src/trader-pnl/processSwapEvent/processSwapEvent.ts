@@ -13,7 +13,6 @@ export const processSwapEvent = async (bigQuery: BigQuery, event: ExtendedEvent)
 
   if (swapRow) {
     console.log('Swap already processed. Skipped.');
-    // swap already processed, skip
     return;
   }
 
