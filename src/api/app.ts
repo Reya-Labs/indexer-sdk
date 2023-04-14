@@ -30,7 +30,7 @@ export const app = express();
 
 app.use(cors(
   {
-    origin: 'https://app.voltz.xyz/'
+    origin: '*'
   }
 ));
 
