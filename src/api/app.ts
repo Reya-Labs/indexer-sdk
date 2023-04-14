@@ -28,7 +28,7 @@ const apiPrefix = '/api';
 
 // create app and setup middleware
 export const app = express();
-app.use(cors<Request>());
+app.use((req, res, next) => { next(); }, cors({maxAge: 84600}));
 
 // Configure routes
 const router = express.Router();
