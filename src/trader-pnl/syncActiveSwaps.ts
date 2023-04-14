@@ -5,7 +5,11 @@ import { Redis } from 'ioredis';
 import { getPreviousEvents, setFromBlock } from '../common';
 import { processSwapEvent } from './processSwapEvent';
 
-export const syncActiveSwaps = async (bigQuery: BigQuery, amms: AMM[], redisClient?: Redis): Promise<void> => {
+export const syncActiveSwaps = async (
+  bigQuery: BigQuery,
+  amms: AMM[],
+  redisClient?: Redis,
+): Promise<void> => {
   const previousSwapEvents = await getPreviousEvents('active_swaps', amms, ['swap']);
 
   const promises = Object.values(previousSwapEvents).map(async ({ events }) => {
@@ -18,10 +22,9 @@ export const syncActiveSwaps = async (bigQuery: BigQuery, amms: AMM[], redisClie
           swapEvent.chainId,
           swapEvent.address,
           swapEvent.blockNumber,
-          redisClient
+          redisClient,
         );
       }
-      
     }
   });
 

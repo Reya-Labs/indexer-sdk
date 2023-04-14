@@ -13,9 +13,14 @@ export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient?: Redis)
       await processMintOrBurnEvent(bigQuery, event);
 
       if (redisClient !== undefined) {
-        await setFromBlock('mint_burn', event.chainId, event.address, event.blockNumber, redisClient);
+        await setFromBlock(
+          'mint_burn',
+          event.chainId,
+          event.address,
+          event.blockNumber,
+          redisClient,
+        );
       }
-
     }
   });
 

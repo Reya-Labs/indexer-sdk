@@ -56,7 +56,7 @@ export const generatePassiveSwapEvent = ({
     rateOracle: rootEventInfo.rateOracle,
     underlyingToken: rootEventInfo.underlyingToken,
     marginEngineAddress: rootEventInfo.marginEngineAddress,
-    amm: rootEventInfo.amm
+    amm: rootEventInfo.amm,
   };
 
   return passiveSwapEvent;
