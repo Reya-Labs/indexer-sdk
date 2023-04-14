@@ -2,7 +2,6 @@ import { BigQuery } from '@google-cloud/bigquery';
 import cors from 'cors';
 import * as dotenv from 'dotenv';
 import express from 'express';
-import { Request } from "express";
 
 import { pullExistingPositionRow } from '../big-query-support';
 import {
@@ -131,6 +130,9 @@ router.get('/positions/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper
 });
 
 router.get('/chains/:chainId', (req, res) => {
+
+  res.set('Access-Control-Allow-Origin', '*');
+
   const chainId = Number(req.params.chainId);
 
   const process = async () => {
@@ -151,6 +153,8 @@ router.get('/chains/:chainId', (req, res) => {
 
   process()
     .then((result) => {
+      console.log(`Requesting information about chain id`);
+      res.set('Access-Control-Allow-Origin', '*');
       res.json(result);
     })
     .catch((error) => {
