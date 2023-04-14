@@ -11,6 +11,9 @@ export const generateVAMMContract = (
     `
       event Mint(address sender, address indexed owner, int24 indexed tickLower, int24 indexed tickUpper, uint128 amount)
       `,
+    `
+    event Burn(address sender, address indexed owner, int24 indexed tickLower, int24 indexed tickUpper, uint128 amount)
+    `,
   ];
 
   const contract = new ethers.Contract(address, abi, provider);

@@ -69,7 +69,7 @@ export const generatePositionRow = (
     variableTokenBalance: existingPosition?.variableTokenBalance || 0, // todo: track
     positionInitializationTimestamp:
       existingPosition?.positionInitializationTimestamp || eventTimestamp,
-    rateOracle: existingPosition?.rateOracle || amm.rateOracle.id,
+    rateOracle: existingPosition?.rateOracle || amm.rateOracle.protocol,
     underlyingToken: existingPosition?.underlyingToken || amm.underlyingToken.name,
     cashflowLiFactor,
     cashflowTimeFactor,

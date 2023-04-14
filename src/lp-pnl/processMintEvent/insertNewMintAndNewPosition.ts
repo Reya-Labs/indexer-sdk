@@ -1,24 +1,21 @@
 import { BigQuery } from '@google-cloud/bigquery';
-import { AMM } from '@voltz-protocol/v1-sdk';
 
 import { BigQueryPositionRow } from '../../big-query-support';
 import { secondsToBqDate } from '../../big-query-support/utils';
-import { DATASET_ID, POSITIONS_TABLE_ID, PROJECT_ID } from '../../common';
-import { generateLpPositionRow } from '../../common/mints/generateLpPositionRow';
-import { MintEventInfo } from '../../common/mints/parseMintEvent';
+import { POSITIONS_TABLE_ID } from '../../common';
+import { generateLpPositionRow } from '../../common/mints-and-burns/generateLpPositionRow';
+import { MintOrBurnEventInfo } from '../../common/mints-and-burns/parseMintOrBurnEvent';
 
 export const insertNewMintAndNewPosition = async (
   bigQuery: BigQuery,
-  amm: AMM,
-  eventInfo: MintEventInfo,
+  eventInfo: MintOrBurnEventInfo,
   eventTimestamp: number,
 ): Promise<void> => {
-  console.log('Inserting new LP position following a mint...');
+  // console.log('Inserting new LP position following a mint...');
 
   // generate position row
-  const positionRow: BigQueryPositionRow = generateLpPositionRow(amm, eventInfo, eventTimestamp);
+  const positionRow: BigQueryPositionRow = generateLpPositionRow(eventInfo, eventTimestamp);
 
-  const positionTableId = `${PROJECT_ID}.${DATASET_ID}.${POSITIONS_TABLE_ID}`;
   const rawPositionRow = `
     \"${positionRow.marginEngineAddress}\",
     \"${positionRow.vammAddress}\",
@@ -47,7 +44,7 @@ export const insertNewMintAndNewPosition = async (
   `;
 
   // build and fire sql query
-  const sqlTransactionQuery = `INSERT INTO \`${positionTableId}\` VALUES(${rawPositionRow});`;
+  const sqlTransactionQuery = `INSERT INTO \`${POSITIONS_TABLE_ID}\` VALUES(${rawPositionRow});`;
 
   const options = {
     query: sqlTransactionQuery,
@@ -57,7 +54,7 @@ export const insertNewMintAndNewPosition = async (
 
   await bigQuery.query(options);
 
-  console.log(
-    `Inserted a new LP position (${positionRow.ownerAddress},[${positionRow.tickLower},${positionRow.tickUpper}]) in AMM ${amm.id}, chain ID ${eventInfo.chainId}`,
-  );
+  // console.log(
+  //   `Inserted a new LP position (${positionRow.ownerAddress},[${positionRow.tickLower},${positionRow.tickUpper}]) in AMM ${eventInfo.amm.id}, chain ID ${eventInfo.chainId}`,
+  // );
 };

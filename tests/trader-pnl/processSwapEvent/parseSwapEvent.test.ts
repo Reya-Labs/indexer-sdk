@@ -1,13 +1,14 @@
 import { BigNumber, Event } from 'ethers';
 
 import { parseSwapEvent, SwapEventInfo } from '../../../src/common/swaps/parseSwapEvent';
-import { mockedAMM } from './utils';
+import { ExtendedEvent } from '../../../src/common/types';
+import { mockedAMM } from '../../utils';
 
 describe('parse swap event', () => {
   it('parse swap event', () => {
     const event = {
       blockHash: 'blockHash',
-      blockNumber: 100,
+      blockNumber: 20,
       transactionHash: 'transactionHash',
       logIndex: 1,
       args: {
@@ -20,16 +21,23 @@ describe('parse swap event', () => {
       },
     } as unknown as Event;
 
-    const eventInfo = parseSwapEvent(1, mockedAMM, event);
+    const extendedEvent: ExtendedEvent = {
+      ...event,
+      type: 'swap',
+      amm: mockedAMM,
+      chainId: 1,
+    };
+
+    const eventInfo = parseSwapEvent(extendedEvent);
 
     const expectedEventInfo: SwapEventInfo = {
       eventId: 'blockhash_transactionhash_1',
+      eventBlockNumber: 20,
       chainId: 1,
       vammAddress: 'amm-test',
       ownerAddress: '0x0000',
       tickLower: -1200,
       tickUpper: 1200,
-      eventBlockNumber: 100,
 
       variableTokenDelta: 10,
       fixedTokenDeltaUnbalanced: -50,

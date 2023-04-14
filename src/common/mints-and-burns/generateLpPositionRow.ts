@@ -1,18 +1,15 @@
-import { AMM } from '@voltz-protocol/v1-sdk';
-
 import { BigQueryPositionRow } from '../../big-query-support';
 import { getTimestampInSeconds } from '..';
-import { MintEventInfo } from './parseMintEvent';
+import { MintOrBurnEventInfo } from './parseMintOrBurnEvent';
 
 export const generateLpPositionRow = (
-  amm: AMM,
-  eventInfo: MintEventInfo,
+  eventInfo: MintOrBurnEventInfo,
   eventTimestamp: number,
 ): BigQueryPositionRow => {
   const rowLastUpdatedTimestamp = getTimestampInSeconds();
 
   return {
-    marginEngineAddress: amm.marginEngineAddress.toLowerCase(),
+    marginEngineAddress: eventInfo.amm.marginEngineAddress.toLowerCase(),
     vammAddress: eventInfo.vammAddress,
     ownerAddress: eventInfo.ownerAddress,
     tickLower: eventInfo.tickLower,
@@ -22,16 +19,16 @@ export const generateLpPositionRow = (
     netNotionalLocked: 0,
     netFixedRateLocked: 0,
     lastUpdatedTimestamp: eventTimestamp,
-    notionalLiquidityProvided: eventInfo.notionalLiquidityProvided,
+    notionalLiquidityProvided: eventInfo.notionalDelta,
     realizedPnLFromFeesCollected: 0,
     netMarginDeposited: 0,
-    rateOracleIndex: amm.rateOracle.protocolId,
+    rateOracleIndex: eventInfo.amm.rateOracle.protocolId,
     rowLastUpdatedTimestamp: rowLastUpdatedTimestamp,
     fixedTokenBalance: 0,
     variableTokenBalance: 0,
     positionInitializationTimestamp: eventTimestamp,
-    rateOracle: amm.rateOracle.id,
-    underlyingToken: amm.underlyingToken.name,
+    rateOracle: eventInfo.amm.rateOracle.id,
+    underlyingToken: eventInfo.amm.underlyingToken.name,
     chainId: eventInfo.chainId,
     cashflowLiFactor: 0,
     cashflowTimeFactor: 0,

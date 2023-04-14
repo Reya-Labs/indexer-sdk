@@ -1,6 +1,8 @@
 import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
 
+import { ExtendedEvent } from '../types';
+
 export type SwapEventInfo = {
   eventId: string;
   eventBlockNumber: number;
@@ -18,12 +20,13 @@ export type SwapEventInfo = {
   rateOracle: string;
   underlyingToken: string;
   marginEngineAddress: string;
+  amm: AMM;
 };
 
-export const parseSwapEvent = (chainId: number, amm: AMM, event: ethers.Event): SwapEventInfo => {
+export const parseSwapEvent = (event: ExtendedEvent): SwapEventInfo => {
   const eventId = `${event.blockHash}_${event.transactionHash}_${event.logIndex}`;
 
-  const tokenDecimals = amm.underlyingToken.decimals;
+  const tokenDecimals = event.amm.underlyingToken.decimals;
 
   const ownerAddress = event.args?.recipient as string;
   const tickLower = event.args?.tickLower as number;
@@ -42,19 +45,22 @@ export const parseSwapEvent = (chainId: number, amm: AMM, event: ethers.Event): 
     ethers.utils.formatUnits(event.args?.cumulativeFeeIncurred as ethers.BigNumber, tokenDecimals),
   );
 
+  const amm = event.amm;
+
   return {
     eventId: eventId.toLowerCase(),
     eventBlockNumber: event.blockNumber,
-    chainId,
-    vammAddress: amm.id.toLowerCase(),
+    chainId: event.chainId,
+    vammAddress: event.amm.id.toLowerCase(),
     ownerAddress: ownerAddress.toLowerCase(),
     tickLower,
     tickUpper,
     variableTokenDelta,
     fixedTokenDeltaUnbalanced,
     feePaidToLps: cumulativeFeeIncurred,
-    rateOracle: amm.rateOracle.id,
-    underlyingToken: amm.underlyingToken.name,
-    marginEngineAddress: amm.marginEngineAddress,
+    rateOracle: event.amm.rateOracle.protocol,
+    underlyingToken: event.amm.underlyingToken.name,
+    marginEngineAddress: event.amm.marginEngineAddress,
+    amm,
   };
 };

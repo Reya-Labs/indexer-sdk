@@ -1,47 +1,54 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
+import { Redis } from 'ioredis';
 
-import { getLastProcessedBlock, setLastProcessedBlock } from '../big-query-support';
-import { getPreviousEvents } from '../common';
+import { applyProcessingWindow, CACHE_SET_WINDOW, getPreviousEvents, setFromBlock } from '../common';
+import { LP_PROCESSING_WINDOW } from '../common';
 import { processPassiveSwapEvents } from './processPassiveSwapEvents';
 
 export const syncPassiveSwaps = async (
-  chainId: number,
   bigQuery: BigQuery,
   amms: AMM[],
-  toBlock: number,
-  minBlockInterval: number,
+  redisClient?: Redis,
 ): Promise<void> => {
-  const promises = amms.map(async (amm) => {
-    const processId = `passive_swap_sync_${chainId}_${amm.id}`;
-    let lastProcessedBlock = await getLastProcessedBlock(bigQuery, processId);
+  const previousSwapEvents = await getPreviousEvents('passive_swaps_lp', amms, ['swap'], bigQuery);
 
-    const events = await getPreviousEvents(amm, 'swap', lastProcessedBlock + 1, toBlock);
+  const promises = Object.values(previousSwapEvents).map(async ({ events, fromBlock }) => {
+    const chainId = events[0].chainId;
+    const minBlockInterval = LP_PROCESSING_WINDOW[chainId];
+    const eventsWithInterval = applyProcessingWindow(events, minBlockInterval);
 
-    if (events.length === 0) {
-      return;
-    }
+    const cacheSetWindow = CACHE_SET_WINDOW[events[0].chainId];
+    let latestCachedBlock = fromBlock;
 
-    console.log(
-      `Processing passive swaps for AMM ${amm.id} between blocks: ${
-        lastProcessedBlock + 1
-      }-${toBlock}...`,
-    );
+    for (const event of eventsWithInterval) {
+      await processPassiveSwapEvents({
+        bigQuery,
+        event,
+      });
 
-    for (const event of events) {
-      if (event.blockNumber >= lastProcessedBlock + minBlockInterval) {
-        await processPassiveSwapEvents({
-          bigQuery,
-          amm,
-          event,
-          chainId,
-        });
+      const currentBlock = event.blockNumber;
+      const currentWindow = currentBlock - latestCachedBlock;
 
-        lastProcessedBlock = event.blockNumber;
+      if (currentWindow > cacheSetWindow) {
+
+        const isSet = await setFromBlock(
+          {
+            syncProcessName: 'passive_swaps_lp',
+            chainId: event.chainId,
+            vammAddress: event.address,
+            lastBlock: event.blockNumber,
+            redisClient: redisClient,
+            bigQuery: bigQuery
+  
+          }
+        );
+
+        latestCachedBlock = isSet ? event.blockNumber : latestCachedBlock;
+
       }
+    
     }
-
-    await setLastProcessedBlock(bigQuery, processId, lastProcessedBlock);
   });
 
   const output = await Promise.allSettled(promises);

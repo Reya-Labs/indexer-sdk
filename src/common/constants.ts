@@ -2,18 +2,35 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
+export const cache: string | undefined = process.env.CACHE;
+
 export const APR_2023_TIMESTAMP = 1680337863;
 
+export const GECKO_KEY = process.env.COINGECKO_API_KEY;
 export const PROJECT_ID = 'risk-monitoring-361911';
 export const DATASET_ID = 'voltz_v1_positions';
+export const SWAPS_TABLE_ID = process.env.SWAPS_TABLE_ID
+  ? `${PROJECT_ID}.${DATASET_ID}.${process.env.SWAPS_TABLE_ID}`
+  : '';
+export const POSITIONS_TABLE_ID = process.env.POSITIONS_TABLE_ID
+  ? `${PROJECT_ID}.${DATASET_ID}.${process.env.POSITIONS_TABLE_ID}`
+  : '';
+export const MINTS_BURNS_TABLE_ID = process.env.MINTS_BURNS_TABLE_ID
+  ? `${PROJECT_ID}.${DATASET_ID}.${process.env.MINTS_BURNS_TABLE_ID}`
+  : '';
 
-export const SWAPS_TABLE_ID = process.env.SWAPS_TABLE_ID || '';
-export const POSITIONS_TABLE_ID = process.env.POSITIONS_TABLE_ID || '';
-export const LAST_PROCESSED_BLOCK_ID = process.env.LAST_PROCESSED_BLOCK_ID || '';
+export const LAST_PROCESSED_BLOCK_TABLE_ID = process.env.LAST_PROCESSED_BLOCK_TABLE_ID
+? `${PROJECT_ID}.${DATASET_ID}.${process.env.LAST_PROCESSED_BLOCK_TABLE_ID}`
+: '';
 
 export const LP_PROCESSING_WINDOW: { [chainId: number]: number } = {
   1: 24 * 300,
   42161: 340000,
+};
+
+export const CACHE_SET_WINDOW: { [chainId: number]: number } = {
+  1: 24 * 60,
+  42161: 68000,
 };
 
 export const SECONDS_IN_YEAR = 31_536_000;

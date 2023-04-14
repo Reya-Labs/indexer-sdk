@@ -3,13 +3,7 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 
 import { BigQueryPositionRow } from '../../big-query-support';
 import { secondsToBqDate } from '../../big-query-support/utils';
-import {
-  DATASET_ID,
-  getLiquidityIndex,
-  POSITIONS_TABLE_ID,
-  PROJECT_ID,
-  SWAPS_TABLE_ID,
-} from '../../common';
+import { getLiquidityIndex, POSITIONS_TABLE_ID, SWAPS_TABLE_ID } from '../../common';
 import { generatePositionRow } from '../../common/swaps/generatePositionRow';
 import { SwapEventInfo } from '../../common/swaps/parseSwapEvent';
 import { generateSwapRow } from './generateSwapRow';
@@ -21,7 +15,7 @@ export const insertNewSwapAndUpdateExistingPosition = async (
   eventTimestamp: number,
   existingPosition: BigQueryPositionRow,
 ): Promise<void> => {
-  console.log('Inserting new active swap and updating position following swap...');
+  // console.log('Inserting new active swap and updating position following swap...');
 
   const swapRow = generateSwapRow(eventInfo, eventTimestamp);
 
@@ -40,7 +34,6 @@ export const insertNewSwapAndUpdateExistingPosition = async (
     liquidityIndexAtRootEvent,
   );
 
-  const swapTableId = `${PROJECT_ID}.${DATASET_ID}.${SWAPS_TABLE_ID}`;
   const rawSwapRow = `
     \"${swapRow.eventId}\",
     \"${swapRow.vammAddress}\",
@@ -58,12 +51,10 @@ export const insertNewSwapAndUpdateExistingPosition = async (
     ${swapRow.chainId}
   `;
 
-  const positionTableId = `${PROJECT_ID}.${DATASET_ID}.${POSITIONS_TABLE_ID}`;
-
   const sqlTransactionQuery = `
-    INSERT INTO \`${swapTableId}\` VALUES (${rawSwapRow});
+    INSERT INTO \`${SWAPS_TABLE_ID}\` VALUES (${rawSwapRow});
                 
-    UPDATE \`${positionTableId}\`
+    UPDATE \`${POSITIONS_TABLE_ID}\`
       SET realizedPnLFromSwaps=${positionRow.realizedPnLFromSwaps},
           realizedPnLFromFeesPaid=${positionRow.realizedPnLFromFeesPaid},
           netNotionalLocked=${positionRow.netNotionalLocked},
@@ -93,7 +84,7 @@ export const insertNewSwapAndUpdateExistingPosition = async (
 
   await bigQuery.query(options);
 
-  console.log(
-    `Inserted new swap with eventId ${eventInfo.eventId} and updated LP position (${positionRow.ownerAddress},[${positionRow.tickLower},${positionRow.tickUpper}]) in AMM ${amm.id}, chain ID ${eventInfo.chainId}`,
-  );
+  // console.log(
+  //   `Inserted new swap with eventId ${eventInfo.eventId} and updated LP position (${positionRow.ownerAddress},[${positionRow.tickLower},${positionRow.tickUpper}]) in AMM ${amm.id}, chain ID ${eventInfo.chainId}`,
+  // );
 };

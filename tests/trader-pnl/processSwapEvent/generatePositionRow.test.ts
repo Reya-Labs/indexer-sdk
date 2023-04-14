@@ -4,7 +4,7 @@
 import { BigQueryPositionRow } from '../../../src/big-query-support';
 import { generatePositionRow } from '../../../src/common/swaps/generatePositionRow';
 import { SwapEventInfo } from '../../../src/common/swaps/parseSwapEvent';
-import { mockedAMM } from './utils';
+import { mockedAMM } from '../../utils';
 
 jest.useFakeTimers().setSystemTime(1640995200000); // 01.01.2022
 jest.mock('../../../src/common/services/getLiquidityIndex.ts', () => {

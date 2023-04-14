@@ -4,7 +4,7 @@
 
 import { BigQuery } from '@google-cloud/bigquery';
 
-import { DATASET_ID, LAST_PROCESSED_BLOCK_ID, PROJECT_ID } from '../common';
+import { LAST_PROCESSED_BLOCK_TABLE_ID } from '../common';
 import { getLastProcessedBlock } from './getLastProcessedBlock';
 
 const getInsertQuery = (tableId: string, processId: string, lastBlock: number): string => {
@@ -21,22 +21,35 @@ export const setLastProcessedBlock = async (
   bigQuery: BigQuery,
   processId: string,
   lastBlock: number,
-): Promise<void> => {
-  const tableId = `${PROJECT_ID}.${DATASET_ID}.${LAST_PROCESSED_BLOCK_ID}`;
+): Promise<boolean> => {
 
-  const doesExist = (await getLastProcessedBlock(bigQuery, processId)) > 0;
+  // todo: find a way to dynamically understand if the queue is full
+  // do batched mutations vs. for loops -> P1 or consider using a different db
+  // https://cloud.google.com/bigquery/docs/best-practices-performance-patterns#dml_statements_that_update_or_insert_single_rows
 
-  const sqlQuery = doesExist
-    ? getUpdateQuery(tableId, processId, lastBlock)
-    : getInsertQuery(tableId, processId, lastBlock);
+  try { 
 
-  const options = {
-    query: sqlQuery,
-    timeoutMs: 100000,
-    useLegacySql: false,
-  };
+    const doesExist = (await getLastProcessedBlock(bigQuery, processId)) > 0;
 
-  await bigQuery.query(options);
+    const sqlQuery = doesExist
+      ? getUpdateQuery(LAST_PROCESSED_BLOCK_TABLE_ID, processId, lastBlock)
+      : getInsertQuery(LAST_PROCESSED_BLOCK_TABLE_ID, processId, lastBlock);
+  
+    const options = {
+      query: sqlQuery,
+      timeoutMs: 100000,
+      useLegacySql: false,
+    };
+  
+    await bigQuery.query(options);
+  
+    // console.log(`Updated last processed block of ${processId} to ${lastBlock}`);
 
-  console.log(`Updated last processed block of ${processId} to ${lastBlock}`);
+    return true;
+
+  } catch (error) {
+    // console.log(`Setting last processed block in bq cache has failed with error: ${(error as Error).message}.`);
+    return false;
+  }
+
 };

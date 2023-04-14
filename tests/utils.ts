@@ -25,7 +25,7 @@ export const mockedAMM = {
     decimals: 18,
   },
   rateOracle: {
-    id: 'rate-oracle',
+    protocol: 'rate-oracle',
     protocolId: 1,
   },
   marginEngineAddress: 'margin-engine',

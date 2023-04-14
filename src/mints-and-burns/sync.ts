@@ -3,31 +3,27 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 import { Redis } from 'ioredis';
 
 import { CACHE_SET_WINDOW, getPreviousEvents, setFromBlock } from '../common';
-import { processMintEvent } from './processMintEvent';
+import { processMintOrBurnEvent } from './processMintAndBurnEvent';
 
-export const syncMints = async (
-  bigQuery: BigQuery,
-  amms: AMM[],
-  redisClient?: Redis,
-): Promise<void> => {
-  const previousMintEvents = await getPreviousEvents('mints_lp', amms, ['mint'], bigQuery);
+export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient?: Redis): Promise<void> => {
+  const previousMintEvents = await getPreviousEvents('mint_burn', amms, ['mint', 'burn'], bigQuery);
 
   const promises = Object.values(previousMintEvents).map(async ({ events, fromBlock }) => {
 
+    // since all events that belong to a given vamm have the same chain id
     const cacheSetWindow = CACHE_SET_WINDOW[events[0].chainId];
     let latestCachedBlock = fromBlock;
 
     for (const event of events) {
-      await processMintEvent(bigQuery, event);
+      await processMintOrBurnEvent(bigQuery, event);
 
       const currentBlock = event.blockNumber;
       const currentWindow = currentBlock - latestCachedBlock;
-
       if (currentWindow > cacheSetWindow) {
 
         const isSet = await setFromBlock(
           {
-            syncProcessName: 'mint_lp',
+            syncProcessName: 'mint_burn',
             chainId: event.chainId,
             vammAddress: event.address,
             lastBlock: event.blockNumber,
@@ -38,8 +34,7 @@ export const syncMints = async (
 
         latestCachedBlock = isSet ? event.blockNumber : latestCachedBlock;
 
-      }
-      
+      }      
     }
   });
 

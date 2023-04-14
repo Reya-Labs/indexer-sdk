@@ -4,18 +4,16 @@
 
 import { BigQuery } from '@google-cloud/bigquery';
 
-import { SWAPS_TABLE_ID } from '../common';
+import { MINTS_BURNS_TABLE_ID } from '../common';
 import { bqNumericToNumber, bqTimestampToUnixSeconds } from './utils';
 
-export type BigQuerySwapRow = {
+export type BigQueryMintOrBurnRow = {
   eventId: string;
   vammAddress: string;
   ownerAddress: string;
   tickLower: number;
   tickUpper: number;
-  variableTokenDelta: number;
-  fixedTokenDeltaUnbalanced: number;
-  feePaidToLps: number;
+  notionalDelta: number;
   eventTimestamp: number;
   rowLastUpdatedTimestamp: number;
   rateOracle: string;
@@ -24,11 +22,11 @@ export type BigQuerySwapRow = {
   chainId: number;
 };
 
-export const pullExistingSwapRow = async (
+export const pullExistingMintOrBurnRow = async (
   bigQuery: BigQuery,
   eventId: string,
-): Promise<BigQuerySwapRow | null> => {
-  const sqlQuery = `SELECT * FROM \`${SWAPS_TABLE_ID}\` WHERE eventId=\"${eventId}\"`;
+): Promise<BigQueryMintOrBurnRow | null> => {
+  const sqlQuery = `SELECT * FROM \`${MINTS_BURNS_TABLE_ID}\` WHERE eventId=\"${eventId}\"`;
 
   const options = {
     query: sqlQuery,
@@ -46,9 +44,7 @@ export const pullExistingSwapRow = async (
     ownerAddress: rows[0].ownerAddress,
     tickLower: rows[0].tickLower,
     tickUpper: rows[0].tickUpper,
-    variableTokenDelta: bqNumericToNumber(rows[0].variableTokenDelta),
-    fixedTokenDeltaUnbalanced: bqNumericToNumber(rows[0].fixedTokenDeltaUnbalanced),
-    feePaidToLps: bqNumericToNumber(rows[0].feePaidToLps),
+    notionalDelta: bqNumericToNumber(rows[0].notionalDelta),
     eventTimestamp: bqTimestampToUnixSeconds(rows[0].eventTimestamp),
     rowLastUpdatedTimestamp: bqTimestampToUnixSeconds(rows[0].rowLastUpdatedTimestamp),
     rateOracle: rows[0].rateOracle,
