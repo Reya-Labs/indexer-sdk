@@ -32,6 +32,8 @@ export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient?: Redis)
           }
         );
 
+        latestCachedBlock = event.blockNumber;
+
       }      
     }
   });

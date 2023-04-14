@@ -38,6 +38,8 @@ export const syncActiveSwaps = async (
             
         );
 
+        latestCachedBlock = event.blockNumber;
+
       }
           
     }

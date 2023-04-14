@@ -36,6 +36,8 @@ export const syncMints = async (
           }
         );
 
+        latestCachedBlock = event.blockNumber;
+
       }
       
     }
