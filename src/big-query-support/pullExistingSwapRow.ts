@@ -46,7 +46,7 @@ export const pullExistingSwapRow = async (
     ownerAddress: rows[0].ownerAddress,
     tickLower: rows[0].tickLower,
     tickUpper: rows[0].tickUpper,
-    variableTokenDelta: bqNumericToNumber(rows[0].notionalLocked),
+    variableTokenDelta: bqNumericToNumber(rows[0].variableTokenDelta),
     fixedTokenDeltaUnbalanced: bqNumericToNumber(rows[0].fixedTokenDeltaUnbalanced),
     feePaidToLps: bqNumericToNumber(rows[0].feePaidToLps),
     eventTimestamp: bqTimestampToUnixSeconds(rows[0].eventTimestamp),
