@@ -27,7 +27,7 @@ export const getChainLevelInformation = async ({
   geckoKey,
 }: GetChainLevelInformationArgs): Promise<ChainLevelInformation> => {
   const volumeQuery = `
-        SELECT underlyingToken, sum(abs(notionalLocked)) as amount
+        SELECT underlyingToken, sum(abs(variableTokenDelta)) as amount
         FROM \`${activeSwapsTableId}\`
         
         WHERE (eventTimestamp > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 30 DAY)) 

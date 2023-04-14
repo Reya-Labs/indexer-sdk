@@ -15,7 +15,7 @@ export const getCurrentEthER = async (geckoKey: string): Promise<number> => {
 export async function dollarAggregate(rows: any, geckoKey: string) {
   let totalInDollars = 0;
 
-  for (let i = 1; i < rows.length; i++) {
+  for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
     let amountInDollars = Number(row.amount.toString());
 
