@@ -23,19 +23,30 @@ export const setLastProcessedBlock = async (
   lastBlock: number,
 ): Promise<void> => {
 
-  const doesExist = (await getLastProcessedBlock(bigQuery, processId)) > 0;
+  // todo: find a way to dynamically understand if the queue is full
+  // do batched mutations vs. for loops -> P1 or consider using a different db
+  // https://cloud.google.com/bigquery/docs/best-practices-performance-patterns#dml_statements_that_update_or_insert_single_rows
 
-  const sqlQuery = doesExist
-    ? getUpdateQuery(LAST_PROCESSED_BLOCK_TABLE_ID, processId, lastBlock)
-    : getInsertQuery(LAST_PROCESSED_BLOCK_TABLE_ID, processId, lastBlock);
+  try { 
 
-  const options = {
-    query: sqlQuery,
-    timeoutMs: 100000,
-    useLegacySql: false,
-  };
+    const doesExist = (await getLastProcessedBlock(bigQuery, processId)) > 0;
 
-  await bigQuery.query(options);
+    const sqlQuery = doesExist
+      ? getUpdateQuery(LAST_PROCESSED_BLOCK_TABLE_ID, processId, lastBlock)
+      : getInsertQuery(LAST_PROCESSED_BLOCK_TABLE_ID, processId, lastBlock);
+  
+    const options = {
+      query: sqlQuery,
+      timeoutMs: 100000,
+      useLegacySql: false,
+    };
+  
+    await bigQuery.query(options);
+  
+    console.log(`Updated last processed block of ${processId} to ${lastBlock}`);
 
-  console.log(`Updated last processed block of ${processId} to ${lastBlock}`);
+  } catch (error) {
+    console.log(`Setting last processed block in bq cache has failed with error: ${(error as Error).message}.`);
+  }
+
 };
