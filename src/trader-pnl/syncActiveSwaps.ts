@@ -25,7 +25,7 @@ export const syncActiveSwaps = async (
 
       if (currentWindow > cacheSetWindow) {
 
-        await setFromBlock(
+        const isSet = await setFromBlock(
 
           {
             syncProcessName: 'active_swaps',
@@ -38,7 +38,7 @@ export const syncActiveSwaps = async (
             
         );
 
-        latestCachedBlock = event.blockNumber;
+        latestCachedBlock = isSet ? event.blockNumber : latestCachedBlock;
 
       }
           

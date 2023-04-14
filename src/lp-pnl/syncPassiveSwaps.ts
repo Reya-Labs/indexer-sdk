@@ -32,7 +32,7 @@ export const syncPassiveSwaps = async (
 
       if (currentWindow > cacheSetWindow) {
 
-        await setFromBlock(
+        const isSet = await setFromBlock(
           {
             syncProcessName: 'passive_swaps_lp',
             chainId: event.chainId,
@@ -44,7 +44,7 @@ export const syncPassiveSwaps = async (
           }
         );
 
-        latestCachedBlock = event.blockNumber;
+        latestCachedBlock = isSet ? event.blockNumber : latestCachedBlock;
 
       }
     

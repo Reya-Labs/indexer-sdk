@@ -25,7 +25,7 @@ export const syncMints = async (
 
       if (currentWindow > cacheSetWindow) {
 
-        await setFromBlock(
+        const isSet = await setFromBlock(
           {
             syncProcessName: 'mint_lp',
             chainId: event.chainId,
@@ -36,7 +36,7 @@ export const syncMints = async (
           }
         );
 
-        latestCachedBlock = event.blockNumber;
+        latestCachedBlock = isSet ? event.blockNumber : latestCachedBlock;
 
       }
       
