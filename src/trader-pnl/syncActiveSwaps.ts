@@ -16,12 +16,16 @@ export const syncActiveSwaps = async (
     for (const swapEvent of events) {
       await processSwapEvent(bigQuery, swapEvent);
         await setFromBlock(
-          'active_swaps',
-          swapEvent.chainId,
-          swapEvent.address,
-          swapEvent.blockNumber,
-          redisClient,
-          bigQuery
+
+          {
+            syncProcessName: 'active_swaps',
+            chainId: swapEvent.chainId,
+            vammAddress: swapEvent.address,
+            lastBlock: swapEvent.blockNumber,
+            redisClient: redisClient,
+            bigQuery: bigQuery
+          }
+           
         );
     }
   });

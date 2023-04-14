@@ -17,12 +17,14 @@ export const syncMints = async (
       await processMintEvent(bigQuery, swapEvent);
       
         await setFromBlock(
-          'mint_lp',
-          swapEvent.chainId,
-          swapEvent.address,
-          swapEvent.blockNumber,
-          redisClient,
-          bigQuery
+          {
+            syncProcessName: 'mint_lp',
+            chainId: swapEvent.chainId,
+            vammAddress: swapEvent.address,
+            lastBlock: swapEvent.blockNumber,
+            redisClient: redisClient,
+            bigQuery: bigQuery
+          }
         );
       
     }
