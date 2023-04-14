@@ -9,6 +9,7 @@ import { generateVAMMContract } from './generateVAMMContract';
 export type VammEvents = {
   [ammId: string]: {
     events: ExtendedEvent[];
+    fromBlock: number;
   };
 };
 
@@ -62,7 +63,7 @@ export const getPreviousEvents = async (
 ): Promise<VammEvents> => {
   const totalEventsByVammAddress: VammEvents = {};
 
-  const promises = amms.map(async (amm): Promise<[AMM, ExtendedEvent[]]> => {
+  const promises = amms.map(async (amm): Promise<[AMM, ExtendedEvent[], number]> => {
     const toBlock = await amm.provider.getBlockNumber();
     const chainId = (await amm.provider.getNetwork()).chainId;
 
@@ -98,14 +99,14 @@ export const getPreviousEvents = async (
       allEvents.push(...extendedEvents);
     }
 
-    return [amm, allEvents];
+    return [amm, allEvents, fromBlock];
   });
 
   const response = await Promise.allSettled(promises);
 
   response.forEach((ammResponse) => {
     if (ammResponse.status === 'fulfilled') {
-      const [amm, events] = ammResponse.value;
+      const [amm, events, fromBlock] = ammResponse.value;
 
       const sortedEvents = events.sort((a, b) => {
         if (a.blockNumber === b.blockNumber) {
@@ -117,6 +118,7 @@ export const getPreviousEvents = async (
 
       totalEventsByVammAddress[amm.id] = {
         events: sortedEvents,
+        fromBlock: fromBlock
       };
     } else {
       throw new Error(`Unable to retrieve events`);

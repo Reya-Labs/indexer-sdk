@@ -28,6 +28,11 @@ export const LP_PROCESSING_WINDOW: { [chainId: number]: number } = {
   42161: 340000,
 };
 
+export const CACHE_SET_WINDOW: { [chainId: number]: number } = {
+  1: 24 * 60,
+  42161: 68000,
+};
+
 export const SECONDS_IN_YEAR = 31_536_000;
 
 // todo: remove this when QA over
