@@ -56,7 +56,7 @@ const getEventFilter = (vammContract: ethers.Contract, eventType: string): ether
 
 // todo: test and break down
 export const getPreviousEvents = async (
-  syncProcessName: 'active_swaps' | 'mints_lp' | 'passive_swaps_lp' | 'mint_burn',
+  syncProcessName: 'active_swaps' | 'mints_lp' | 'passive_swaps_lp' | 'mint_burn' | 'lp_speed',
   amms: AMM[],
   eventTypes: ('mint' | 'burn' | 'swap')[],
   bigQuery: BigQuery
