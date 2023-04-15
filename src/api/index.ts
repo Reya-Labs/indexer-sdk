@@ -1,4 +1,5 @@
 import * as dotenv from 'dotenv';
+import * as http from "http"
 
 dotenv.config();
 
@@ -18,12 +19,20 @@ async function authenticateImplicitWithAdc() {
 const main = async () => {
   await authenticateImplicitWithAdc();
 
-  const PORT = process.env.PORT || 8080;
-  console.log('PORT:', PORT);
-  app.listen(PORT, () => {
-    console.log('Listening...');
+  // const PORT = process.env.PORT || 8080;
+  // console.log('PORT:', PORT);
+  // app.listen(PORT, () => {
+  //   console.log('Listening...');
+  // });
+
+
+  app.set('port', process.env.PORT || 8080);
+  http.createServer(app).listen(app.get('port'),
+    () => {
+    console.log("Express server listening on port " + app.get('port'));
   });
-};
+
+};  
 
 main()
   .then(() => {
