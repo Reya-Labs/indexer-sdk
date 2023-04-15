@@ -30,6 +30,7 @@ export const insertNewMintOrBurn = async (
   `;
 
   // build and fire sql query
+  // todo: get rid of transaction in here
   const sqlTransactionQuery = `
     BEGIN 
       BEGIN TRANSACTION;
