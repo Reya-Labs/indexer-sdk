@@ -1,9 +1,8 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import cors from 'cors';
-// import * as dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 import express from 'express';
-
-// import { pullExistingPositionRow } from '../big-query-support';
+import { pullExistingPositionRow } from '../big-query-support';
 import {
   GECKO_KEY,
   getLiquidityIndex,
@@ -13,195 +12,129 @@ import {
   SECONDS_IN_YEAR,
   SWAPS_TABLE_ID,
 } from '../common';
-// import { getAmm, getBlockAtTimestamp } from './common';
+import { getAmm, getBlockAtTimestamp } from './common';
 import { ChainLevelInformation, getChainLevelInformation } from './common/getChainLevelInformation';
 
-// dotenv.config();
+dotenv.config();
 
-const bigQuery = new BigQuery({
-  projectId: PROJECT_ID,
-});
+  const bigQuery = new BigQuery({
+    projectId: PROJECT_ID,
+  });
 
-export const app = express();
+  export const app = express();
 
-app.use(cors());
+  app.use(cors());
 
-app.get('/', (req, res) => {
-  res.send('Welcome to Voltz API');
-});
+  app.get('/', (req, res) => {
+    res.send('Welcome to Voltz API');
+  });
 
 
-app.get('/chains', async (req, res) => {
+  app.get('/chains/:chainId', async (req, res) => {
 
-  if (GECKO_KEY === undefined) {
-    throw Error('Make sure Coingecko Key is provided');
-  }
-
-  // const result: ChainLevelInformation = await getChainLevelInformation({
-  //         chainId: 1,
-  //         activeSwapsTableId: SWAPS_TABLE_ID,
-  //         mintsAndBurnsTableId: MINTS_BURNS_TABLE_ID,
-  //         bigQuery: bigQuery,
-  //         geckoKey: GECKO_KEY,
-  // });
-
-  // console.log(result); 
-
-  res.json(
-    {
-      value: 10000000
+    if (GECKO_KEY === undefined) {
+      throw Error('Make sure Coingecko Key is provided');
     }
-  );
 
-  // res.send(`lolz dont' have any chains info`);
+    const chainId = Number(req.params.chainId);
 
-  // res.json({
-  //   ...result
-  // });
-  
-});
+    const result: ChainLevelInformation = await getChainLevelInformation({
+            chainId: chainId,
+            activeSwapsTableId: SWAPS_TABLE_ID,
+            mintsAndBurnsTableId: MINTS_BURNS_TABLE_ID,
+            bigQuery: bigQuery,
+            geckoKey: GECKO_KEY,
+    });
 
-// app.get('/', (req: Request, res: Response) => {
-//   res.send({
-//     message: 'Hello World!'
-//   })
-// })
+    res.json(
+      {
+        volume30Day: result.volume30Day,
+        totalLiquidity: result.totalLiquidity
+      }
+    );
+    
+  });
 
-// OLD //
+  app.get('/positions/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper', async (req, res) => {
 
-// constants
-// const apiPrefix = '/api';
+    console.log(`Requesting information about a position`);
 
-// create app and setup middleware
+    const chainId = Number(req.params.chainId);
+    const vammAddress = req.params.vammAddress;
+    const ownerAddress = req.params.ownerAddress;
+    const tickLower = Number(req.params.tickLower);
+    const tickUpper = Number(req.params.tickUpper);
+
+    const existingPosition = await pullExistingPositionRow(
+      bigQuery,
+      chainId,
+      vammAddress,
+      ownerAddress,
+      tickLower,
+      tickUpper,
+    );
+
+    if (!existingPosition) {
+
+      res.json({
+        realizedPnLFromSwaps: null,
+        realizedPnLFromFeesPaid: null,
+        realizedPnLFromFeesCollected: null,
+        unrealizedPnLFromSwaps: null,
+      });
+
+      return;
+
+    }
 
 
-// Configure routes
-// const router = express.Router();
+    const amm = await getAmm(chainId, vammAddress);
+    const maturityTimestamp = Math.floor(amm.termEndTimestampInMS / 1000);
+    let currentTimestamp = (await amm.provider.getBlock('latest')).timestamp;
 
-// Get server info
-// router.get('/', (req, res) => {
-//   return res.send(`Hello World`);
-// });
+    let currentLiquidityIndex = 1;
 
-// Get realized & unrealized pnl of a position (then layer in lps through the same route)
-// router.get('/positions/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper', (req, res) => {
+    if (maturityTimestamp >= currentTimestamp) {
+      currentLiquidityIndex = await getLiquidityIndex(
+        chainId,
+        amm.provider,
+        amm.marginEngineAddress,
+      );
+    } else {
+      const blockAtSettlement = await getBlockAtTimestamp(amm.provider, maturityTimestamp);
 
-//   console.log(`Requesting information about a position`);
+      currentLiquidityIndex = await getLiquidityIndex(
+        chainId,
+        amm.provider,
+        amm.marginEngineAddress,
+        blockAtSettlement,
+      );
 
-//   const chainId = Number(req.params.chainId);
-//   const vammAddress = req.params.vammAddress;
-//   const ownerAddress = req.params.ownerAddress;
-//   const tickLower = Number(req.params.tickLower);
-//   const tickUpper = Number(req.params.tickUpper);
+      currentTimestamp = maturityTimestamp;
+    }
 
-//   const process = async () => {
-//     const existingPosition = await pullExistingPositionRow(
-//       bigQuery,
-//       chainId,
-//       vammAddress,
-//       ownerAddress,
-//       tickLower,
-//       tickUpper,
-//     );
+    // realized PnL
+    const rPnL =
+      existingPosition.cashflowLiFactor * currentLiquidityIndex +
+      (existingPosition.cashflowTimeFactor * currentTimestamp) / SECONDS_IN_YEAR +
+      existingPosition.cashflowFreeTerm;
 
-//     if (!existingPosition) {
-//       res.json({
-//         realizedPnLFromSwaps: 0,
-//         realizedPnLFromFeesPaid: 0,
-//         realizedPnLFromFeesCollected: 0,
-//         unrealizedPnLFromSwaps: 0,
-//       });
+    // unrealized PnL
+    const currentFixedRate = await amm.getFixedApr();
 
-//       return;
-//     }
+    const timeInYears = getTimeInYearsBetweenTimestamps(currentTimestamp, maturityTimestamp);
 
-//     const amm = await getAmm(chainId, vammAddress);
-//     const maturityTimestamp = Math.floor(amm.termEndTimestampInMS / 1000);
+    const uPnL =
+      existingPosition.netNotionalLocked *
+      (currentFixedRate - existingPosition.netFixedRateLocked) *
+      timeInYears;
+    
 
-//     let currentTimestamp = (await amm.provider.getBlock('latest')).timestamp;
+      res.json({
+        realizedPnLFromSwaps: rPnL,
+        realizedPnLFromFeesPaid: existingPosition.realizedPnLFromFeesPaid,
+        realizedPnLFromFeesCollected: existingPosition.realizedPnLFromFeesCollected,
+        unrealizedPnLFromSwaps: uPnL,
+      });
 
-//     let currentLiquidityIndex = 1;
-//     if (maturityTimestamp >= currentTimestamp) {
-//       currentLiquidityIndex = await getLiquidityIndex(
-//         chainId,
-//         amm.provider,
-//         amm.marginEngineAddress,
-//       );
-//     } else {
-//       const blockAtSettlement = await getBlockAtTimestamp(amm.provider, maturityTimestamp);
-
-//       currentLiquidityIndex = await getLiquidityIndex(
-//         chainId,
-//         amm.provider,
-//         amm.marginEngineAddress,
-//         blockAtSettlement,
-//       );
-
-//       currentTimestamp = maturityTimestamp;
-//     }
-
-//     // realized PnL
-//     const rPnL =
-//       existingPosition.cashflowLiFactor * currentLiquidityIndex +
-//       (existingPosition.cashflowTimeFactor * currentTimestamp) / SECONDS_IN_YEAR +
-//       existingPosition.cashflowFreeTerm;
-
-//     // unrealized PnL
-//     const currentFixedRate = await amm.getFixedApr();
-
-//     const timeInYears = getTimeInYearsBetweenTimestamps(currentTimestamp, maturityTimestamp);
-
-//     const uPnL =
-//       existingPosition.netNotionalLocked *
-//       (currentFixedRate - existingPosition.netFixedRateLocked) *
-//       timeInYears;
-
-//     res.json({
-//       realizedPnLFromSwaps: rPnL,
-//       realizedPnLFromFeesPaid: existingPosition.realizedPnLFromFeesPaid,
-//       realizedPnLFromFeesCollected: existingPosition.realizedPnLFromFeesCollected,
-//       unrealizedPnLFromSwaps: uPnL,
-//     });
-//   };
-
-//   process()
-//     .then((result) => {
-//       res.json(result);
-//     })
-//     .catch((error) => {
-//       console.log(`There is an error with message: ${(error as Error).message}`);
-//     });
-// });
-
-// router.get('/chains/:chainId', (req, res) => {
-
-//   console.log(`Requesting information about a chain`);
-
-//   const chainId = Number(req.params.chainId);
-
-//   const process = async () => {
-//     if (GECKO_KEY === undefined) {
-//       throw Error('Make sure Coingecko Key is provided');
-//     }
-//     const result: ChainLevelInformation = await getChainLevelInformation({
-//       chainId,
-//       activeSwapsTableId: SWAPS_TABLE_ID,
-//       mintsAndBurnsTableId: MINTS_BURNS_TABLE_ID,
-//       bigQuery: bigQuery,
-//       geckoKey: GECKO_KEY,
-//     });
-//     res.json({
-//       ...result,
-//     });
-//   };
-
-//   process()
-//     .then((result) => {
-//       res.json(result);
-//     })
-//     .catch((error) => {
-//       console.log(`There is an error with message: ${(error as Error).message}`);
-//     });
-// });
-
-// app.use(apiPrefix, router);
+  });
