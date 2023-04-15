@@ -1,6 +1,6 @@
 import { BigNumber, Event } from 'ethers';
 
-import { parseSwapEvent, SwapEventInfo } from '../../../src/common/swaps/parseSwapEvent';
+import { parseSwapEvent, SwapEventInfo } from '../../../src/common/event-parsers/parseSwapEvent';
 import { ExtendedEvent } from '../../../src/common/types';
 import { mockedAMM } from '../../utils';
 

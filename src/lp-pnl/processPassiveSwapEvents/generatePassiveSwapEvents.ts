@@ -3,7 +3,7 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 import { BigQueryPositionRow } from '../../big-query-support';
 import { getVariableFactor } from '../../common';
 import { generateMarginEngineContract } from '../../common/contract-services/generateMarginEngineContract';
-import { SwapEventInfo } from '../../common/swaps/parseSwapEvent';
+import { SwapEventInfo } from '../../common/event-parsers/parseSwapEvent';
 import { generatePassiveSwapEvent } from './generatePassiveSwapEvent';
 import { getOnChainFixedAndVariableTokenBalances } from './getOnChainFixedAndVariableTokenBalances';
 

@@ -4,7 +4,7 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 import { secondsToBqDate } from '../../big-query-support/utils';
 import { getLiquidityIndex, POSITIONS_TABLE_ID, SWAPS_TABLE_ID } from '../../common';
 import { generatePositionRow } from '../../common/swaps/generatePositionRow';
-import { SwapEventInfo } from '../../common/swaps/parseSwapEvent';
+import { SwapEventInfo } from '../../common/event-parsers/parseSwapEvent';
 import { generateSwapRow } from './generateSwapRow';
 
 export const insertNewSwapAndNewPosition = async (
