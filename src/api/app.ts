@@ -45,9 +45,11 @@ app.get('/chains', async (req, res) => {
           geckoKey: GECKO_KEY,
   });
 
-  res.json({
-    ...result
-  });
+  res.send(`lolz dont' have any chains info`);
+
+  // res.json({
+  //   ...result
+  // });
   
 });
 
