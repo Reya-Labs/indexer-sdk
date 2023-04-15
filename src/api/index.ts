@@ -30,11 +30,13 @@ const main = async () => {
   // // http.createServer(app).listen(app.get('port'), 'localhost');
   // http.createServer()
   
-  http.createServer(function (req, res) {
+  // http.createServer(function (req, res) {
 
-    res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.end('Hello World');
-  }).listen(8080, 'localhost');
+  //   res.writeHead(200, {'Content-Type': 'text/plain'});
+  //   res.end('Hello World');
+  // }).listen(8080, 'localhost');
+
+  http.createServer(app).listen(8080, 'localhost');
 
 };  
 
