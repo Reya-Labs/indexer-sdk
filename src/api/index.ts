@@ -1,5 +1,4 @@
 import * as dotenv from 'dotenv';
-import * as http from "http"
 
 dotenv.config();
 
