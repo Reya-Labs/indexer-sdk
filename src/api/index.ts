@@ -26,11 +26,15 @@ const main = async () => {
   // });
 
 
-  app.set('port', process.env.PORT || 8080);
-  http.createServer(app).listen(app.get('port'),
-    () => {
-    console.log("Express server listening on port " + app.get('port'));
-  });
+  // app.set('port', process.env.PORT || 8080);
+  // // http.createServer(app).listen(app.get('port'), 'localhost');
+  // http.createServer()
+  
+  http.createServer(function (req, res) {
+
+    res.writeHead(200, {'Content-Type': 'text/plain'});
+    res.end('Hello World');
+  }).listen(8080, 'localhost');
 
 };  
 
