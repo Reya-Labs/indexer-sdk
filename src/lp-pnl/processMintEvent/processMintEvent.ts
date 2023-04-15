@@ -1,7 +1,7 @@
 import { BigQuery } from '@google-cloud/bigquery';
 
 import { pullExistingPositionRow } from '../../big-query-support';
-import { parseMintOrBurnEvent } from '../../common/mints-and-burns/parseMintOrBurnEvent';
+import { parseMintOrBurnEvent } from '../../common/event-parsers/parseMintOrBurnEvent';
 import { ExtendedEvent } from '../../common/types';
 import { insertNewMintAndNewPosition } from './insertNewMintAndNewPosition';
 

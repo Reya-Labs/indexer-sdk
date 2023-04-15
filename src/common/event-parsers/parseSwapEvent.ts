@@ -21,6 +21,7 @@ export type SwapEventInfo = {
   underlyingToken: string;
   marginEngineAddress: string;
   amm: AMM;
+  type: string;
 };
 
 export const parseSwapEvent = (event: ExtendedEvent): SwapEventInfo => {
@@ -62,5 +63,6 @@ export const parseSwapEvent = (event: ExtendedEvent): SwapEventInfo => {
     underlyingToken: event.amm.underlyingToken.name,
     marginEngineAddress: event.amm.marginEngineAddress,
     amm,
+    type: event.type
   };
 };

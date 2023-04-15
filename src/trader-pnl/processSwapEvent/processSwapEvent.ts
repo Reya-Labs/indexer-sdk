@@ -1,7 +1,7 @@
 import { BigQuery } from '@google-cloud/bigquery';
 
 import { pullExistingPositionRow, pullExistingSwapRow } from '../../big-query-support';
-import { parseSwapEvent } from '../../common/swaps/parseSwapEvent';
+import { parseSwapEvent } from '../../common/event-parsers/parseSwapEvent';
 import { ExtendedEvent } from '../../common/types';
 import { insertNewSwapAndNewPosition } from './insertNewSwapAndNewPosition';
 import { insertNewSwapAndUpdateExistingPosition } from './insertNewSwapAndUpdateExistingPosition';

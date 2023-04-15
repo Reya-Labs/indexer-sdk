@@ -3,7 +3,7 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 import { BigQueryPositionRow } from '../../big-query-support';
 import { getLiquidityIndex } from '../../common';
 import { generatePositionRow } from '../../common/swaps/generatePositionRow';
-import { SwapEventInfo } from '../../common/swaps/parseSwapEvent';
+import { SwapEventInfo } from '../../common/event-parsers/parseSwapEvent';
 
 type Args = {
   passiveSwapEvents: SwapEventInfo[];

@@ -3,7 +3,7 @@
 
 import { BigQueryPositionRow } from '../../../src/big-query-support';
 import { generatePositionRow } from '../../../src/common/swaps/generatePositionRow';
-import { SwapEventInfo } from '../../../src/common/swaps/parseSwapEvent';
+import { SwapEventInfo } from '../../../src/common/event-parsers/parseSwapEvent';
 import { mockedAMM } from '../../utils';
 
 jest.useFakeTimers().setSystemTime(1640995200000); // 01.01.2022

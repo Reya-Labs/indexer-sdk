@@ -3,7 +3,7 @@ import { BigQuery } from '@google-cloud/bigquery';
 import { BigQueryMintOrBurnRow } from '../../big-query-support';
 import { secondsToBqDate } from '../../big-query-support/utils';
 import { MINTS_BURNS_TABLE_ID } from '../../common';
-import { MintOrBurnEventInfo } from '../../common/mints-and-burns/parseMintOrBurnEvent';
+import { MintOrBurnEventInfo } from '../../common/event-parsers/parseMintOrBurnEvent';
 import { generateMintOrBurnRow } from './generateMintOrBurnRow';
 
 export const insertNewMintOrBurn = async (
