@@ -31,7 +31,7 @@ app.get('/', (req, res) => {
 });
 
 
-app.get('/chains', async (req, res) => {
+app.get('/chains/:chainId', async (req, res) => {
 
   console.log(req); 
 
@@ -39,19 +39,24 @@ app.get('/chains', async (req, res) => {
     throw Error('Make sure Coingecko Key is provided');
   }
 
+  const chainId = Number(req.params.chainId);
+
+  console.log(chainId);
+
   const result: ChainLevelInformation = await getChainLevelInformation({
-          chainId: 1,
+          chainId: chainId,
           activeSwapsTableId: SWAPS_TABLE_ID,
           mintsAndBurnsTableId: MINTS_BURNS_TABLE_ID,
           bigQuery: bigQuery,
           geckoKey: GECKO_KEY,
   });
 
-  console.log(result.totalLiquidity)
+  console.log(result.totalLiquidity);
 
   res.json(
     {
-      liqudity: result.totalLiquidity
+      volume30Day: result.volume30Day,
+      totalLiquidity: result.totalLiquidity
     }
   );
 
