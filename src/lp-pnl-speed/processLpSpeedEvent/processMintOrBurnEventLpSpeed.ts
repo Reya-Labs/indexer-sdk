@@ -1,12 +1,12 @@
 import { BigQuery } from "@google-cloud/bigquery";
 import { MintOrBurnEventInfo } from "../../common/event-parsers";
-import { pullExistingPositionRow } from "../../big-query-support";
+import { BigQueryPositionRow, pullExistingPositionRow } from "../../big-query-support";
 import { gPositionInsertQueryMint } from "./gPositionInsertQueryMint";
 import { gPositionUpdateQueryMintBurn } from "./gPositionUpdateQueryMintBurn";
 
 export const processMintOrBurnEventLpSpeed = async (bigQuery: BigQuery, eventInfo: MintOrBurnEventInfo): Promise<void> => {
 
-    const existingPosition = await pullExistingPositionRow(
+    const existingPosition: BigQueryPositionRow | null = await pullExistingPositionRow(
         bigQuery,
         eventInfo.chainId,
         eventInfo.vammAddress,
