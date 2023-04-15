@@ -37,15 +37,23 @@ app.get('/chains', async (req, res) => {
     throw Error('Make sure Coingecko Key is provided');
   }
 
-  const result: ChainLevelInformation = await getChainLevelInformation({
-          chainId: 1,
-          activeSwapsTableId: SWAPS_TABLE_ID,
-          mintsAndBurnsTableId: MINTS_BURNS_TABLE_ID,
-          bigQuery: bigQuery,
-          geckoKey: GECKO_KEY,
-  });
+  // const result: ChainLevelInformation = await getChainLevelInformation({
+  //         chainId: 1,
+  //         activeSwapsTableId: SWAPS_TABLE_ID,
+  //         mintsAndBurnsTableId: MINTS_BURNS_TABLE_ID,
+  //         bigQuery: bigQuery,
+  //         geckoKey: GECKO_KEY,
+  // });
 
-  res.send(`lolz dont' have any chains info`);
+  // console.log(result); 
+
+  res.json(
+    {
+      value: 10000000
+    }
+  );
+
+  // res.send(`lolz dont' have any chains info`);
 
   // res.json({
   //   ...result
