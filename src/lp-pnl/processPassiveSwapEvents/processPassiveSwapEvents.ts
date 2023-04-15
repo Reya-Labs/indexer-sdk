@@ -25,7 +25,7 @@ export const processPassiveSwapEvents = async ({
   const existingLpPositionRows = await pullExistingLpPositionRows(
     bigQuery,
     event.amm.id,
-    rootEventInfo.timestamp,
+    rootEventInfo.eventTimestamp,
   );
 
   const { passiveSwapEvents, affectedLps } = await generatePassiveSwapEvents({
@@ -44,7 +44,7 @@ export const processPassiveSwapEvents = async ({
     affectedLps,
     chainId: rootEventInfo.chainId,
     amm: rootEventInfo.amm,
-    eventTimestamp: rootEventInfo.timestamp,
+    eventTimestamp: rootEventInfo.eventTimestamp,
     eventBlockNumber: rootEventInfo.eventBlockNumber,
   });
 
@@ -60,7 +60,7 @@ export const processPassiveSwapEvents = async ({
 
   console.log(
     `Updated ${lpPositionRows.length} LP positions from passive swap at ${new Date(
-      rootEventInfo.timestamp * 1000,
+      rootEventInfo.eventTimestamp * 1000,
     ).toISOString()}`,
   );
 };
