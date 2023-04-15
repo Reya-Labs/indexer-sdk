@@ -1,34 +1,55 @@
-// import { BigQuery } from '@google-cloud/bigquery';
+import { BigQuery } from '@google-cloud/bigquery';
 import cors from 'cors';
 // import * as dotenv from 'dotenv';
 import express from 'express';
 
 // import { pullExistingPositionRow } from '../big-query-support';
-// import {
-//   GECKO_KEY,
-//   getLiquidityIndex,
-//   getTimeInYearsBetweenTimestamps,
-//   MINTS_BURNS_TABLE_ID,
-//   PROJECT_ID,
-//   SECONDS_IN_YEAR,
-//   SWAPS_TABLE_ID,
-// } from '../common';
+import {
+  GECKO_KEY,
+  getLiquidityIndex,
+  getTimeInYearsBetweenTimestamps,
+  MINTS_BURNS_TABLE_ID,
+  PROJECT_ID,
+  SECONDS_IN_YEAR,
+  SWAPS_TABLE_ID,
+} from '../common';
 // import { getAmm, getBlockAtTimestamp } from './common';
-// import { ChainLevelInformation, getChainLevelInformation } from './common/getChainLevelInformation';
+import { ChainLevelInformation, getChainLevelInformation } from './common/getChainLevelInformation';
 
 // dotenv.config();
 
-// const bigQuery = new BigQuery({
-//   projectId: PROJECT_ID,
-// });
+const bigQuery = new BigQuery({
+  projectId: PROJECT_ID,
+});
 
 export const app = express();
 
 app.use(cors());
 
 app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+  res.send('Welcome to Voltz API');
+});
+
+
+app.get('/chains', async (req, res) => {
+
+  if (GECKO_KEY === undefined) {
+    throw Error('Make sure Coingecko Key is provided');
+  }
+
+  const result: ChainLevelInformation = await getChainLevelInformation({
+          chainId: 1,
+          activeSwapsTableId: SWAPS_TABLE_ID,
+          mintsAndBurnsTableId: MINTS_BURNS_TABLE_ID,
+          bigQuery: bigQuery,
+          geckoKey: GECKO_KEY,
+  });
+
+  res.json({
+    ...result
+  });
+  
+});
 
 // app.get('/', (req: Request, res: Response) => {
 //   res.send({
