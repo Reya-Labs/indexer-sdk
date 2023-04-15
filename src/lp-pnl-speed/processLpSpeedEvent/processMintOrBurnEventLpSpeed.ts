@@ -1,6 +1,8 @@
 import { BigQuery } from "@google-cloud/bigquery";
 import { MintOrBurnEventInfo } from "../../common/event-parsers";
 import { pullExistingPositionRow } from "../../big-query-support";
+import { gPositionInsertQueryMint } from "./gPositionInsertQueryMint";
+import { gPositionUpdateQueryMintBurn } from "./gPositionUpdateQueryMintBurn";
 
 export const processMintOrBurnEventLpSpeed = async (bigQuery: BigQuery, eventInfo: MintOrBurnEventInfo): Promise<void> => {
 
