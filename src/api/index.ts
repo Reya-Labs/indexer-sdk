@@ -19,24 +19,11 @@ async function authenticateImplicitWithAdc() {
 const main = async () => {
   await authenticateImplicitWithAdc();
 
-  // const PORT = process.env.PORT || 8080;
-  // console.log('PORT:', PORT);
-  // app.listen(PORT, () => {
-  //   console.log('Listening...');
-  // });
-
-
-  // app.set('port', process.env.PORT || 8080);
-  // // http.createServer(app).listen(app.get('port'), 'localhost');
-  // http.createServer()
-  
-  // http.createServer(function (req, res) {
-
-  //   res.writeHead(200, {'Content-Type': 'text/plain'});
-  //   res.end('Hello World');
-  // }).listen(8080, 'localhost');
-
-  http.createServer(app).listen(8080, 'localhost');
+  const PORT = process.env.PORT || 8080;
+  console.log('PORT:', PORT);
+  app.listen(PORT, () => {
+    console.log(`Listening on port ${PORT}}`);
+  });  
 
 };  
 

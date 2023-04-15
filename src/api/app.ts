@@ -1,42 +1,56 @@
-import { BigQuery } from '@google-cloud/bigquery';
+// import { BigQuery } from '@google-cloud/bigquery';
 import cors from 'cors';
-import * as dotenv from 'dotenv';
+// import * as dotenv from 'dotenv';
 import express from 'express';
 
-import { pullExistingPositionRow } from '../big-query-support';
-import {
-  GECKO_KEY,
-  getLiquidityIndex,
-  getTimeInYearsBetweenTimestamps,
-  MINTS_BURNS_TABLE_ID,
-  PROJECT_ID,
-  SECONDS_IN_YEAR,
-  SWAPS_TABLE_ID,
-} from '../common';
-import { getAmm, getBlockAtTimestamp } from './common';
-import { ChainLevelInformation, getChainLevelInformation } from './common/getChainLevelInformation';
+// import { pullExistingPositionRow } from '../big-query-support';
+// import {
+//   GECKO_KEY,
+//   getLiquidityIndex,
+//   getTimeInYearsBetweenTimestamps,
+//   MINTS_BURNS_TABLE_ID,
+//   PROJECT_ID,
+//   SECONDS_IN_YEAR,
+//   SWAPS_TABLE_ID,
+// } from '../common';
+// import { getAmm, getBlockAtTimestamp } from './common';
+// import { ChainLevelInformation, getChainLevelInformation } from './common/getChainLevelInformation';
 
-dotenv.config();
+// dotenv.config();
 
-const bigQuery = new BigQuery({
-  projectId: PROJECT_ID,
-});
+// const bigQuery = new BigQuery({
+//   projectId: PROJECT_ID,
+// });
 
-// constants
-const apiPrefix = '/api';
-
-// create app and setup middleware
 export const app = express();
 
 app.use(cors());
 
+app.get('/', (req, res) => {
+  res.send('Hello World!')
+})
+
+// app.get('/', (req: Request, res: Response) => {
+//   res.send({
+//     message: 'Hello World!'
+//   })
+// })
+
+// OLD //
+
+// constants
+// const apiPrefix = '/api';
+
+// create app and setup middleware
+
+
 // Configure routes
-const router = express.Router();
+// const router = express.Router();
 
 // Get server info
-router.get('/', (req, res) => {
-  return res.send(`Hello World`);
-});
+// router.get('/', (req, res) => {
+//   return res.send(`Hello World`);
+// });
 
 // Get realized & unrealized pnl of a position (then layer in lps through the same route)
 // router.get('/positions/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper', (req, res) => {
@@ -159,4 +173,4 @@ router.get('/', (req, res) => {
 //     });
 // });
 
-app.use(apiPrefix, router);
+// app.use(apiPrefix, router);
