@@ -59,12 +59,6 @@ app.get('/chains/:chainId', async (req, res) => {
       totalLiquidity: result.totalLiquidity
     }
   );
-
-  // res.send(`lolz dont' have any chains info`);
-
-  // res.json({
-  //   ...result
-  // });
   
 });
 
