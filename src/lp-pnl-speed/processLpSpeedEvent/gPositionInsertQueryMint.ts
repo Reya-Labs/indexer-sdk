@@ -1,5 +1,5 @@
 import { secondsToBqDate } from "../../big-query-support/utils";
-import { getTimestampInSeconds } from "../../common";
+import { POSITIONS_TABLE_ID, getTimestampInSeconds } from "../../common";
 import { MintOrBurnEventInfo } from "../../common/event-parsers";
 
 export const gPositionInsertQueryMint = (
@@ -12,7 +12,7 @@ export const gPositionInsertQueryMint = (
 
     const rowLastUpdatedTimestamp = getTimestampInSeconds();
 
-    const query = `
+    const row = `
     \"${eventInfo.marginEngineAddress}\",
     \"${eventInfo.vammAddress}\",
     \"${eventInfo.ownerAddress}\",
@@ -38,7 +38,8 @@ export const gPositionInsertQueryMint = (
     ${0},
     ${0}
   `;
-    
 
+    const query = `INSERT INTO \`${POSITIONS_TABLE_ID}\` VALUES(${row})`
+    
     return query;
 }
