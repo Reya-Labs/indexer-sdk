@@ -9,11 +9,8 @@ export const processMintOrBurnEvent = async (
   bigQuery: BigQuery,
   event: ExtendedEvent,
 ): Promise<void> => {
-  // console.log('Mint Or Burn processing...');
 
   const eventInfo = parseMintOrBurnEvent(event);
-
-  const eventTimestamp = (await event.getBlock()).timestamp;
 
   const existingMintOrBurnEvent = await pullExistingMintOrBurnRow(bigQuery, eventInfo.eventId);
 
@@ -22,6 +19,6 @@ export const processMintOrBurnEvent = async (
     return;
   }
 
-  await insertNewMintOrBurn(bigQuery, eventInfo, eventTimestamp);
+  await insertNewMintOrBurn(bigQuery, eventInfo);
   
 };

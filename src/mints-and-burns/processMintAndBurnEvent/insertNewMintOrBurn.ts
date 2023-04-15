@@ -9,10 +9,9 @@ import { generateMintOrBurnRow } from './generateMintOrBurnRow';
 export const insertNewMintOrBurn = async (
   bigQuery: BigQuery,
   eventInfo: MintOrBurnEventInfo,
-  eventTimestamp: number,
 ): Promise<void> => {
   // console.log('Inserting a new mint or burn');
-  const mintOrBurnRow: BigQueryMintOrBurnRow = generateMintOrBurnRow(eventInfo, eventTimestamp);
+  const mintOrBurnRow: BigQueryMintOrBurnRow = generateMintOrBurnRow(eventInfo);
 
   const rawMintOrBurnRow = `
     \"${mintOrBurnRow.eventId}\",

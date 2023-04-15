@@ -16,6 +16,7 @@ export type MintOrBurnEventInfo = {
   marginEngineAddress: string;
   amm: AMM;
   type: string;
+  eventTimestamp: number;
 };
 
 export const parseMintOrBurnEvent = (event: ExtendedEvent): MintOrBurnEventInfo => {
@@ -46,6 +47,7 @@ export const parseMintOrBurnEvent = (event: ExtendedEvent): MintOrBurnEventInfo 
     underlyingToken: event.amm.underlyingToken.name,
     marginEngineAddress: event.amm.marginEngineAddress,
     amm,
-    type: event.type
+    type: event.type,
+    eventTimestamp: event.timestamp
   };
 };

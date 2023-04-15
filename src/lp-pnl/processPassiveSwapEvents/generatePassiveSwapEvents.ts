@@ -11,14 +11,12 @@ type GeneratePassiveSwapEventsArgs = {
   existingLpPositionRows: BigQueryPositionRow[];
   amm: AMM;
   rootEventInfo: SwapEventInfo;
-  eventTimestamp: number;
 };
 
 export const generatePassiveSwapEvents = async ({
   existingLpPositionRows,
   amm,
-  rootEventInfo,
-  eventTimestamp,
+  rootEventInfo
 }: GeneratePassiveSwapEventsArgs): Promise<{
   passiveSwapEvents: SwapEventInfo[];
   affectedLps: BigQueryPositionRow[];
@@ -34,7 +32,7 @@ export const generatePassiveSwapEvents = async ({
     amm.provider,
     amm.marginEngineAddress,
     startTimestamp,
-    eventTimestamp,
+    rootEventInfo.timestamp,
     rootEventInfo.eventBlockNumber,
   );
 
@@ -45,7 +43,7 @@ export const generatePassiveSwapEvents = async ({
   const affectedLps: BigQueryPositionRow[] = [];
 
   for (const positionRow of existingLpPositionRows) {
-    if (positionRow.lastUpdatedTimestamp < eventTimestamp) {
+    if (positionRow.lastUpdatedTimestamp < rootEventInfo.timestamp) {
       // position is initialized before event timestamp
       const ownerAddress = positionRow.ownerAddress;
       const tickLower = positionRow.tickLower;
@@ -73,7 +71,7 @@ export const generatePassiveSwapEvents = async ({
           ownerAddress,
           tickLower,
           tickUpper,
-          eventTimestamp,
+          eventTimestamp: rootEventInfo.timestamp,
           startTimestamp,
           maturityTimestamp,
           variableFactorStartToCurrent,

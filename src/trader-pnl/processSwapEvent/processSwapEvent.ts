@@ -16,8 +16,6 @@ export const processSwapEvent = async (bigQuery: BigQuery, event: ExtendedEvent)
     return;
   }
 
-  const eventTimestamp = (await event.getBlock()).timestamp;
-
   // check if a position already exists in the positions table
   const existingPosition = await pullExistingPositionRow(
     bigQuery,
@@ -34,11 +32,11 @@ export const processSwapEvent = async (bigQuery: BigQuery, event: ExtendedEvent)
       bigQuery,
       event.amm,
       eventInfo,
-      eventTimestamp,
+      event.timestamp,
       existingPosition,
     );
   } else {
     // this is the first swap of the position
-    await insertNewSwapAndNewPosition(bigQuery, event.amm, eventInfo, eventTimestamp);
+    await insertNewSwapAndNewPosition(bigQuery, event.amm, eventInfo, event.timestamp);
   }
 };
