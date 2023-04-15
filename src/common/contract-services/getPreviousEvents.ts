@@ -86,15 +86,21 @@ export const getPreviousEvents = async (
         fromBlock,
         toBlock,
       );
-      const extendedEvents: ExtendedEvent[] = events.map((event) => {
-        const extendedEvent = {
-          ...event,
-          type: eventType,
-          amm: amm,
-          chainId: chainId,
-        };
-        return extendedEvent;
-      });
+
+      const extendedEvents: ExtendedEvent[] = await Promise.all(
+        events.map(async (event) => {
+          const eventTimestamp = (await event.getBlock()).timestamp;
+            const extendedEvent = {
+              ...event,
+              type: eventType,
+              amm: amm,
+              chainId: chainId,
+              timestamp: eventTimestamp
+            };
+            return extendedEvent;
+          })
+      );
+
 
       allEvents.push(...extendedEvents);
     }

@@ -21,21 +21,17 @@ export const processPassiveSwapEvents = async ({
   // Get information about root swap event
   const rootEventInfo = parseSwapEvent(event);
 
-  // Retrieve the current timestamp
-  const eventTimestamp = (await event.getBlock()).timestamp;
-
   // Retrieve all LPs
   const existingLpPositionRows = await pullExistingLpPositionRows(
     bigQuery,
     event.amm.id,
-    eventTimestamp,
+    rootEventInfo.timestamp,
   );
 
   const { passiveSwapEvents, affectedLps } = await generatePassiveSwapEvents({
     existingLpPositionRows,
     amm: event.amm,
-    rootEventInfo,
-    eventTimestamp,
+    rootEventInfo
   });
 
   if (affectedLps.length === 0) {
@@ -48,7 +44,7 @@ export const processPassiveSwapEvents = async ({
     affectedLps,
     chainId: rootEventInfo.chainId,
     amm: rootEventInfo.amm,
-    eventTimestamp,
+    eventTimestamp: rootEventInfo.timestamp,
     eventBlockNumber: rootEventInfo.eventBlockNumber,
   });
 
@@ -64,7 +60,7 @@ export const processPassiveSwapEvents = async ({
 
   console.log(
     `Updated ${lpPositionRows.length} LP positions from passive swap at ${new Date(
-      eventTimestamp * 1000,
+      rootEventInfo.timestamp * 1000,
     ).toISOString()}`,
   );
 };

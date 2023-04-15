@@ -6,7 +6,7 @@ import { ExtendedEvent } from '../../common/types';
 import { insertNewMintAndNewPosition } from './insertNewMintAndNewPosition';
 
 export const processMintEvent = async (bigQuery: BigQuery, event: ExtendedEvent): Promise<void> => {
-  
+
   const eventInfo = parseMintOrBurnEvent(event);
 
   const existingPosition = await pullExistingPositionRow(
@@ -25,8 +25,6 @@ export const processMintEvent = async (bigQuery: BigQuery, event: ExtendedEvent)
     // to keep things simple, we just need mints to make sure we capture and don't miss any lps
     // don't care about tracking notional liquidity provided by looking through updated mints and burns yet
 
-    const eventTimestamp = (await event.getBlock()).timestamp;
-
-    await insertNewMintAndNewPosition(bigQuery, eventInfo, eventTimestamp);
+    await insertNewMintAndNewPosition(bigQuery, eventInfo);
   }
 };

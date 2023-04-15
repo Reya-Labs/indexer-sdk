@@ -4,7 +4,6 @@ import { MintOrBurnEventInfo } from '../event-parsers/parseMintOrBurnEvent';
 
 export const generateLpPositionRow = (
   eventInfo: MintOrBurnEventInfo,
-  eventTimestamp: number,
 ): BigQueryPositionRow => {
   const rowLastUpdatedTimestamp = getTimestampInSeconds();
 
@@ -18,7 +17,7 @@ export const generateLpPositionRow = (
     realizedPnLFromFeesPaid: 0,
     netNotionalLocked: 0,
     netFixedRateLocked: 0,
-    lastUpdatedTimestamp: eventTimestamp,
+    lastUpdatedTimestamp: eventInfo.timestamp,
     notionalLiquidityProvided: eventInfo.notionalDelta,
     realizedPnLFromFeesCollected: 0,
     netMarginDeposited: 0,
@@ -26,7 +25,7 @@ export const generateLpPositionRow = (
     rowLastUpdatedTimestamp: rowLastUpdatedTimestamp,
     fixedTokenBalance: 0,
     variableTokenBalance: 0,
-    positionInitializationTimestamp: eventTimestamp,
+    positionInitializationTimestamp: eventInfo.timestamp,
     rateOracle: eventInfo.amm.rateOracle.id,
     underlyingToken: eventInfo.amm.underlyingToken.name,
     chainId: eventInfo.chainId,

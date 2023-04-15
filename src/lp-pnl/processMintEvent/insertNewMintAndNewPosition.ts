@@ -9,12 +9,11 @@ import { MintOrBurnEventInfo } from '../../common/event-parsers/parseMintOrBurnE
 export const insertNewMintAndNewPosition = async (
   bigQuery: BigQuery,
   eventInfo: MintOrBurnEventInfo,
-  eventTimestamp: number,
 ): Promise<void> => {
   // console.log('Inserting new LP position following a mint...');
 
   // generate position row
-  const positionRow: BigQueryPositionRow = generateLpPositionRow(eventInfo, eventTimestamp);
+  const positionRow: BigQueryPositionRow = generateLpPositionRow(eventInfo);
 
   const rawPositionRow = `
     \"${positionRow.marginEngineAddress}\",

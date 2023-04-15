@@ -4,13 +4,11 @@ import { MintOrBurnEventInfo } from '../../common/event-parsers/parseMintOrBurnE
 
 export const generateMintOrBurnRow = (
   eventInfo: MintOrBurnEventInfo,
-  eventTimestamp: number,
 ): BigQueryMintOrBurnRow => {
   const rowLastUpdatedTimestamp = getTimestampInSeconds();
 
   return {
     ...eventInfo,
-    eventTimestamp: eventTimestamp,
     rowLastUpdatedTimestamp: rowLastUpdatedTimestamp,
   };
 };
