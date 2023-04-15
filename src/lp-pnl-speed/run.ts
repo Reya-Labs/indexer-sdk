@@ -4,7 +4,7 @@ import * as dotenv from 'dotenv';
 import { Redis } from 'ioredis';
 
 import { APR_2023_TIMESTAMP, getAmms, PROJECT_ID } from '../common';
-import { syncPassiveSwaps } from './syncPassiveSwaps';
+import { sync } from './sync';
 
 dotenv.config();
 
@@ -22,7 +22,7 @@ export const runPassiveSwaps = async (chainIds: number[], redisClient?: Redis) =
 
   while (true) {
     try {
-      await syncPassiveSwaps(bigQuery, amms, redisClient);
+      await sync(bigQuery, amms, redisClient);
     } catch (error) {
       console.log(`Loop has failed with message: ${(error as Error).message}. It will retry...`);
     }
