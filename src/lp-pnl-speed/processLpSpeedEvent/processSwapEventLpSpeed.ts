@@ -1,10 +1,16 @@
-import { BigQuery } from "@google-cloud/bigquery";
-import { SwapEventInfo } from "../../common/event-parsers";
-import { generateLpPositionUpdatesQuery, pullExistingLpPositionRows } from "../../big-query-support";
-import { generateLpPositionRowsFromPassiveSwaps } from "../../lp-pnl/processPassiveSwapEvents/generateLpPositionRowsFromPassiveSwaps";
+import { BigQuery } from '@google-cloud/bigquery';
 
-export const processSwapEventLpSpeed = async (bigQuery: BigQuery, rootEventInfo: SwapEventInfo): Promise<void> => {
+import {
+  generateLpPositionUpdatesQuery,
+  pullExistingLpPositionRows,
+} from '../../big-query-support';
+import { SwapEventInfo } from '../../common/event-parsers';
+import { generateLpPositionRowsFromPassiveSwaps } from '../../lp-pnl/processPassiveSwapEvents/generateLpPositionRowsFromPassiveSwaps';
 
+export const processSwapEventLpSpeed = async (
+  bigQuery: BigQuery,
+  rootEventInfo: SwapEventInfo,
+): Promise<void> => {
   // Retrieve all LPs
   const existingLpPositionRows = await pullExistingLpPositionRows(
     bigQuery,
@@ -12,11 +18,10 @@ export const processSwapEventLpSpeed = async (bigQuery: BigQuery, rootEventInfo:
     rootEventInfo.eventTimestamp,
   );
 
-
   const { passiveSwapEvents, affectedLps } = await gPassiveSwapEvents({
     existingLpPositionRows,
     amm: rootEventInfo.amm,
-    rootEventInfo
+    rootEventInfo,
   });
 
   if (affectedLps.length === 0) {
@@ -42,5 +47,4 @@ export const processSwapEventLpSpeed = async (bigQuery: BigQuery, rootEventInfo:
   };
 
   await bigQuery.query(options);
-
-}
+};

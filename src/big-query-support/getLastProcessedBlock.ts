@@ -10,7 +10,6 @@ export const getLastProcessedBlock = async (
   bigQuery: BigQuery,
   processId: string,
 ): Promise<number> => {
-
   const sqlQuery = `SELECT * FROM \`${LAST_PROCESSED_BLOCK_TABLE_ID}\` WHERE process_id=\"${processId}\"`;
 
   const options = {

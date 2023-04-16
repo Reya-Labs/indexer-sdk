@@ -59,7 +59,7 @@ export const getPreviousEvents = async (
   syncProcessName: 'active_swaps' | 'mints_lp' | 'passive_swaps_lp' | 'mint_burn' | 'lp_speed',
   amms: AMM[],
   eventTypes: ('mint' | 'burn' | 'swap')[],
-  bigQuery: BigQuery
+  bigQuery: BigQuery,
 ): Promise<VammEvents> => {
   const totalEventsByVammAddress: VammEvents = {};
 
@@ -68,10 +68,10 @@ export const getPreviousEvents = async (
     const chainId = (await amm.provider.getNetwork()).chainId;
 
     const fromBlock = await getFromBlock({
-      syncProcessName, 
+      syncProcessName,
       chainId,
       vammAddress: amm.id,
-      bigQuery: bigQuery
+      bigQuery: bigQuery,
     });
 
     const vammContract = generateVAMMContract(amm.id, amm.provider);
@@ -90,17 +90,16 @@ export const getPreviousEvents = async (
       const extendedEvents: ExtendedEvent[] = await Promise.all(
         events.map(async (event) => {
           const eventTimestamp = (await event.getBlock()).timestamp;
-            const extendedEvent = {
-              ...event,
-              type: eventType,
-              amm: amm,
-              chainId: chainId,
-              timestamp: eventTimestamp
-            };
-            return extendedEvent;
-          })
+          const extendedEvent = {
+            ...event,
+            type: eventType,
+            amm: amm,
+            chainId: chainId,
+            timestamp: eventTimestamp,
+          };
+          return extendedEvent;
+        }),
       );
-
 
       allEvents.push(...extendedEvents);
     }
@@ -124,7 +123,7 @@ export const getPreviousEvents = async (
 
       totalEventsByVammAddress[amm.id] = {
         events: sortedEvents,
-        fromBlock: fromBlock
+        fromBlock: fromBlock,
       };
     } else {
       throw new Error(`Unable to retrieve events`);

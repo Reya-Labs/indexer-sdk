@@ -1,34 +1,36 @@
-import { BigQuery } from "@google-cloud/bigquery";
-import { MintOrBurnEventInfo } from "../../common/event-parsers";
-import { BigQueryPositionRow, pullExistingPositionRow } from "../../big-query-support";
-import { gPositionInsertQueryMint } from "./gPositionInsertQueryMint";
-import { gPositionUpdateQueryMintBurn } from "./gPositionUpdateQueryMintBurn";
+import { BigQuery } from '@google-cloud/bigquery';
 
-export const processMintOrBurnEventLpSpeed = async (bigQuery: BigQuery, eventInfo: MintOrBurnEventInfo): Promise<void> => {
+import { BigQueryPositionRow, pullExistingPositionRow } from '../../big-query-support';
+import { MintOrBurnEventInfo } from '../../common/event-parsers';
+import { gPositionInsertQueryMint } from './gPositionInsertQueryMint';
+import { gPositionUpdateQueryMintBurn } from './gPositionUpdateQueryMintBurn';
 
-    const existingPosition: BigQueryPositionRow | null = await pullExistingPositionRow(
-        bigQuery,
-        eventInfo.chainId,
-        eventInfo.vammAddress,
-        eventInfo.ownerAddress,
-        eventInfo.tickLower,
-        eventInfo.tickUpper,
-    );
+export const processMintOrBurnEventLpSpeed = async (
+  bigQuery: BigQuery,
+  eventInfo: MintOrBurnEventInfo,
+): Promise<void> => {
+  const existingPosition: BigQueryPositionRow | null = await pullExistingPositionRow(
+    bigQuery,
+    eventInfo.chainId,
+    eventInfo.vammAddress,
+    eventInfo.ownerAddress,
+    eventInfo.tickLower,
+    eventInfo.tickUpper,
+  );
 
-    let query = ``;
+  let query = ``;
 
-    if (existingPosition) { 
-        query = gPositionUpdateQueryMintBurn(existingPosition, eventInfo);
-    } else { 
-        query = gPositionInsertQueryMint(eventInfo);
-    }   
+  if (existingPosition) {
+    query = gPositionUpdateQueryMintBurn(existingPosition, eventInfo);
+  } else {
+    query = gPositionInsertQueryMint(eventInfo);
+  }
 
-    const options = {
-        query: query,
-        timeoutMs: 100000,
-        useLegacySql: false,
-    };
-    
-    await bigQuery.query(options);
+  const options = {
+    query: query,
+    timeoutMs: 100000,
+    useLegacySql: false,
+  };
 
-}
+  await bigQuery.query(options);
+};

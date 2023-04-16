@@ -65,6 +65,6 @@ export const parseSwapEvent = (event: ExtendedEvent): SwapEventInfo => {
     marginEngineAddress: event.amm.marginEngineAddress,
     amm,
     type: event.type,
-    eventTimestamp: event.timestamp
+    eventTimestamp: event.timestamp,
   };
 };

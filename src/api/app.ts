@@ -2,6 +2,7 @@ import { BigQuery } from '@google-cloud/bigquery';
 import cors from 'cors';
 import * as dotenv from 'dotenv';
 import express from 'express';
+
 import { pullExistingPositionRow } from '../big-query-support';
 import {
   GECKO_KEY,
@@ -17,46 +18,42 @@ import { ChainLevelInformation, getChainLevelInformation } from './common/getCha
 
 dotenv.config();
 
-  const bigQuery = new BigQuery({
-    projectId: PROJECT_ID,
+const bigQuery = new BigQuery({
+  projectId: PROJECT_ID,
+});
+
+export const app = express();
+
+app.use(cors());
+
+app.get('/', (req, res) => {
+  res.send('Welcome to Voltz API');
+});
+
+app.get('/chains/:chainId', async (req, res) => {
+  if (GECKO_KEY === undefined) {
+    throw Error('Make sure Coingecko Key is provided');
+  }
+
+  const chainId = Number(req.params.chainId);
+
+  const result: ChainLevelInformation = await getChainLevelInformation({
+    chainId: chainId,
+    activeSwapsTableId: SWAPS_TABLE_ID,
+    mintsAndBurnsTableId: MINTS_BURNS_TABLE_ID,
+    bigQuery: bigQuery,
+    geckoKey: GECKO_KEY,
   });
 
-  export const app = express();
-
-  app.use(cors());
-
-  app.get('/', (req, res) => {
-    res.send('Welcome to Voltz API');
+  res.json({
+    volume30Day: result.volume30Day,
+    totalLiquidity: result.totalLiquidity,
   });
+});
 
-
-  app.get('/chains/:chainId', async (req, res) => {
-
-    if (GECKO_KEY === undefined) {
-      throw Error('Make sure Coingecko Key is provided');
-    }
-
-    const chainId = Number(req.params.chainId);
-
-    const result: ChainLevelInformation = await getChainLevelInformation({
-            chainId: chainId,
-            activeSwapsTableId: SWAPS_TABLE_ID,
-            mintsAndBurnsTableId: MINTS_BURNS_TABLE_ID,
-            bigQuery: bigQuery,
-            geckoKey: GECKO_KEY,
-    });
-
-    res.json(
-      {
-        volume30Day: result.volume30Day,
-        totalLiquidity: result.totalLiquidity
-      }
-    );
-    
-  });
-
-  app.get('/positions/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper', async (req, res) => {
-
+app.get(
+  '/positions/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper',
+  async (req, res) => {
     console.log(`Requesting information about a position`);
 
     const chainId = Number(req.params.chainId);
@@ -75,7 +72,6 @@ dotenv.config();
     );
 
     if (!existingPosition) {
-
       res.json({
         realizedPnLFromSwaps: null,
         realizedPnLFromFeesPaid: null,
@@ -84,9 +80,7 @@ dotenv.config();
       });
 
       return;
-
     }
-
 
     const amm = await getAmm(chainId, vammAddress);
     const maturityTimestamp = Math.floor(amm.termEndTimestampInMS / 1000);
@@ -128,13 +122,12 @@ dotenv.config();
       existingPosition.netNotionalLocked *
       (currentFixedRate - existingPosition.netFixedRateLocked) *
       timeInYears;
-    
 
-      res.json({
-        realizedPnLFromSwaps: rPnL,
-        realizedPnLFromFeesPaid: existingPosition.realizedPnLFromFeesPaid,
-        realizedPnLFromFeesCollected: existingPosition.realizedPnLFromFeesCollected,
-        unrealizedPnLFromSwaps: uPnL,
-      });
-
-  });
+    res.json({
+      realizedPnLFromSwaps: rPnL,
+      realizedPnLFromFeesPaid: existingPosition.realizedPnLFromFeesPaid,
+      realizedPnLFromFeesCollected: existingPosition.realizedPnLFromFeesCollected,
+      unrealizedPnLFromSwaps: uPnL,
+    });
+  },
+);

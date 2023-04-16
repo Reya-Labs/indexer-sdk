@@ -22,9 +22,8 @@ const main = async () => {
   console.log('PORT:', PORT);
   app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);
-  });  
-
-};  
+  });
+};
 
 main()
   .then(() => {

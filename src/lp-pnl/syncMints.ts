@@ -13,7 +13,6 @@ export const syncMints = async (
   const previousMintEvents = await getPreviousEvents('mints_lp', amms, ['mint'], bigQuery);
 
   const promises = Object.values(previousMintEvents).map(async ({ events, fromBlock }) => {
-
     const cacheSetWindow = CACHE_SET_WINDOW[events[0].chainId];
     let latestCachedBlock = fromBlock;
 
@@ -24,22 +23,17 @@ export const syncMints = async (
       const currentWindow = currentBlock - latestCachedBlock;
 
       if (currentWindow > cacheSetWindow) {
-
-        const isSet = await setFromBlock(
-          {
-            syncProcessName: 'mint_lp',
-            chainId: event.chainId,
-            vammAddress: event.address,
-            lastBlock: event.blockNumber,
-            redisClient: redisClient,
-            bigQuery: bigQuery
-          }
-        );
+        const isSet = await setFromBlock({
+          syncProcessName: 'mint_lp',
+          chainId: event.chainId,
+          vammAddress: event.address,
+          lastBlock: event.blockNumber,
+          redisClient: redisClient,
+          bigQuery: bigQuery,
+        });
 
         latestCachedBlock = isSet ? event.blockNumber : latestCachedBlock;
-
       }
-      
     }
   });
 

@@ -20,8 +20,8 @@ export const MINTS_BURNS_TABLE_ID = process.env.MINTS_BURNS_TABLE_ID
   : '';
 
 export const LAST_PROCESSED_BLOCK_TABLE_ID = process.env.LAST_PROCESSED_BLOCK_TABLE_ID
-? `${PROJECT_ID}.${DATASET_ID}.${process.env.LAST_PROCESSED_BLOCK_TABLE_ID}`
-: '';
+  ? `${PROJECT_ID}.${DATASET_ID}.${process.env.LAST_PROCESSED_BLOCK_TABLE_ID}`
+  : '';
 
 export const LP_PROCESSING_WINDOW: { [chainId: number]: number } = {
   1: 24 * 300,

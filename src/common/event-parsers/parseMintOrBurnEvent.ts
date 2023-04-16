@@ -48,6 +48,6 @@ export const parseMintOrBurnEvent = (event: ExtendedEvent): MintOrBurnEventInfo 
     marginEngineAddress: event.amm.marginEngineAddress,
     amm,
     type: event.type,
-    eventTimestamp: event.timestamp
+    eventTimestamp: event.timestamp,
   };
 };

@@ -2,7 +2,12 @@ import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
 import { Redis } from 'ioredis';
 
-import { applyProcessingWindow, CACHE_SET_WINDOW, getPreviousEvents, setFromBlock } from '../common';
+import {
+  applyProcessingWindow,
+  CACHE_SET_WINDOW,
+  getPreviousEvents,
+  setFromBlock,
+} from '../common';
 import { LP_PROCESSING_WINDOW } from '../common';
 import { processPassiveSwapEvents } from './processPassiveSwapEvents';
 
@@ -31,23 +36,17 @@ export const syncPassiveSwaps = async (
       const currentWindow = currentBlock - latestCachedBlock;
 
       if (currentWindow > cacheSetWindow) {
-
-        const isSet = await setFromBlock(
-          {
-            syncProcessName: 'passive_swaps_lp',
-            chainId: event.chainId,
-            vammAddress: event.address,
-            lastBlock: event.blockNumber,
-            redisClient: redisClient,
-            bigQuery: bigQuery
-  
-          }
-        );
+        const isSet = await setFromBlock({
+          syncProcessName: 'passive_swaps_lp',
+          chainId: event.chainId,
+          vammAddress: event.address,
+          lastBlock: event.blockNumber,
+          redisClient: redisClient,
+          bigQuery: bigQuery,
+        });
 
         latestCachedBlock = isSet ? event.blockNumber : latestCachedBlock;
-
       }
-    
     }
   });
 

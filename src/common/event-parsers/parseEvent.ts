@@ -1,26 +1,19 @@
 import { ExtendedEvent } from '../types';
-import { SwapEventInfo, parseSwapEvent } from './parseSwapEvent';
 import { MintOrBurnEventInfo, parseMintOrBurnEvent } from './parseMintOrBurnEvent';
-
-
+import { parseSwapEvent,SwapEventInfo } from './parseSwapEvent';
 
 export const parseEvent = (event: ExtendedEvent): SwapEventInfo | MintOrBurnEventInfo => {
+  let parsedEvent: SwapEventInfo | MintOrBurnEventInfo;
 
-    let parsedEvent: SwapEventInfo | MintOrBurnEventInfo;
-
-    switch(event.type) { 
-
-        case ('mint' || 'burn'): { 
-            parsedEvent = parseMintOrBurnEvent(event); 
-        }
-
-        default: {
-            parsedEvent = parseSwapEvent(event);
-        }
-
+  switch (event.type) {
+    case 'mint' || 'burn': {
+      parsedEvent = parseMintOrBurnEvent(event);
     }
 
-    return parsedEvent;
+    default: {
+      parsedEvent = parseSwapEvent(event);
+    }
+  }
 
-
+  return parsedEvent;
 };

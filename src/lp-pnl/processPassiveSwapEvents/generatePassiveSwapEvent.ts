@@ -1,5 +1,5 @@
-import { getFixedTokenDeltaUnbalanced } from '../../common/services';
 import { SwapEventInfo } from '../../common/event-parsers/parseSwapEvent';
+import { getFixedTokenDeltaUnbalanced } from '../../common/services';
 
 export type GeneratePassiveSwapEventArgs = {
   ownerAddress: string;
