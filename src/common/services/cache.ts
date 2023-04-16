@@ -1,63 +1,64 @@
-import { BigQuery } from "@google-cloud/bigquery";
-import { Redis } from "ioredis";
-import { getLastProcessedBlock } from "../../big-query-support/getLastProcessedBlock";
-import { setLastProcessedBlock } from "../../big-query-support/setLastProcessedBlock";
-import { getRedis, setRedis } from "./redisService";
+import { BigQuery } from '@google-cloud/bigquery';
+import { Redis } from 'ioredis';
 
+import { getLastProcessedBlock } from '../../big-query-support/getLastProcessedBlock';
+import { setLastProcessedBlock } from '../../big-query-support/setLastProcessedBlock';
+import { getRedis, setRedis } from './redisService';
 
 export type GetFromBlockArgs = {
-    syncProcessName: string,
-    chainId: number,
-    vammAddress: string,
-    redisClient?: Redis,
-    bigQuery?: BigQuery
-}
+  syncProcessName: string;
+  chainId: number;
+  vammAddress: string;
+  redisClient?: Redis;
+  bigQuery?: BigQuery;
+};
 
-export const getFromBlock = async (
-  {
-    syncProcessName, chainId, vammAddress, redisClient, bigQuery
-  }: GetFromBlockArgs
-): Promise<number> => {
+export const getFromBlock = async ({
+  syncProcessName,
+  chainId,
+  vammAddress,
+  redisClient,
+  bigQuery,
+}: GetFromBlockArgs): Promise<number> => {
+  const processId = `${syncProcessName}_${chainId}_${vammAddress}`;
 
-    const processId =`${syncProcessName}_${chainId}_${vammAddress}`;
+  if (bigQuery !== undefined) {
+    return await getLastProcessedBlock(bigQuery, processId);
+  }
 
-    if (bigQuery !== undefined) {
-        return (await getLastProcessedBlock(bigQuery, processId));
-    }
+  if (redisClient !== undefined) {
+    return await getRedis(processId, redisClient);
+  }
 
-    if (redisClient !== undefined) {
-        return (await getRedis(processId, redisClient));
-    }
-
-    return 0;
-
+  return 0;
 };
 
 export type SetFromBlockArgs = {
-    syncProcessName: string,
-    chainId: number,
-    vammAddress: string,
-    lastBlock: number,
-    redisClient?: Redis,
-    bigQuery?: BigQuery
-}
+  syncProcessName: string;
+  chainId: number;
+  vammAddress: string;
+  lastBlock: number;
+  redisClient?: Redis;
+  bigQuery?: BigQuery;
+};
 
-export const setFromBlock = async (
-  {
-    syncProcessName, chainId, vammAddress, lastBlock, redisClient, bigQuery
-  }: SetFromBlockArgs
-): Promise<boolean> => {
+export const setFromBlock = async ({
+  syncProcessName,
+  chainId,
+  vammAddress,
+  lastBlock,
+  redisClient,
+  bigQuery,
+}: SetFromBlockArgs): Promise<boolean> => {
+  const processId = `${syncProcessName}_${chainId}_${vammAddress}`;
 
-    const processId =`${syncProcessName}_${chainId}_${vammAddress}`;
+  if (bigQuery !== undefined) {
+    return await setLastProcessedBlock(bigQuery, processId, lastBlock);
+  }
 
-    if (bigQuery !== undefined) {
-        return await setLastProcessedBlock(bigQuery, processId, lastBlock);
-    }
+  if (redisClient !== undefined) {
+    return await setRedis(processId, lastBlock, redisClient);
+  }
 
-    if (redisClient !== undefined) { 
-        return await setRedis(processId, lastBlock, redisClient);
-    }
-
-    return false;
-
+  return false;
 };

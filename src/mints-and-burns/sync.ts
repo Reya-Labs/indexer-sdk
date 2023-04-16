@@ -9,7 +9,6 @@ export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient?: Redis)
   const previousMintEvents = await getPreviousEvents('mint_burn', amms, ['mint', 'burn'], bigQuery);
 
   const promises = Object.values(previousMintEvents).map(async ({ events, fromBlock }) => {
-
     // since all events that belong to a given vamm have the same chain id
     const cacheSetWindow = CACHE_SET_WINDOW[events[0].chainId];
     let latestCachedBlock = fromBlock;
@@ -20,21 +19,17 @@ export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient?: Redis)
       const currentBlock = event.blockNumber;
       const currentWindow = currentBlock - latestCachedBlock;
       if (currentWindow > cacheSetWindow) {
-
-        const isSet = await setFromBlock(
-          {
-            syncProcessName: 'mint_burn',
-            chainId: event.chainId,
-            vammAddress: event.address,
-            lastBlock: event.blockNumber,
-            redisClient: redisClient,
-            bigQuery: bigQuery
-          }
-        );
+        const isSet = await setFromBlock({
+          syncProcessName: 'mint_burn',
+          chainId: event.chainId,
+          vammAddress: event.address,
+          lastBlock: event.blockNumber,
+          redisClient: redisClient,
+          bigQuery: bigQuery,
+        });
 
         latestCachedBlock = isSet ? event.blockNumber : latestCachedBlock;
-
-      }      
+      }
     }
   });
 

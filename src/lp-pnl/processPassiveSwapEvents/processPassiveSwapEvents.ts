@@ -31,7 +31,7 @@ export const processPassiveSwapEvents = async ({
   const { passiveSwapEvents, affectedLps } = await generatePassiveSwapEvents({
     existingLpPositionRows,
     amm: event.amm,
-    rootEventInfo
+    rootEventInfo,
   });
 
   if (affectedLps.length === 0) {

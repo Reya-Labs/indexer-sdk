@@ -6,7 +6,6 @@ import { ExtendedEvent } from '../../common/types';
 import { insertNewMintAndNewPosition } from './insertNewMintAndNewPosition';
 
 export const processMintEvent = async (bigQuery: BigQuery, event: ExtendedEvent): Promise<void> => {
-
   const eventInfo = parseMintOrBurnEvent(event);
 
   const existingPosition = await pullExistingPositionRow(

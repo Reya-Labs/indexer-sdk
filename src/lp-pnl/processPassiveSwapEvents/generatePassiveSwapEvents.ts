@@ -16,7 +16,7 @@ type GeneratePassiveSwapEventsArgs = {
 export const generatePassiveSwapEvents = async ({
   existingLpPositionRows,
   amm,
-  rootEventInfo
+  rootEventInfo,
 }: GeneratePassiveSwapEventsArgs): Promise<{
   passiveSwapEvents: SwapEventInfo[];
   affectedLps: BigQueryPositionRow[];

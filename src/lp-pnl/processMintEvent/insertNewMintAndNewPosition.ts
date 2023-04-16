@@ -3,8 +3,8 @@ import { BigQuery } from '@google-cloud/bigquery';
 import { BigQueryPositionRow } from '../../big-query-support';
 import { secondsToBqDate } from '../../big-query-support/utils';
 import { POSITIONS_TABLE_ID } from '../../common';
-import { generateLpPositionRow } from '../../common/mints-and-burns/generateLpPositionRow';
 import { MintOrBurnEventInfo } from '../../common/event-parsers/parseMintOrBurnEvent';
+import { generateLpPositionRow } from '../../common/mints-and-burns/generateLpPositionRow';
 
 export const insertNewMintAndNewPosition = async (
   bigQuery: BigQuery,

@@ -13,7 +13,6 @@ export const syncActiveSwaps = async (
   const previousSwapEvents = await getPreviousEvents('active_swaps', amms, ['swap'], bigQuery);
 
   const promises = Object.values(previousSwapEvents).map(async ({ events, fromBlock }) => {
-
     const cacheSetWindow = CACHE_SET_WINDOW[events[0].chainId];
     let latestCachedBlock = fromBlock;
 
@@ -24,24 +23,17 @@ export const syncActiveSwaps = async (
       const currentWindow = currentBlock - latestCachedBlock;
 
       if (currentWindow > cacheSetWindow) {
-
-        const isSet = await setFromBlock(
-
-          {
-            syncProcessName: 'active_swaps',
-            chainId: event.chainId,
-            vammAddress: event.address,
-            lastBlock: event.blockNumber,
-            redisClient: redisClient,
-            bigQuery: bigQuery
-          }
-            
-        );
+        const isSet = await setFromBlock({
+          syncProcessName: 'active_swaps',
+          chainId: event.chainId,
+          vammAddress: event.address,
+          lastBlock: event.blockNumber,
+          redisClient: redisClient,
+          bigQuery: bigQuery,
+        });
 
         latestCachedBlock = isSet ? event.blockNumber : latestCachedBlock;
-
       }
-          
     }
   });
 

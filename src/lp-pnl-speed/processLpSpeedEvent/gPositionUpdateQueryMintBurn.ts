@@ -1,17 +1,17 @@
-import { BigQueryPositionRow } from "../../big-query-support";
-import { secondsToBqDate } from "../../big-query-support/utils";
-import { POSITIONS_TABLE_ID, getTimestampInSeconds } from "../../common";
-import { MintOrBurnEventInfo } from "../../common/event-parsers";
+import { BigQueryPositionRow } from '../../big-query-support';
+import { secondsToBqDate } from '../../big-query-support/utils';
+import { getTimestampInSeconds,POSITIONS_TABLE_ID } from '../../common';
+import { MintOrBurnEventInfo } from '../../common/event-parsers';
 
 export const gPositionUpdateQueryMintBurn = (
-    existingPosition: BigQueryPositionRow,
-    eventInfo: MintOrBurnEventInfo
+  existingPosition: BigQueryPositionRow,
+  eventInfo: MintOrBurnEventInfo,
 ): string => {
-    
-    const rowLastUpdatedTimestamp = getTimestampInSeconds();
-    const notionalLiquidityProvided = existingPosition.notionalLiquidityProvided + eventInfo.notionalDelta;
+  const rowLastUpdatedTimestamp = getTimestampInSeconds();
+  const notionalLiquidityProvided =
+    existingPosition.notionalLiquidityProvided + eventInfo.notionalDelta;
 
-    const query = `
+  const query = `
     UPDATE \`${POSITIONS_TABLE_ID}\`
         SET notionalLiquidityProvided=${notionalLiquidityProvided},
         rowLastUpdatedTimestamp=\'${secondsToBqDate(rowLastUpdatedTimestamp)}\'
@@ -20,7 +20,7 @@ export const gPositionUpdateQueryMintBurn = (
         ownerAddress=\"${existingPosition.ownerAddress}\" AND
         tickLower=${existingPosition.tickLower} AND 
         tickUpper=${existingPosition.tickUpper};
-    `; 
+    `;
 
-    return query; 
-}
+  return query;
+};
