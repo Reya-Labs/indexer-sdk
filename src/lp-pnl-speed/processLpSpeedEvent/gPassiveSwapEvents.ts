@@ -1,18 +1,18 @@
 import { AMM } from '@voltz-protocol/v1-sdk';
-
 import { BigQueryPositionRow } from '../../big-query-support';
 import { SwapEventInfo } from '../../common/event-parsers/parseSwapEvent';
+import { VAMMPriceChangeEventInfo } from '../../common/event-parsers';
 
 type GPassiveSwapEventsArgs = {
   existingLpPositionRows: BigQueryPositionRow[];
   amm: AMM;
-  rootEventInfo: SwapEventInfo;
+  priceChangeEventInfo: VAMMPriceChangeEventInfo;
 };
 
-export const generatePassiveSwapEvents = async ({
+export const gPassiveSwapEvents = async ({
   existingLpPositionRows,
   amm,
-  rootEventInfo,
+  priceChangeEventInfo,
 }: GPassiveSwapEventsArgs): Promise<{
   passiveSwapEvents: SwapEventInfo[];
   affectedLps: BigQueryPositionRow[];
@@ -29,12 +29,14 @@ export const generatePassiveSwapEvents = async ({
   for (const positionRow of existingLpPositionRows) {
 
 
-    if (positionRow.lastUpdatedTimestamp < rootEventInfo.eventTimestamp) {
+    if (positionRow.lastUpdatedTimestamp < priceChangeEventInfo.eventTimestamp) {
 
       // position is initialized before event timestamp
       const ownerAddress = positionRow.ownerAddress;
       const tickLower = positionRow.tickLower;
       const tickUpper = positionRow.tickUpper;
+
+      
 
       
 
