@@ -6,6 +6,7 @@ import {
 } from '../../big-query-support';
 import { generateLpPositionRowsFromPassiveSwaps } from '../../lp-pnl/processPassiveSwapEvents/generateLpPositionRowsFromPassiveSwaps';
 import { VAMMPriceChangeEventInfo } from '../../common/event-parsers';
+import { gPassiveSwapEvents } from './gPassiveSwapEvents';
 
 
 export const processVAMMPriceChangeEvent = async (
