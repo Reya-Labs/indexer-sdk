@@ -9,7 +9,7 @@ export const processLpSpeedEvent = async (
   bigQuery: BigQuery,
   event: ExtendedEvent,
 ): Promise<void> => {
-  const eventInfo: VAMMPriceChangeEvent | MintOrBurnEventInfo = parseEvent(event);
+  const eventInfo: VAMMPriceChangeEventInfo | MintOrBurnEventInfo = parseEvent(event);
 
   if ('variableTokenDelta' in eventInfo) {
     await processVAMMPriceChangeEvent(bigQuery, eventInfo);
