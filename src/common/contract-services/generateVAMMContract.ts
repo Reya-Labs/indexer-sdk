@@ -14,6 +14,9 @@ export const generateVAMMContract = (
     `
     event Burn(address sender, address indexed owner, int24 indexed tickLower, int24 indexed tickUpper, uint128 amount)
     `,
+    `
+    event VAMMPriceChange(int24 tick)
+    `,
   ];
 
   const contract = new ethers.Contract(address, abi, provider);
