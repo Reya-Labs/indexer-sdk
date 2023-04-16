@@ -37,13 +37,60 @@ export const calculatePassiveTokenDeltas = (
     liquidity: number,
     tickUpper: number,
     tickLower: number,
-    tickCurrent: number
+    tickCurrent: number,
+    tickPrevious: number
 ): PassiveTokenDeltas => {
 
+    // assume that this lp is affected, i.e. the check of wether it is affected or not is done before
+    // passing to this function
 
+    if (tickPrevious < tickLower) {
 
+        /*
+            if we assume that the lp was affected by this trade, it must be that the 
+            current tick is one of the two: 
+                (>= tickLower) && (< tickUpper)
+                > tickUpper
+        */
 
+        if (tickCurrent < tickLower) {
 
+            return { 
+                variableTokenDelta: 0,
+                fixedTokenDeltaUnbalanced: 0
+            }
+
+        }
+
+        if ((tickCurrent >= tickLower) && (tickCurrent < tickUpper)) {
+
+            // lowerBound = tickLower
+            // upperBound = tickCurrent
+
+            // todo: write tests to check for precision
+            const liquidityJSBI = JSBI.BigInt(liquidity);
+            
+ 
+            const variableTokenDelta: JSBI = getAmount1Delta(
+                sqrtRatioA96,
+                sqrtRatioB96, 
+                liquidityJSBI
+            );
+
+            const fixedTokenDeltaUnbalanced: JSBI = getAmount0Delta(
+                sqrtRatioA96,
+                sqrtRatioB96, 
+                liquidityJSBI
+            );
+
+        }
+        
+
+    } else if (tickPrevious < tickUpper) { 
+
+    } else {
+
+    }
 
     return { 
         variableTokenDelta: 0,
