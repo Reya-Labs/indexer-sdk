@@ -3,6 +3,7 @@ import { BigQuery } from '@google-cloud/bigquery';
 import { MintOrBurnEventInfo, parseEvent, SwapEventInfo, VAMMPriceChangeEventInfo } from '../../common/event-parsers';
 import { ExtendedEvent } from '../../common/types';
 import { processMintOrBurnEventLpSpeed } from './processMintOrBurnEventLpSpeed';
+import { processVAMMPriceChangeEvent } from './processVAMMPriceChangeEvent';
 
 export const processLpSpeedEvent = async (
   bigQuery: BigQuery,

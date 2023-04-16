@@ -4,27 +4,25 @@ import {
   generateLpPositionUpdatesQuery,
   pullExistingLpPositionRows,
 } from '../../big-query-support';
-import { SwapEventInfo } from '../../common/event-parsers';
 import { generateLpPositionRowsFromPassiveSwaps } from '../../lp-pnl/processPassiveSwapEvents/generateLpPositionRowsFromPassiveSwaps';
+import { VAMMPriceChangeEventInfo } from '../../common/event-parsers';
 
 
-// https://github.com/Voltz-Protocol/voltz-core/blob/09aa40b7159de6256f14615292b9e0d1b50d7399/contracts/VAMM.sol#L711
-// todo: rename this to processVAMMPriceChangeEvent event
-export const processSwapEventLpSpeed = async (
+export const processVAMMPriceChangeEvent = async (
   bigQuery: BigQuery,
-  rootEventInfo: SwapEventInfo,
+  priceChangeEventInfo: VAMMPriceChangeEventInfo,
 ): Promise<void> => {
-  // Retrieve all LPs
+  
   const existingLpPositionRows = await pullExistingLpPositionRows(
     bigQuery,
-    rootEventInfo.amm.id,
-    rootEventInfo.eventTimestamp,
+    priceChangeEventInfo.amm.id,
+    priceChangeEventInfo.eventTimestamp,
   );
 
   const { passiveSwapEvents, affectedLps } = await gPassiveSwapEvents({
     existingLpPositionRows,
-    amm: rootEventInfo.amm,
-    rootEventInfo,
+    amm: priceChangeEventInfo.amm,
+    priceChangeEventInfo,
   });
 
   if (affectedLps.length === 0) {
@@ -35,10 +33,10 @@ export const processSwapEventLpSpeed = async (
   const lpPositionRows = await generateLpPositionRowsFromPassiveSwaps({
     passiveSwapEvents,
     affectedLps,
-    chainId: rootEventInfo.chainId,
-    amm: rootEventInfo.amm,
-    eventTimestamp: rootEventInfo.eventTimestamp,
-    eventBlockNumber: rootEventInfo.eventBlockNumber,
+    chainId: priceChangeEventInfo.chainId,
+    amm: priceChangeEventInfo.amm,
+    eventTimestamp: priceChangeEventInfo.eventTimestamp,
+    eventBlockNumber: priceChangeEventInfo.eventBlockNumber,
   });
 
   const sqlTransactionQuery = generateLpPositionUpdatesQuery(lpPositionRows);
