@@ -27,11 +27,22 @@ export const generatePassiveSwapEvents = async ({
   const affectedLps: BigQueryPositionRow[] = [];
 
   for (const positionRow of existingLpPositionRows) {
+
+
     if (positionRow.lastUpdatedTimestamp < rootEventInfo.eventTimestamp) {
+
       // position is initialized before event timestamp
       const ownerAddress = positionRow.ownerAddress;
       const tickLower = positionRow.tickLower;
       const tickUpper = positionRow.tickUpper;
+
+      
+
+
+      
+
+    } else {
+        throw Error("Position is in the future");
     }
   }
 

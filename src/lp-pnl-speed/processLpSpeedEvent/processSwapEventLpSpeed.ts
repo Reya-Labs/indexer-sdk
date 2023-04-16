@@ -7,6 +7,9 @@ import {
 import { SwapEventInfo } from '../../common/event-parsers';
 import { generateLpPositionRowsFromPassiveSwaps } from '../../lp-pnl/processPassiveSwapEvents/generateLpPositionRowsFromPassiveSwaps';
 
+
+// https://github.com/Voltz-Protocol/voltz-core/blob/09aa40b7159de6256f14615292b9e0d1b50d7399/contracts/VAMM.sol#L711
+// todo: rename this to processVAMMPriceChangeEvent event
 export const processSwapEventLpSpeed = async (
   bigQuery: BigQuery,
   rootEventInfo: SwapEventInfo,
