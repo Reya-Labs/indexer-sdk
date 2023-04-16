@@ -6,3 +6,4 @@ export const Q192 = JSBI.exponentiate(Q96, JSBI.BigInt(2));
 export const ZERO = JSBI.BigInt(0);
 export const ONE = JSBI.BigInt(1);
 export const NEGATIVE_ONE = JSBI.BigInt(-1);
+export const MaxUint256 = JSBI.BigInt('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'); 
