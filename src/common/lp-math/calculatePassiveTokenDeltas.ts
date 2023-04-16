@@ -1,11 +1,12 @@
 import JSBI from 'jsbi';
 import { FullMath } from './fullMath';
-import { Q96, ONE } from './internalConstants';
+import { Q96, ONE, ZERO, NEGATIVE_ONE } from './internalConstants';
+import { TickMath } from './tickMath';
 
 
 type PassiveTokenDeltas = {
-    variableTokenDelta: number;
-    fixedTokenDeltaUnbalanced: number;
+    variableTokenDelta: JSBI;
+    fixedTokenDeltaUnbalanced: JSBI;
 };
 
 const getAmount0Delta = (sqrtRatioAX96: JSBI, sqrtRatioBX96: JSBI, liquidity: JSBI, roundUp: boolean): JSBI  => {
@@ -40,6 +41,9 @@ export const calculatePassiveTokenDeltas = (
     tickCurrent: number,
     tickPrevious: number
 ): PassiveTokenDeltas => {
+    
+    let variableTokenDelta: JSBI = ZERO;
+    let fixedTokenDeltaUnbalanced: JSBI = ZERO;
 
     // assume that this lp is affected, i.e. the check of wether it is affected or not is done before
     // passing to this function
@@ -56,11 +60,15 @@ export const calculatePassiveTokenDeltas = (
         if (tickCurrent < tickLower) {
 
             return { 
-                variableTokenDelta: 0,
-                fixedTokenDeltaUnbalanced: 0
+                variableTokenDelta: ZERO,
+                fixedTokenDeltaUnbalanced: ZERO
             }
 
         }
+
+        const liquidityJSBI: JSBI = JSBI.BigInt(liquidity);
+        let sqrtRatioA96: JSBI;
+        let sqrtRatioB96: JSBI;
 
         if ((tickCurrent >= tickLower) && (tickCurrent < tickUpper)) {
 
@@ -68,23 +76,45 @@ export const calculatePassiveTokenDeltas = (
             // upperBound = tickCurrent
 
             // todo: write tests to check for precision
-            const liquidityJSBI = JSBI.BigInt(liquidity);
             
- 
-            const variableTokenDelta: JSBI = getAmount1Delta(
-                sqrtRatioA96,
-                sqrtRatioB96, 
-                liquidityJSBI
-            );
+            sqrtRatioA96 = TickMath.getSqrtRatioAtTick(tickLower); 
+            sqrtRatioB96 = TickMath.getSqrtRatioAtTick(tickCurrent);
+            
+        } else {
+            // i.e. > tickUpper
 
-            const fixedTokenDeltaUnbalanced: JSBI = getAmount0Delta(
-                sqrtRatioA96,
-                sqrtRatioB96, 
-                liquidityJSBI
-            );
+
+            // lower bound = tickLower
+            // upper bound = tickUpper
+
+            sqrtRatioA96 = TickMath.getSqrtRatioAtTick(tickLower); 
+            sqrtRatioB96 = TickMath.getSqrtRatioAtTick(tickUpper);
 
         }
+
+        /*  
+            in both of the two scenarios above: 
+            the latest swap has pushed the price up, hence pushed the fixed rate down
+            since it pushed the fixed rate down, it must have been a fixed taker swap from trader's (taker's) perspective
+            which in turn means it is a variable taker swap from lp's (maker's) perspective, hence the sign of
+            variable token delta is positive and sign of fixed token delta is negative
+        */ 
+
+        // todo: check if round up needs to be true or false when running sims and tests
+        variableTokenDelta = getAmount1Delta(
+            sqrtRatioA96,
+            sqrtRatioB96, 
+            liquidityJSBI,
+            true
+        );
         
+        // todo: check if round up needs to be true or false when running sims and tests
+        fixedTokenDeltaUnbalanced = getAmount0Delta(
+            sqrtRatioA96,
+            sqrtRatioB96, 
+            JSBI.multiply(NEGATIVE_ONE, liquidityJSBI),
+            true
+        );
 
     } else if (tickPrevious < tickUpper) { 
 
@@ -93,8 +123,8 @@ export const calculatePassiveTokenDeltas = (
     }
 
     return { 
-        variableTokenDelta: 0,
-        fixedTokenDeltaUnbalanced: 0
+        variableTokenDelta: variableTokenDelta,
+        fixedTokenDeltaUnbalanced: fixedTokenDeltaUnbalanced
     }
 
 }
