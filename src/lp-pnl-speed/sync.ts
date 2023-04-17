@@ -13,12 +13,17 @@ export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient?: Redis)
     bigQuery,
   );
 
+  console.log("1");
+
   const promises = Object.values(previousMintBurnSwapEvents).map(async ({ events, fromBlock }) => {
+    console.log("2");
     const cacheSetWindow = CACHE_SET_WINDOW[events[0].chainId];
     let latestCachedBlock = fromBlock;
 
     for (const event of events) {
+      console.log("3");
       await processLpSpeedEvent(bigQuery, event);
+      console.log("4");
 
       const currentBlock = event.blockNumber;
       const currentWindow = currentBlock - latestCachedBlock;

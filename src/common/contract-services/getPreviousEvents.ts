@@ -71,8 +71,6 @@ export const getPreviousEvents = async (
     const toBlock = await amm.provider.getBlockNumber();
     const chainId = (await amm.provider.getNetwork()).chainId;
 
-    console.log(syncProcessName);
-
     const fromBlock = await getFromBlock({
       syncProcessName,
       chainId,
@@ -95,14 +93,13 @@ export const getPreviousEvents = async (
 
       const extendedEvents: ExtendedEvent[] = await Promise.all(
         events.map(async (event) => {
-          const eventTimestamp = (await event.getBlock()).timestamp;
           const extendedEvent = {
             ...event,
             type: eventType,
             amm: amm,
-            chainId: chainId,
-            timestamp: eventTimestamp,
+            chainId: chainId
           };
+          console.log(extendedEvent);
           return extendedEvent;
         }),
       );
@@ -131,6 +128,8 @@ export const getPreviousEvents = async (
         events: sortedEvents,
         fromBlock: fromBlock,
       };
+
+      console.log("here");
     } else {
       throw new Error(`Unable to retrieve events`);
     }

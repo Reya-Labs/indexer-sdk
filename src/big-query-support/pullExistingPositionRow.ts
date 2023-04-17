@@ -17,7 +17,7 @@ export type BigQueryPositionRow = {
   realizedPnLFromFeesPaid: number;
   netNotionalLocked: number;
   netFixedRateLocked: number;
-  lastUpdatedTimestamp: number;
+  lastUpdatedBlockNumber: number;
   notionalLiquidityProvided: number;
   realizedPnLFromFeesCollected: number;
   netMarginDeposited: number;
@@ -25,7 +25,7 @@ export type BigQueryPositionRow = {
   rowLastUpdatedTimestamp: number;
   fixedTokenBalance: number;
   variableTokenBalance: number;
-  positionInitializationTimestamp: number; // immutable
+  positionInitializationBlockNumber: number; // immutable
   rateOracle: string; // immutable
   underlyingToken: string; // immutable
   chainId: number; // immutable
@@ -73,7 +73,7 @@ export const pullExistingPositionRow = async (
     realizedPnLFromFeesPaid: bqNumericToNumber(rows[0].realizedPnLFromFeesPaid),
     netNotionalLocked: bqNumericToNumber(rows[0].netNotionalLocked),
     netFixedRateLocked: bqNumericToNumber(rows[0].netFixedRateLocked),
-    lastUpdatedTimestamp: bqTimestampToUnixSeconds(rows[0].lastUpdatedTimestamp),
+    lastUpdatedBlockNumber: rows[0].lastUpdatedBlockNumber,
     notionalLiquidityProvided: bqNumericToNumber(rows[0].notionalLiquidityProvided),
     realizedPnLFromFeesCollected: bqNumericToNumber(rows[0].realizedPnLFromFeesCollected),
     netMarginDeposited: bqNumericToNumber(rows[0].netMarginDeposited),
@@ -81,9 +81,7 @@ export const pullExistingPositionRow = async (
     rowLastUpdatedTimestamp: bqTimestampToUnixSeconds(rows[0].rowLastUpdatedTimestamp),
     fixedTokenBalance: bqNumericToNumber(rows[0].fixedTokenBalance),
     variableTokenBalance: bqNumericToNumber(rows[0].variableTokenBalance),
-    positionInitializationTimestamp: bqTimestampToUnixSeconds(
-      rows[0].positionInitializationTimestamp,
-    ),
+    positionInitializationBlockNumber: rows[0].positionInitializationBlockNumber,
     rateOracle: rows[0].rateOracle,
     underlyingToken: rows[0].underlyingToken,
     chainId: rows[0].chainId,

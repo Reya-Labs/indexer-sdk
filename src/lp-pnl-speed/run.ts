@@ -30,7 +30,7 @@ export const run = async (chainIds: number[], redisClient?: Redis) => {
   // note, atm the create position table script does not check wether
   // the matching position shares the same schema
   // todo: introduce a check on process.env.POSITIONS_TABLE_ID
-  await createPositionsTable(process.env.POSITIONS_TABLE_ID, bigQuery);
+  // await createPositionsTable(process.env.POSITIONS_TABLE_ID, bigQuery);
 
   while (true) {
     try {

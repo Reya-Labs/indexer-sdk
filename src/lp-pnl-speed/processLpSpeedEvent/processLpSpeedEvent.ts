@@ -14,6 +14,7 @@ export const processLpSpeedEvent = async (
   bigQuery: BigQuery,
   event: ExtendedEvent,
 ): Promise<void> => {
+  console.log("processLpSpeedEvent");
   const eventInfo: VAMMPriceChangeEventInfo | MintOrBurnEventInfo | SwapEventInfo =
     parseEvent(event);
 

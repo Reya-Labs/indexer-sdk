@@ -23,8 +23,6 @@ export const getFromBlock = async ({
 }: GetFromBlockArgs): Promise<number> => {
   const processId = `${syncProcessName}_${chainId}_${vammAddress}`;
 
-  console.log('cache');
-
   if ((bigQuery !== undefined) && (LAST_PROCESSED_BLOCK_TABLE_ID !== '')) {
     return await getLastProcessedBlock(bigQuery, processId);
   }
@@ -32,8 +30,6 @@ export const getFromBlock = async ({
   if (redisClient !== undefined) {
     return await getRedis(processId, redisClient);
   }
-
-  console.log('default');
 
   return 0;
 };

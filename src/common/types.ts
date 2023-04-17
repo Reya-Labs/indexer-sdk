@@ -5,5 +5,4 @@ export interface ExtendedEvent extends Event {
   type: 'mint' | 'burn' | 'swap' | 'price_change';
   amm: AMM;
   chainId: number;
-  timestamp: number;
 }

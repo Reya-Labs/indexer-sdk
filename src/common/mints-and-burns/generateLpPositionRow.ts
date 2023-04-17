@@ -15,7 +15,7 @@ export const generateLpPositionRow = (eventInfo: MintOrBurnEventInfo): BigQueryP
     realizedPnLFromFeesPaid: 0,
     netNotionalLocked: 0,
     netFixedRateLocked: 0,
-    lastUpdatedTimestamp: eventInfo.eventTimestamp,
+    lastUpdatedBlockNumber: eventInfo.eventBlockNumber,
     notionalLiquidityProvided: eventInfo.notionalDelta,
     realizedPnLFromFeesCollected: 0,
     netMarginDeposited: 0,
@@ -23,12 +23,14 @@ export const generateLpPositionRow = (eventInfo: MintOrBurnEventInfo): BigQueryP
     rowLastUpdatedTimestamp: rowLastUpdatedTimestamp,
     fixedTokenBalance: 0,
     variableTokenBalance: 0,
-    positionInitializationTimestamp: eventInfo.eventTimestamp,
+    positionInitializationBlockNumber: eventInfo.eventBlockNumber,
     rateOracle: eventInfo.amm.rateOracle.id,
     underlyingToken: eventInfo.amm.underlyingToken.name,
     chainId: eventInfo.chainId,
     cashflowLiFactor: 0,
     cashflowTimeFactor: 0,
     cashflowFreeTerm: 0,
+    tickPrevious: 0, // not relevant for this processing
+    liquidity: 0 // not relevant for this processing
   };
 };
