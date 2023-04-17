@@ -18,7 +18,7 @@ export const processVAMMPriceChangeEvent = async (
     priceChangeEventInfo.eventTimestamp,
   );
 
-  const { passiveSwapEvents, affectedLps } = await gPassiveSwapEvents({
+  const { passiveSwapEvents, affectedLps } = gPassiveSwapEvents({
     existingLpPositionRows,
     amm: priceChangeEventInfo.amm,
     priceChangeEventInfo,
