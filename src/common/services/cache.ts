@@ -4,6 +4,7 @@ import { Redis } from 'ioredis';
 import { getLastProcessedBlock } from '../../big-query-support/getLastProcessedBlock';
 import { setLastProcessedBlock } from '../../big-query-support/setLastProcessedBlock';
 import { getRedis, setRedis } from './redisService';
+import { LAST_PROCESSED_BLOCK_TABLE_ID } from '../constants';
 
 export type GetFromBlockArgs = {
   syncProcessName: string;
@@ -24,22 +25,15 @@ export const getFromBlock = async ({
 
   console.log('cache');
 
-  console.log(
-    {
-      syncProcessName,
-      chainId,
-      vammAddress,
-      redisClient,
-      bigQuery,
-    }
-  )
-  if (bigQuery !== undefined) {
+  if ((bigQuery !== undefined) && (LAST_PROCESSED_BLOCK_TABLE_ID !== '')) {
     return await getLastProcessedBlock(bigQuery, processId);
   }
 
   if (redisClient !== undefined) {
     return await getRedis(processId, redisClient);
   }
+
+  console.log('default');
 
   return 0;
 };

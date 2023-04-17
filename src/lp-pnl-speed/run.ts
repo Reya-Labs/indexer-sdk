@@ -22,13 +22,14 @@ export const run = async (chainIds: number[], redisClient?: Redis) => {
     return;
   }
 
-  if (process.env.POSITIONS_TABLE_ID === undefined) {
+  if ((process.env.POSITIONS_TABLE_ID === undefined) || (process.env.POSITIONS_TABLE_ID === '')) {
     throw Error("Make sure a positions table id is provided as an environment variable");
   }
 
   // only creates a position table if it does not exist
   // note, atm the create position table script does not check wether
   // the matching position shares the same schema
+  // todo: introduce a check on process.env.POSITIONS_TABLE_ID
   await createPositionsTable(process.env.POSITIONS_TABLE_ID, bigQuery);
 
   while (true) {

@@ -69,7 +69,6 @@ export const getPreviousEvents = async (
   const promises = amms.map(async (amm): Promise<[AMM, ExtendedEvent[], number]> => {
     
     const toBlock = await amm.provider.getBlockNumber();
-    console.log("yo1");
     const chainId = (await amm.provider.getNetwork()).chainId;
 
     console.log(syncProcessName);
@@ -80,11 +79,8 @@ export const getPreviousEvents = async (
       vammAddress: amm.id,
       bigQuery: bigQuery,
     });
-    console.log("yo3");
 
     const vammContract = generateVAMMContract(amm.id, amm.provider);
-
-    console.log("yo4");
 
     const allEvents = [];
 
