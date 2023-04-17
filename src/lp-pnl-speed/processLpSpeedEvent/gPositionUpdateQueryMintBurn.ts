@@ -14,7 +14,9 @@ export const gPositionUpdateQueryMintBurn = (
   const query = `
     UPDATE \`${POSITIONS_TABLE_ID}\`
         SET notionalLiquidityProvided=${notionalLiquidityProvided},
-        rowLastUpdatedTimestamp=\'${secondsToBqDate(rowLastUpdatedTimestamp)}\'
+        rowLastUpdatedTimestamp=\'${secondsToBqDate(rowLastUpdatedTimestamp)}\',
+        lastUpdatedBlockNumber=${eventInfo.eventBlockNumber}
+
     WHERE chainId=${existingPosition.chainId} AND
         vammAddress=\"${existingPosition.vammAddress}\" AND 
         ownerAddress=\"${existingPosition.ownerAddress}\" AND
