@@ -127,8 +127,6 @@ export const getPreviousEvents = async (
         events: sortedEvents,
         fromBlock: fromBlock,
       };
-
-      console.log("here");
     } else {
       throw new Error(`Unable to retrieve events`);
     }

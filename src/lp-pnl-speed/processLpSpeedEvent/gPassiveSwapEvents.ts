@@ -54,7 +54,7 @@ export const gPassiveSwapEvents = ({
         ethers.utils.formatUnits(fixedTokenDeltaUnbalancedString, tokenDecimals),
       );
 
-      // note, what if there are two in the same block...
+      // note, what if there are two in the same block... 
       const passiveSwapEventId =
         `${priceChangeEventInfo.chainId}_${priceChangeEventInfo.vammAddress}_${ownerAddress}_${priceChangeEventInfo.eventBlockNumber}`.toLowerCase();
 

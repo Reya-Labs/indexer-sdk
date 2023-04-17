@@ -7,9 +7,6 @@ export type VAMMPriceChangeEventInfo = {
   eventBlockNumber: number;
   chainId: number;
   vammAddress: string;
-  ownerAddress: string;
-  tickLower: number;
-  tickUpper: number;
 
   tick: number;
 
@@ -22,9 +19,6 @@ export type VAMMPriceChangeEventInfo = {
 
 export const parseVAMMPriceChangeEvent = (event: ExtendedEvent): VAMMPriceChangeEventInfo => {
   const eventId = `${event.blockHash}_${event.transactionHash}_${event.logIndex}`;
-  const ownerAddress = event.args?.recipient as string;
-  const tickLower = event.args?.tickLower as number;
-  const tickUpper = event.args?.tickUpper as number;
   const tick = event.args?.tick as number;
 
   const amm = event.amm;
@@ -34,9 +28,6 @@ export const parseVAMMPriceChangeEvent = (event: ExtendedEvent): VAMMPriceChange
     eventBlockNumber: event.blockNumber,
     chainId: event.chainId,
     vammAddress: event.amm.id.toLowerCase(),
-    ownerAddress: ownerAddress.toLowerCase(),
-    tickLower,
-    tickUpper,
     tick,
     rateOracle: event.amm.rateOracle.protocol,
     underlyingToken: event.amm.underlyingToken.name,
