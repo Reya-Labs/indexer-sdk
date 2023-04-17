@@ -51,6 +51,9 @@ const getEventFilter = (vammContract: ethers.Contract, eventType: string): ether
     case 'price_change': {
       return vammContract.filters.VAMMPriceChange();
     }
+    case 'vamm_initialization': {
+      return vammContract.filters.VAMMInitialization();
+    }
     default: {
       throw new Error(`Unknown event type ${eventType}.`);
     }
@@ -61,7 +64,7 @@ const getEventFilter = (vammContract: ethers.Contract, eventType: string): ether
 export const getPreviousEvents = async (
   syncProcessName: 'active_swaps' | 'mints_lp' | 'passive_swaps_lp' | 'mint_burn' | 'lp_speed',
   amms: AMM[],
-  eventTypes: ('mint' | 'burn' | 'swap' | 'price_change')[],
+  eventTypes: ('mint' | 'burn' | 'swap' | 'price_change' | 'vamm_initialization')[],
   bigQuery: BigQuery,
 ): Promise<VammEvents> => {
   const totalEventsByVammAddress: VammEvents = {};
@@ -83,7 +86,7 @@ export const getPreviousEvents = async (
     const allEvents = [];
 
     for (let i = 0; i < eventTypes.length; i++) {
-      const eventType: 'mint' | 'burn' | 'swap' | 'price_change' = eventTypes[i];
+      const eventType: 'mint' | 'burn' | 'swap' | 'price_change' | 'vamm_initialization' = eventTypes[i];
       const eventFilter: ethers.EventFilter = getEventFilter(vammContract, eventType);
       const events: ethers.Event[] = await vammContract.queryFilter(
         eventFilter,
