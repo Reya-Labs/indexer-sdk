@@ -7,6 +7,8 @@ import { TickMath } from './tickMath';
 export type PassiveTokenDeltas = {
     variableTokenDelta: number;
     fixedTokenDeltaUnbalanced: number;
+    variableTokenDeltaString: string;
+    fixedTokenDeltaUnbalancedString: string;
 };
 
 const getAmount0Delta = (sqrtRatioAX96: JSBI, sqrtRatioBX96: JSBI, liquidity: JSBI, roundUp: boolean): JSBI  => {
@@ -72,7 +74,9 @@ export const calculatePassiveTokenDeltas = (
             // lp is not affected by this trade
             return { 
                 variableTokenDelta: 0,
-                fixedTokenDeltaUnbalanced: 0
+                fixedTokenDeltaUnbalanced: 0,
+                variableTokenDeltaString: '0',
+                fixedTokenDeltaUnbalancedString: '0'
             }
         } else if ((tickCurrent >= tickLower) && (tickCurrent < tickUpper)) {            
             sqrtRatioA96 = TickMath.getSqrtRatioAtTick(tickLower); 
@@ -105,7 +109,9 @@ export const calculatePassiveTokenDeltas = (
             // lp is not affected by this trade
             return { 
                 variableTokenDelta: 0,
-                fixedTokenDeltaUnbalanced: 0
+                fixedTokenDeltaUnbalanced: 0,
+                variableTokenDeltaString: '0',
+                fixedTokenDeltaUnbalancedString: '0'
             }
         }
     }
@@ -126,11 +132,12 @@ export const calculatePassiveTokenDeltas = (
         true
     );
 
-
     // todo: check if precision is maintained after conversion to number
     return { 
         variableTokenDelta: JSBI.toNumber(variableTokenDelta),
-        fixedTokenDeltaUnbalanced: JSBI.toNumber(fixedTokenDeltaUnbalanced)
+        fixedTokenDeltaUnbalanced: JSBI.toNumber(fixedTokenDeltaUnbalanced),
+        variableTokenDeltaString: variableTokenDelta.toString(),
+        fixedTokenDeltaUnbalancedString: fixedTokenDeltaUnbalanced.toString()
     }
 
 }
