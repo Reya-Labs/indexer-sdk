@@ -68,12 +68,12 @@ export const calculatePassiveTokenDeltas = (
 
     if (tickPrevious < tickLower) {
         if (tickCurrent < tickLower) {
+            // lp is not affected by this trade
             return { 
                 variableTokenDelta: ZERO,
                 fixedTokenDeltaUnbalanced: ZERO
             }
-        }
-        if ((tickCurrent >= tickLower) && (tickCurrent < tickUpper)) {            
+        } else if ((tickCurrent >= tickLower) && (tickCurrent < tickUpper)) {            
             sqrtRatioA96 = TickMath.getSqrtRatioAtTick(tickLower); 
             sqrtRatioB96 = TickMath.getSqrtRatioAtTick(tickCurrent);
         } else {
@@ -88,16 +88,26 @@ export const calculatePassiveTokenDeltas = (
         } else if ((tickCurrent >= tickLower) && (tickCurrent < tickUpper)) { 
             sqrtRatioA96 = TickMath.getSqrtRatioAtTick(tickPrevious); 
             sqrtRatioB96 = TickMath.getSqrtRatioAtTick(tickCurrent);
+        } else {
+            sqrtRatioA96 = TickMath.getSqrtRatioAtTick(tickPrevious); 
+            sqrtRatioB96 = TickMath.getSqrtRatioAtTick(tickUpper);
         }
-
-        
-
-        
-
     } else {
-
+        // tickPrevious > tickUpper
+        if (tickCurrent < tickLower) {
+            sqrtRatioA96 = TickMath.getSqrtRatioAtTick(tickLower); 
+            sqrtRatioB96 = TickMath.getSqrtRatioAtTick(tickUpper);
+        } else if ((tickCurrent >= tickLower) && (tickCurrent < tickUpper)) { 
+            sqrtRatioA96 = TickMath.getSqrtRatioAtTick(tickLower); 
+            sqrtRatioB96 = TickMath.getSqrtRatioAtTick(tickUpper);
+        } else {
+            // lp is not affected by this trade
+            return { 
+                variableTokenDelta: ZERO,
+                fixedTokenDeltaUnbalanced: ZERO
+            }
+        }
     }
-
 
     // todo: check if round up needs to be true or false when running sims and tests
     variableTokenDelta = getAmount1Delta(
