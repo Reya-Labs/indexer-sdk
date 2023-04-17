@@ -1,10 +1,9 @@
 import { Storage } from '@google-cloud/storage';
 
-import { PROJECT_ID } from './common';
-import { runMints } from './lp-pnl/runMints';
-import { runPassiveSwaps } from './lp-pnl/runPassiveSwaps';
+import { PROJECT_ID } from './common'; 
 import { run as runMintsAndBurns } from './mints-and-burns/run';
 import { run as runTraders } from './trader-pnl/run';
+import { run as runLpsSpeed} from './lp-pnl-speed/run';
 
 async function authenticateImplicitWithAdc() {
   const storage = new Storage({
@@ -23,8 +22,7 @@ const main = async () => {
 
   promises = promises.concat(runMintsAndBurns(chainIds));
   promises = promises.concat(runTraders(chainIds));
-  promises = promises.concat(runMints(chainIds));
-  promises = promises.concat(runPassiveSwaps(chainIds));
+  promises = promises.concat(runLpsSpeed(chainIds));
 
   console.log(`Number of parallel calls ${promises.length}`);
 
