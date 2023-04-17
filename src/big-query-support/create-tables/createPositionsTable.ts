@@ -17,9 +17,15 @@ export const getPositionTable = async (tableId: number, bigQuery: BigQuery): Pro
 
 }
 
-export const createPositionTable = async (tableId: number, bigQuery: BigQuery) => {
+export const createPositionTable = async (tableId: number, bigQuery: BigQuery): Promise<void> => {
 
-  const tableName = `${PROJECT_ID}.${DATASET_ID}.Voltz V1 Positions Staging ${tableId}`;  
+  const tableName = `${PROJECT_ID}.${DATASET_ID}.Voltz V1 Positions Staging ${tableId}`; 
+
+  const existingTable: Table | null = await getPositionTable(tableId, bigQuery);
+
+  if (existingTable !== null) {
+    return; 
+  }
 
   const schema = `
 
