@@ -20,7 +20,6 @@ export type VAMMPriceChangeEventInfo = {
 export const parseVAMMPriceChangeEvent = (event: ExtendedEvent): VAMMPriceChangeEventInfo => {
   const eventId = `${event.blockHash}_${event.transactionHash}_${event.logIndex}`;
   const tick = event.args?.tick as number;
-
   const amm = event.amm;
 
   return {

@@ -1,7 +1,7 @@
 import { AMM, getNotionalFromLiquidity } from '@voltz-protocol/v1-sdk';
 import { BigNumber } from 'ethers';
-
 import { ExtendedEvent } from '../types';
+import JSBI from 'jsbi';
 
 export type MintOrBurnEventInfo = {
   eventId: string;
@@ -17,6 +17,7 @@ export type MintOrBurnEventInfo = {
   amm: AMM;
   type: string;
   eventBlockNumber: number;
+  liquidityDelta: JSBI;
 };
 
 export const parseMintOrBurnEvent = (event: ExtendedEvent): MintOrBurnEventInfo => {
@@ -49,5 +50,6 @@ export const parseMintOrBurnEvent = (event: ExtendedEvent): MintOrBurnEventInfo 
     amm,
     type: event.type,
     eventBlockNumber: event.blockNumber,
+    liquidityDelta: JSBI.BigInt(amount.toString())
   };
 };

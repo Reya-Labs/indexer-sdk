@@ -6,19 +6,19 @@ import { parseVAMMPriceChangeEvent, VAMMPriceChangeEventInfo } from './parseVAMM
 export const parseEvent = (
   event: ExtendedEvent,
 ): SwapEventInfo | MintOrBurnEventInfo | VAMMPriceChangeEventInfo => {
-  let parsedEvent: SwapEventInfo | MintOrBurnEventInfo | VAMMPriceChangeEventInfo;
-
+  
   switch (event.type) {
     case 'mint' || 'burn': {
-      parsedEvent = parseMintOrBurnEvent(event);
+      return parseMintOrBurnEvent(event);
     }
     case 'price_change': {
-      parsedEvent = parseVAMMPriceChangeEvent(event);
+      return parseVAMMPriceChangeEvent(event);
     }
-    default: {
-      parsedEvent = parseSwapEvent(event);
+    case 'swap': {
+      return parseSwapEvent(event);
+    } default: {
+      throw Error('Provide a valid event type');
     }
   }
 
-  return parsedEvent;
 };

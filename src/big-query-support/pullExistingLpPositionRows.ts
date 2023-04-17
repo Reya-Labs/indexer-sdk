@@ -27,7 +27,10 @@ export const pullExistingLpPositionRows = async (
     query: sqlQuery,
   };
 
+  console.log(sqlQuery);
   const [rows] = await bigQuery.query(options);
+  console.log("success");
+  
 
   if (!rows || rows.length === 0) {
     return [];
