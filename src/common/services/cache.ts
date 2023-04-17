@@ -22,6 +22,17 @@ export const getFromBlock = async ({
 }: GetFromBlockArgs): Promise<number> => {
   const processId = `${syncProcessName}_${chainId}_${vammAddress}`;
 
+  console.log('cache');
+
+  console.log(
+    {
+      syncProcessName,
+      chainId,
+      vammAddress,
+      redisClient,
+      bigQuery,
+    }
+  )
   if (bigQuery !== undefined) {
     return await getLastProcessedBlock(bigQuery, processId);
   }

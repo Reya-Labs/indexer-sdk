@@ -97,7 +97,7 @@ export const calculatePassiveTokenDeltas = (
   } else if (tickPrevious < tickUpper) {
     if (tickCurrent < tickLower) {
       sqrtRatioA96 = TickMath.getSqrtRatioAtTick(tickLower);
-      sqrtRatioB96 = TickMath.getSqrtRatioAtTick(tickCurrent);
+      sqrtRatioB96 = TickMath.getSqrtRatioAtTick(tickPrevious);
     } else if (tickCurrent >= tickLower && tickCurrent < tickUpper) {
       sqrtRatioA96 = TickMath.getSqrtRatioAtTick(tickPrevious);
       sqrtRatioB96 = TickMath.getSqrtRatioAtTick(tickCurrent);
@@ -111,7 +111,7 @@ export const calculatePassiveTokenDeltas = (
       sqrtRatioA96 = TickMath.getSqrtRatioAtTick(tickLower);
       sqrtRatioB96 = TickMath.getSqrtRatioAtTick(tickUpper);
     } else if (tickCurrent >= tickLower && tickCurrent < tickUpper) {
-      sqrtRatioA96 = TickMath.getSqrtRatioAtTick(tickLower);
+      sqrtRatioA96 = TickMath.getSqrtRatioAtTick(tickCurrent);
       sqrtRatioB96 = TickMath.getSqrtRatioAtTick(tickUpper);
     } else {
       // lp is not affected by this trade
