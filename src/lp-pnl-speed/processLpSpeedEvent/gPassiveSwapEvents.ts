@@ -54,9 +54,9 @@ export const gPassiveSwapEvents = ({
         ethers.utils.formatUnits(fixedTokenDeltaUnbalancedString, tokenDecimals),
       );
 
-      // todo: check if we can have two passive swaps with the same event timestamp, realistically yeah
+      // note, what if there are two in the same block...
       const passiveSwapEventId =
-        `${priceChangeEventInfo.chainId}_${priceChangeEventInfo.vammAddress}_${ownerAddress}_${priceChangeEventInfo.eventTimestamp}`.toLowerCase();
+        `${priceChangeEventInfo.chainId}_${priceChangeEventInfo.vammAddress}_${ownerAddress}_${priceChangeEventInfo.eventBlockNumber}`.toLowerCase();
 
       const passiveSwapEvent: SwapEventInfo = {
         eventId: passiveSwapEventId,

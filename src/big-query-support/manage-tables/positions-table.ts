@@ -30,7 +30,6 @@ export const createPositionsTable = async (tableName: string, bigQuery: BigQuery
     return; 
   }
 
-  // const schema = 'marginEngineAddress:string, vammAddress:string, ownerAddress:string, tickLower:integer, tickUpper:integer, realizedPnLFromSwaps:numeric, realizedPnLFromFeesPaid:numeric, netNotionalLocked:numeric, netFixedRate:numeric, lastUpdatedTimestamp:timestamp, notionalLiquidityProvided:numeric, realizedPnLFromFeesCollected:numeric, netMarginDeposited:numeric, rateOracleIndex:numeric, rowLastUpdatedTimestamp:timestamp, fixedTokenBalance:numeric, variableTokenBalance:numeric, positionInitializationTimestamp:timestamp, rateOracle: string, underlyingToken: string, chainId:integer, cashflowFactor:numeric, cashflowTimeFactor:numeric, cashflowFreeTerm:numeric, liquidity:numeric, tickPrevious:integer';
   const schema  = [
     {name: 'marginEngineAddress', type: 'STRING', mode: 'REQUIRED'},
     {name: 'vammAddress', type: 'STRING', mode: 'REQUIRED'},
@@ -41,7 +40,7 @@ export const createPositionsTable = async (tableName: string, bigQuery: BigQuery
     {name: 'realizedPnLFromFeesPaid', type: 'NUMERIC', mode: 'REQUIRED', precision: '18', scale: '9'},
     {name: 'netNotionalLocked', type: 'NUMERIC', mode: 'REQUIRED', precision: '18', scale: '9'},
     {name: 'netFixedRateLocked', type: 'NUMERIC', mode: 'REQUIRED', precision: '18', scale: '9'},
-    {name: 'lastUpdatedTimestamp', type: 'TIMESTAMP', mode: 'REQUIRED'},
+    {name: 'lastUpdatedBlockNumber', type: 'INTEGER', mode: 'REQUIRED'},
     {name: 'notionalLiquidityProvided', type: 'NUMERIC', mode: 'REQUIRED', precision: '18', scale: '9'},
     {name: 'realizedPnLFromFeesCollected', type: 'NUMERIC', mode: 'REQUIRED', precision: '18', scale: '9'},
     {name: 'netMarginDeposited', type: 'NUMERIC', mode: 'REQUIRED', precision: '18', scale: '9'},
@@ -49,7 +48,7 @@ export const createPositionsTable = async (tableName: string, bigQuery: BigQuery
     {name: 'rowLastUpdatedTimestamp', type: 'TIMESTAMP', mode: 'REQUIRED'},
     {name: 'fixedTokenBalance', type: 'NUMERIC', mode: 'REQUIRED', precision: '18', scale: '9'},
     {name: 'variableTokenBalance', type: 'NUMERIC', mode: 'REQUIRED', precision: '18', scale: '9'},
-    {name: 'positionInitializationTimestamp', type: 'TIMESTAMP', mode: 'REQUIRED'},
+    {name: 'positionInitializationBlockNumber', type: 'INTEGER', mode: 'REQUIRED'},
     {name: 'rateOracle', type: 'STRING', mode: 'REQUIRED'},
     {name: 'underlyingToken', type: 'STRING', mode: 'REQUIRED'},
     {name: 'chainId', type: 'INTEGER', mode: 'REQUIRED'},
