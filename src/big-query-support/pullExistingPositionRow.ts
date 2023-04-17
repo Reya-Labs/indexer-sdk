@@ -32,6 +32,8 @@ export type BigQueryPositionRow = {
   cashflowLiFactor: number;
   cashflowTimeFactor: number;
   cashflowFreeTerm: number;
+  tickPrevious: number;
+  liquidity: number;
 };
 
 export const pullExistingPositionRow = async (
@@ -88,5 +90,7 @@ export const pullExistingPositionRow = async (
     cashflowLiFactor: bqNumericToNumber(rows[0].cashflowLiFactor),
     cashflowTimeFactor: bqNumericToNumber(rows[0].cashflowTimeFactor),
     cashflowFreeTerm: bqNumericToNumber(rows[0].cashflowFreeTerm),
+    liquidity: bqNumericToNumber(rows[0].liquidity),
+    tickPrevious: rows[0].tickPrevious
   };
 };

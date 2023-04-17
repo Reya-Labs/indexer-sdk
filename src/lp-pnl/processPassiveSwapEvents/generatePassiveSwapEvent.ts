@@ -57,6 +57,8 @@ export const generatePassiveSwapEvent = ({
     underlyingToken: rootEventInfo.underlyingToken,
     marginEngineAddress: rootEventInfo.marginEngineAddress,
     amm: rootEventInfo.amm,
+    type: 'swap',
+    eventTimestamp: rootEventInfo.eventTimestamp
   };
 
   return passiveSwapEvent;
