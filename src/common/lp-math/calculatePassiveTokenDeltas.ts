@@ -1,7 +1,7 @@
 import JSBI from 'jsbi';
 
 import { FullMath } from './fullMath';
-import { NEGATIVE_ONE,ONE, Q96, ZERO } from './internalConstants';
+import { NEGATIVE_ONE, ONE, Q96, ZERO } from './internalConstants';
 import { TickMath } from './tickMath';
 
 export type PassiveTokenDeltas = {
