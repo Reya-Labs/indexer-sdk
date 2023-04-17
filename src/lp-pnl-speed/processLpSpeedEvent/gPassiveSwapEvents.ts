@@ -19,10 +19,10 @@ export const gPassiveSwapEvents = ({
   existingLpPositionRows,
   amm,
   priceChangeEventInfo,
-}: GPassiveSwapEventsArgs): Promise<{
+}: GPassiveSwapEventsArgs):{
   passiveSwapEvents: SwapEventInfo[];
   affectedLps: BigQueryPositionRow[];
-}> => {
+} => {
   const tokenDecimals = amm.underlyingToken.decimals;
 
   const passiveSwapEvents: SwapEventInfo[] = [];
