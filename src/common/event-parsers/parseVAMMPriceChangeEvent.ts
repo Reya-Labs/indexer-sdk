@@ -18,7 +18,6 @@ export type VAMMPriceChangeEventInfo = {
   marginEngineAddress: string;
   amm: AMM;
   type: string;
-  eventTimestamp: number;
 };
 
 export const parseVAMMPriceChangeEvent = (event: ExtendedEvent): VAMMPriceChangeEventInfo => {
@@ -43,7 +42,6 @@ export const parseVAMMPriceChangeEvent = (event: ExtendedEvent): VAMMPriceChange
     underlyingToken: event.amm.underlyingToken.name,
     marginEngineAddress: event.amm.marginEngineAddress,
     amm,
-    type: event.type,
-    eventTimestamp: event.timestamp,
+    type: event.type
   };
 };

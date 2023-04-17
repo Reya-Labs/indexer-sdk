@@ -11,16 +11,15 @@ import { bqNumericToNumber, bqTimestampToUnixSeconds, secondsToBqDate } from './
 export const pullExistingLpPositionRows = async (
   bigQuery: BigQuery,
   vammAddress: string,
-  currentTimestamp: number,
+  currentBlockNumber: number,
 ): Promise<BigQueryPositionRow[]> => {
-  const currentTimestampBQ = secondsToBqDate(currentTimestamp);
 
   // note, since we're doing time based indexing of passive swaps, can't rely on extra details from the swap event
   const sqlQuery = `
     SELECT * FROM \`${POSITIONS_TABLE_ID}\` 
       WHERE 
         notionalLiquidityProvided>0 AND 
-        positionInitializationTimestamp<\'${currentTimestampBQ}\' AND
+        positionInitializationBlockNumber<\'${currentBlockNumber}\' AND
         vammAddress=\"${vammAddress}\"
     `;
 
@@ -45,7 +44,7 @@ export const pullExistingLpPositionRows = async (
       realizedPnLFromFeesPaid: bqNumericToNumber(row.realizedPnLFromFeesPaid),
       netNotionalLocked: bqNumericToNumber(row.netNotionalLocked),
       netFixedRateLocked: bqNumericToNumber(row.netFixedRateLocked),
-      lastUpdatedTimestamp: bqTimestampToUnixSeconds(row.lastUpdatedTimestamp),
+      lastUpdatedBlockNumber: row.blockNumber,
       notionalLiquidityProvided: bqNumericToNumber(row.notionalLiquidityProvided),
       realizedPnLFromFeesCollected: bqNumericToNumber(row.realizedPnLFromFeesCollected),
       netMarginDeposited: bqNumericToNumber(row.netMarginDeposited),
@@ -53,9 +52,7 @@ export const pullExistingLpPositionRows = async (
       rowLastUpdatedTimestamp: bqTimestampToUnixSeconds(row.rowLastUpdatedTimestamp),
       fixedTokenBalance: bqNumericToNumber(row.fixedTokenBalance),
       variableTokenBalance: bqNumericToNumber(row.variableTokenBalance),
-      positionInitializationTimestamp: bqTimestampToUnixSeconds(
-        row.positionInitializationTimestamp,
-      ),
+      positionInitializationBlockNumber: row.positionInitializationBlockNumber,
       rateOracle: row.rateOracle,
       underlyingToken: row.underlyingToken,
       chainId: row.chainId,

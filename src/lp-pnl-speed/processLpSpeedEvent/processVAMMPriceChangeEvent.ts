@@ -15,7 +15,7 @@ export const processVAMMPriceChangeEvent = async (
   const existingLpPositionRows = await pullExistingLpPositionRows(
     bigQuery,
     priceChangeEventInfo.amm.id,
-    priceChangeEventInfo.eventTimestamp,
+    priceChangeEventInfo.eventBlockNumber,
   );
 
   const { passiveSwapEvents, affectedLps } = gPassiveSwapEvents({
