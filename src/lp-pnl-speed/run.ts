@@ -29,7 +29,7 @@ export const run = async (chainIds: number[], redisClient?: Redis) => {
   // only creates a position table if it does not exist
   // note, atm the create position table script does not check wether
   // the matching position shares the same schema
-  createPositionsTable(process.env.POSITIONS_TABLE_ID, bigQuery);
+  await createPositionsTable(process.env.POSITIONS_TABLE_ID, bigQuery);
 
   while (true) {
     try {
