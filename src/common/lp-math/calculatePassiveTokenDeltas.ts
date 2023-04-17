@@ -71,8 +71,8 @@ export const calculatePassiveTokenDeltas = (
         if (tickCurrent < tickLower) {
             // lp is not affected by this trade
             return { 
-                variableTokenDelta: ZERO,
-                fixedTokenDeltaUnbalanced: ZERO
+                variableTokenDelta: 0,
+                fixedTokenDeltaUnbalanced: 0
             }
         } else if ((tickCurrent >= tickLower) && (tickCurrent < tickUpper)) {            
             sqrtRatioA96 = TickMath.getSqrtRatioAtTick(tickLower); 
@@ -104,8 +104,8 @@ export const calculatePassiveTokenDeltas = (
         } else {
             // lp is not affected by this trade
             return { 
-                variableTokenDelta: ZERO,
-                fixedTokenDeltaUnbalanced: ZERO
+                variableTokenDelta: 0,
+                fixedTokenDeltaUnbalanced: 0
             }
         }
     }
