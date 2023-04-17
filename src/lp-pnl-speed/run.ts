@@ -31,6 +31,8 @@ export const run = async (chainIds: number[], redisClient?: Redis) => {
   // the matching position shares the same schema
   await createPositionsTable(process.env.POSITIONS_TABLE_ID, bigQuery);
 
+  console.log("yo 5");
+
   while (true) {
     try {
       await sync(bigQuery, amms, redisClient);
