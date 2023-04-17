@@ -5,10 +5,12 @@ import { Redis } from 'ioredis';
 
 import { APR_2023_TIMESTAMP, getAmms, PROJECT_ID } from '../common';
 import { sync } from './sync';
+import { createPositionsTable } from '../big-query-support/manage-tables';
 
 dotenv.config();
 
 export const run = async (chainIds: number[], redisClient?: Redis) => {
+
   const bigQuery = new BigQuery({
     projectId: PROJECT_ID,
   });
@@ -19,6 +21,15 @@ export const run = async (chainIds: number[], redisClient?: Redis) => {
     console.log('amms list empty');
     return;
   }
+
+  if (process.env.POSITIONS_TABLE_ID === undefined) {
+    throw Error("Make sure a positions table id is provided as an environment variable");
+  }
+
+  // only creates a position table if it does not exist
+  // note, atm the create position table script does not check wether
+  // the matching position shares the same schema
+  createPositionsTable(process.env.POSITIONS_TABLE_ID, bigQuery);
 
   while (true) {
     try {
