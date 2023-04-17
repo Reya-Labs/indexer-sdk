@@ -1,11 +1,13 @@
-import { BigQuery, RowMetadata, SimpleQueryRowsResponse } from '@google-cloud/bigquery';
+/* eslint-disable */
+import { BigQuery } from '@google-cloud/bigquery';
 
-export async function pullRows(sqlQuery: string, bigQuery: BigQuery): Promise<RowMetadata> {
+// todo: typings
+export async function pullRows(sqlQuery: string, bigQuery: BigQuery): Promise<any> {
   const options = {
     query: sqlQuery,
   };
 
-  const [rows]: SimpleQueryRowsResponse = await bigQuery.query(options);
+  const [rows] = await bigQuery.query(options);
 
   if (rows === undefined || rows.length === 0) {
     return null;
