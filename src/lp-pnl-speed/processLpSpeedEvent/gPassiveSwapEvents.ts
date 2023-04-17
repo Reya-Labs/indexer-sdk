@@ -37,7 +37,6 @@ export const gPassiveSwapEvents = async ({
       const tickLower = positionRow.tickLower;
       const tickUpper = positionRow.tickUpper;
       const tickPrevious = positionRow.tickPrevious;
-
       
       const {variableTokenDelta, fixedTokenDeltaUnbalanced} : PassiveTokenDeltas = calculatePassiveTokenDeltas(
         positionRow.liquidity, 
@@ -68,6 +67,13 @@ export const gPassiveSwapEvents = async ({
         type: 'swap',
         eventTimestamp: priceChangeEventInfo.eventTimestamp
       };
+
+      passiveSwapEvents.push(passiveSwapEvent);
+
+        affectedLps.push({
+          ...positionRow,
+          tickPrevious: priceChangeEventInfo.tick
+        });
       
     } else {
         throw Error("Position is in the future");
