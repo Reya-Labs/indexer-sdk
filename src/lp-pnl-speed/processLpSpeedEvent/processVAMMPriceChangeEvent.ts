@@ -7,6 +7,7 @@ import {
 import { VAMMPriceChangeEventInfo } from '../../common/event-parsers';
 import { generateLpPositionRowsFromPassiveSwaps } from '../../lp-pnl/processPassiveSwapEvents/generateLpPositionRowsFromPassiveSwaps';
 import { gPassiveSwapEvents } from './gPassiveSwapEvents';
+import { blockNumberToTimestamp } from '../../common/event-parsers/blockNumberToTimestamp';
 
 export const processVAMMPriceChangeEvent = async (
   bigQuery: BigQuery,
@@ -29,12 +30,14 @@ export const processVAMMPriceChangeEvent = async (
     return;
   }
 
+  const eventTimestamp = await blockNumberToTimestamp(priceChangeEventInfo.chainId, priceChangeEventInfo.eventBlockNumber);
+
   const lpPositionRows = await generateLpPositionRowsFromPassiveSwaps({
     passiveSwapEvents,
     affectedLps,
     chainId: priceChangeEventInfo.chainId,
     amm: priceChangeEventInfo.amm,
-    eventTimestamp: priceChangeEventInfo.eventTimestamp,
+    eventTimestamp: eventTimestamp,
     eventBlockNumber: priceChangeEventInfo.eventBlockNumber,
   });
 
