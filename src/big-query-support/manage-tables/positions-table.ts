@@ -8,9 +8,7 @@ export const getPositionsTable = async (tableName: string, bigQuery: BigQuery): 
     const [tables] = await bigQuery.dataset(DATASET_ID).getTables();
 
     const table: Table | undefined = tables.find(
-      (table) => { 
-        console.log(table.id);
-        console.log(tableName);
+      (table) => {
         return table.id === tableName;
       }
     );
