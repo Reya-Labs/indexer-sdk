@@ -6,25 +6,22 @@ import { CACHE_SET_WINDOW, getPreviousEvents, setFromBlock } from '../common';
 import { processLpSpeedEvent } from './processLpSpeedEvent/processLpSpeedEvent';
 
 export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient?: Redis): Promise<void> => {
-  const previousMintBurnSwapEvents = await getPreviousEvents(
+  const previousEvents = await getPreviousEvents(
     'lp_speed',
     amms,
-    ['mint', 'burn', 'price_change', 'vamm_initialization'],
+    ['mint', 'burn', 'price_change'],
     bigQuery,
   );
 
-  const promises = Object.values(previousMintBurnSwapEvents).map(async ({ events, fromBlock }) => {
-
-    if (events[0].type !== 'vamm_initialization') {
-      throw Error("First event must be vamm initialization");
-    }
-
+  const promises = Object.values(previousEvents).map(async ({ events, fromBlock, fromTick }) => {
+    // todo: double check the fact that events are properly ordered sicne last time
+    // checked and the initialization of the vammm didn't come up first
     // note this must be the initialization tick
-    let currentTick: number = events[0].args?.tick;
+    let currentTick: number = fromTick as number;
     const cacheSetWindow = CACHE_SET_WINDOW[events[0].chainId];
     let latestCachedBlock = fromBlock;
 
-    for (const event of events) {
+    for (const event of events.slice(1)) {
       
       const newTick: number = await processLpSpeedEvent(bigQuery, event, currentTick);
        
