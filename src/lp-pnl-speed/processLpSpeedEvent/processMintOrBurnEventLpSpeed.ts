@@ -8,6 +8,7 @@ import { gPositionUpdateQueryMintBurn } from './gPositionUpdateQueryMintBurn';
 export const processMintOrBurnEventLpSpeed = async (
   bigQuery: BigQuery,
   eventInfo: MintOrBurnEventInfo,
+  currentTick: number
 ): Promise<void> => {
   const existingPosition: BigQueryPositionRow | null = await pullExistingPositionRow(
     bigQuery,
@@ -23,7 +24,7 @@ export const processMintOrBurnEventLpSpeed = async (
   if (existingPosition) {
     query = gPositionUpdateQueryMintBurn(existingPosition, eventInfo);
   } else {
-    query = gPositionInsertQueryMint(eventInfo);
+    query = gPositionInsertQueryMint(eventInfo, currentTick);
   }
 
   const options = {
