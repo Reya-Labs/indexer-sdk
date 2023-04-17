@@ -62,6 +62,8 @@ export const pullExistingLpPositionRows = async (
       cashflowLiFactor: bqNumericToNumber(row.cashflowLiFactor),
       cashflowTimeFactor: bqNumericToNumber(row.cashflowTimeFactor),
       cashflowFreeTerm: bqNumericToNumber(row.cashflowFreeTerm),
+      liquidity: bqNumericToNumber(row.liqudiity),
+      tickPrevious: row.tickPrevious
     };
   });
 
