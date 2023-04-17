@@ -1,13 +1,9 @@
 import { BigQuery, Table } from "@google-cloud/bigquery";
-import { DATASET_ID, PROJECT_ID } from "../../common";
+import { DATASET_ID } from "../../common";
 
+export const getPositionsTable = async (tableName: string, bigQuery: BigQuery): Promise<Table | null> => {
 
-
-export const getPositionTable = async (tableId: number, bigQuery: BigQuery): Promise<Table | null> => {
-
-    // todo: check typings and add tests
-
-    const tableName = `${PROJECT_ID}.${DATASET_ID}.Voltz V1 Positions Staging ${tableId}`;  
+    // todo: check typings and add tests 
     
     const dataset = bigQuery.dataset(DATASET_ID);
 
@@ -17,11 +13,9 @@ export const getPositionTable = async (tableId: number, bigQuery: BigQuery): Pro
 
 }
 
-export const createPositionTable = async (tableId: number, bigQuery: BigQuery): Promise<void> => {
+export const createPositionsTable = async (tableName: string, bigQuery: BigQuery): Promise<void> => {
 
-  const tableName = `${PROJECT_ID}.${DATASET_ID}.Voltz V1 Positions Staging ${tableId}`; 
-
-  const existingTable: Table | null = await getPositionTable(tableId, bigQuery);
+  const existingTable: Table | null = await getPositionsTable(tableName, bigQuery);
 
   if (existingTable !== null) {
     return; 
