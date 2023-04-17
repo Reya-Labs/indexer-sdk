@@ -1,4 +1,5 @@
 import { AMM } from '@voltz-protocol/v1-sdk';
+
 import { ExtendedEvent } from '../types';
 
 export type VAMMPriceChangeEventInfo = {
@@ -24,7 +25,7 @@ export const parseVAMMPriceChangeEvent = (event: ExtendedEvent): VAMMPriceChange
   const eventId = `${event.blockHash}_${event.transactionHash}_${event.logIndex}`;
   const ownerAddress = event.args?.recipient as string;
   const tickLower = event.args?.tickLower as number;
-  const tickUpper = event.args?.tickUpper as number; 
+  const tickUpper = event.args?.tickUpper as number;
   const tick = event.args?.tick as number;
 
   const amm = event.amm;

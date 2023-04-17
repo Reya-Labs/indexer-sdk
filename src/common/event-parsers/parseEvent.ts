@@ -3,7 +3,9 @@ import { MintOrBurnEventInfo, parseMintOrBurnEvent } from './parseMintOrBurnEven
 import { parseSwapEvent, SwapEventInfo } from './parseSwapEvent';
 import { parseVAMMPriceChangeEvent, VAMMPriceChangeEventInfo } from './parseVAMMPriceChangeEvent';
 
-export const parseEvent = (event: ExtendedEvent): SwapEventInfo | MintOrBurnEventInfo | VAMMPriceChangeEventInfo => {
+export const parseEvent = (
+  event: ExtendedEvent,
+): SwapEventInfo | MintOrBurnEventInfo | VAMMPriceChangeEventInfo => {
   let parsedEvent: SwapEventInfo | MintOrBurnEventInfo | VAMMPriceChangeEventInfo;
 
   switch (event.type) {

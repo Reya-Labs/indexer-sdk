@@ -1,6 +1,6 @@
 import { BigQueryPositionRow } from '../../big-query-support';
 import { secondsToBqDate } from '../../big-query-support/utils';
-import { getTimestampInSeconds,POSITIONS_TABLE_ID } from '../../common';
+import { getTimestampInSeconds, POSITIONS_TABLE_ID } from '../../common';
 import { MintOrBurnEventInfo } from '../../common/event-parsers';
 
 export const gPositionUpdateQueryMintBurn = (
