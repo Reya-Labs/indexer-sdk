@@ -7,10 +7,10 @@ export const getPositionsTable = async (tableName: string, bigQuery: BigQuery): 
     
     const [tables] = await bigQuery.dataset(DATASET_ID).getTables();
 
-    console.log(tables.length);
-
     const table: Table | undefined = tables.find(
       (table) => { 
+        console.log(table.id);
+        console.log(tableName);
         return table.id === tableName;
       }
     );
@@ -31,8 +31,6 @@ export const createPositionsTable = async (tableName: string, bigQuery: BigQuery
     console.log("A positions table already exists"); 
     return; 
   }
-
-  console.log("Creating a new positions table"); 
 
   // const schema = 'marginEngineAddress:string, vammAddress:string, ownerAddress:string, tickLower:integer, tickUpper:integer, realizedPnLFromSwaps:numeric, realizedPnLFromFeesPaid:numeric, netNotionalLocked:numeric, netFixedRate:numeric, lastUpdatedTimestamp:timestamp, notionalLiquidityProvided:numeric, realizedPnLFromFeesCollected:numeric, netMarginDeposited:numeric, rateOracleIndex:numeric, rowLastUpdatedTimestamp:timestamp, fixedTokenBalance:numeric, variableTokenBalance:numeric, positionInitializationTimestamp:timestamp, rateOracle: string, underlyingToken: string, chainId:integer, cashflowFactor:numeric, cashflowTimeFactor:numeric, cashflowFreeTerm:numeric, liquidity:numeric, tickPrevious:integer';
   const schema  = [
