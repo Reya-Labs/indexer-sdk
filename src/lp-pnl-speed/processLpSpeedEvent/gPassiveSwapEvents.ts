@@ -2,6 +2,7 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 import { BigQueryPositionRow } from '../../big-query-support';
 import { SwapEventInfo } from '../../common/event-parsers/parseSwapEvent';
 import { VAMMPriceChangeEventInfo } from '../../common/event-parsers';
+import { calculatePassiveTokenDeltas, PassiveTokenDeltas } from '../../common/lp-math/calculatePassiveTokenDeltas';
 
 type GPassiveSwapEventsArgs = {
   existingLpPositionRows: BigQueryPositionRow[];
@@ -35,14 +36,39 @@ export const gPassiveSwapEvents = async ({
       const ownerAddress = positionRow.ownerAddress;
       const tickLower = positionRow.tickLower;
       const tickUpper = positionRow.tickUpper;
+      const tickPrevious = positionRow.tickPrevious;
 
       
+      const {variableTokenDelta, fixedTokenDeltaUnbalanced} : PassiveTokenDeltas = calculatePassiveTokenDeltas(
+        positionRow.liquidity, 
+        tickUpper, 
+        tickLower,
+        priceChangeEventInfo.tick,
+        tickPrevious
+      );
 
+      // todo: check if we can have two passive swaps with the same event timestamp, realistically yeah
+      const passiveSwapEventId = `${priceChangeEventInfo.chainId}_${priceChangeEventInfo.vammAddress}_${ownerAddress}_${priceChangeEventInfo.eventTimestamp}`.toLowerCase();
+
+      const passiveSwapEvent: SwapEventInfo = {
+        eventId: passiveSwapEventId,
+        eventBlockNumber: priceChangeEventInfo.eventBlockNumber,
+        chainId: priceChangeEventInfo.chainId,
+        vammAddress: priceChangeEventInfo.vammAddress,
+        ownerAddress,
+        tickLower,
+        tickUpper,
+        variableTokenDelta,
+        fixedTokenDeltaUnbalanced,
+        feePaidToLps: 0, // does not apply to passive swaps
+        rateOracle: priceChangeEventInfo.rateOracle,
+        underlyingToken: priceChangeEventInfo.underlyingToken,
+        marginEngineAddress: priceChangeEventInfo.marginEngineAddress,
+        amm: priceChangeEventInfo.amm,
+        type: 'swap',
+        eventTimestamp: priceChangeEventInfo.eventTimestamp
+      };
       
-
-
-      
-
     } else {
         throw Error("Position is in the future");
     }
