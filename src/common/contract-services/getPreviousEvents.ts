@@ -99,7 +99,6 @@ export const getPreviousEvents = async (
             amm: amm,
             chainId: chainId
           };
-          console.log(extendedEvent);
           return extendedEvent;
         }),
       );
