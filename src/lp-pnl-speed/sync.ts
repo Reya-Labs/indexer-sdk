@@ -9,7 +9,7 @@ export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient?: Redis)
   const previousMintBurnSwapEvents = await getPreviousEvents(
     'lp_speed',
     amms,
-    ['mint', 'burn', 'price_change'],
+    ['mint', 'burn', 'price_change', 'vamm_initialization'],
     bigQuery,
   );
 
