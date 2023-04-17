@@ -29,7 +29,8 @@ export const gPassiveSwapEvents = ({
   const affectedLps: BigQueryPositionRow[] = [];
 
   for (const positionRow of existingLpPositionRows) {
-    if (positionRow.lastUpdatedTimestamp < priceChangeEventInfo.eventTimestamp) {
+    // note, block number is not sufficient since tx ordering within the block also matters
+    if (positionRow.lastUpdatedBlockNumber < priceChangeEventInfo.eventBlockNumber) {
       // position is initialized before event timestamp
       const ownerAddress = positionRow.ownerAddress;
       const tickLower = positionRow.tickLower;
@@ -72,8 +73,7 @@ export const gPassiveSwapEvents = ({
         underlyingToken: priceChangeEventInfo.underlyingToken,
         marginEngineAddress: priceChangeEventInfo.marginEngineAddress,
         amm: priceChangeEventInfo.amm,
-        type: 'swap',
-        eventTimestamp: priceChangeEventInfo.eventTimestamp,
+        type: 'swap'
       };
 
       passiveSwapEvents.push(passiveSwapEvent);

@@ -6,7 +6,7 @@ import { BigQuery } from '@google-cloud/bigquery';
 
 import { POSITIONS_TABLE_ID } from '../common';
 import { BigQueryPositionRow } from './pullExistingPositionRow';
-import { bqNumericToNumber, bqTimestampToUnixSeconds, secondsToBqDate } from './utils';
+import { bqNumericToNumber, bqTimestampToUnixSeconds } from './utils';
 
 export const pullExistingLpPositionRows = async (
   bigQuery: BigQuery,
