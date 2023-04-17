@@ -4,16 +4,14 @@ import {
   generateLpPositionUpdatesQuery,
   pullExistingLpPositionRows,
 } from '../../big-query-support';
-import { generateLpPositionRowsFromPassiveSwaps } from '../../lp-pnl/processPassiveSwapEvents/generateLpPositionRowsFromPassiveSwaps';
 import { VAMMPriceChangeEventInfo } from '../../common/event-parsers';
+import { generateLpPositionRowsFromPassiveSwaps } from '../../lp-pnl/processPassiveSwapEvents/generateLpPositionRowsFromPassiveSwaps';
 import { gPassiveSwapEvents } from './gPassiveSwapEvents';
-
 
 export const processVAMMPriceChangeEvent = async (
   bigQuery: BigQuery,
   priceChangeEventInfo: VAMMPriceChangeEventInfo,
 ): Promise<void> => {
-  
   const existingLpPositionRows = await pullExistingLpPositionRows(
     bigQuery,
     priceChangeEventInfo.amm.id,

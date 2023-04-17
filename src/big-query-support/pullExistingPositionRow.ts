@@ -91,6 +91,6 @@ export const pullExistingPositionRow = async (
     cashflowTimeFactor: bqNumericToNumber(rows[0].cashflowTimeFactor),
     cashflowFreeTerm: bqNumericToNumber(rows[0].cashflowFreeTerm),
     liquidity: bqNumericToNumber(rows[0].liquidity),
-    tickPrevious: rows[0].tickPrevious
+    tickPrevious: rows[0].tickPrevious,
   };
 };

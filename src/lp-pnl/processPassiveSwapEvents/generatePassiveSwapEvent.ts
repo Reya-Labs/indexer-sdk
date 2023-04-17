@@ -58,7 +58,7 @@ export const generatePassiveSwapEvent = ({
     marginEngineAddress: rootEventInfo.marginEngineAddress,
     amm: rootEventInfo.amm,
     type: 'swap',
-    eventTimestamp: rootEventInfo.eventTimestamp
+    eventTimestamp: rootEventInfo.eventTimestamp,
   };
 
   return passiveSwapEvent;
