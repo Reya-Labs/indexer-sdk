@@ -4,9 +4,9 @@ import { Q96, ONE, ZERO, NEGATIVE_ONE } from './internalConstants';
 import { TickMath } from './tickMath';
 
 
-type PassiveTokenDeltas = {
-    variableTokenDelta: JSBI;
-    fixedTokenDeltaUnbalanced: JSBI;
+export type PassiveTokenDeltas = {
+    variableTokenDelta: number;
+    fixedTokenDeltaUnbalanced: number;
 };
 
 const getAmount0Delta = (sqrtRatioAX96: JSBI, sqrtRatioBX96: JSBI, liquidity: JSBI, roundUp: boolean): JSBI  => {
@@ -49,6 +49,7 @@ export const iaVariableTakerSwap = (
     }
     return false;
 }
+
 
 // todo: this function can be simplified
 export const calculatePassiveTokenDeltas = (
@@ -125,9 +126,11 @@ export const calculatePassiveTokenDeltas = (
         true
     );
 
+
+    // todo: check if precision is maintained after conversion to number
     return { 
-        variableTokenDelta: variableTokenDelta,
-        fixedTokenDeltaUnbalanced: fixedTokenDeltaUnbalanced
+        variableTokenDelta: JSBI.toNumber(variableTokenDelta),
+        fixedTokenDeltaUnbalanced: JSBI.toNumber(fixedTokenDeltaUnbalanced)
     }
 
 }
