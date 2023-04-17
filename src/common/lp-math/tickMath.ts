@@ -1,7 +1,9 @@
+/* eslint-disable */
+
 import JSBI from 'jsbi';
 import invariant from 'tiny-invariant';
 
-import { MaxUint256,ONE, ZERO } from './internalConstants';
+import { MaxUint256, ONE, ZERO } from './internalConstants';
 
 function mulShift(val: JSBI, mulBy: string): JSBI {
   return JSBI.signedRightShift(JSBI.multiply(val, JSBI.BigInt(mulBy)), JSBI.BigInt(128));

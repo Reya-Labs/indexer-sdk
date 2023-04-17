@@ -46,11 +46,11 @@ export const gPassiveSwapEvents = ({
         );
 
       const variableTokenDelta = Number(
-        ethers.utils.formatUnits(variableTokenDeltaString , tokenDecimals),
+        ethers.utils.formatUnits(variableTokenDeltaString, tokenDecimals),
       );
 
       const fixedTokenDeltaUnbalanced = Number(
-        ethers.utils.formatUnits(fixedTokenDeltaUnbalancedString , tokenDecimals),
+        ethers.utils.formatUnits(fixedTokenDeltaUnbalancedString, tokenDecimals),
       );
 
       // todo: check if we can have two passive swaps with the same event timestamp, realistically yeah
