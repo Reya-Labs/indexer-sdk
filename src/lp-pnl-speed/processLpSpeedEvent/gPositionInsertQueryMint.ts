@@ -34,7 +34,8 @@ export const gPositionInsertQueryMint = (eventInfo: MintOrBurnEventInfo, current
     ${eventInfo.chainId},
     ${0},
     ${0},
-    ${eventInfo.liquidityDelta.toString()},
+    ${0},
+    ${eventInfo.liquidityDelta},
     ${currentTick}
   `;
 

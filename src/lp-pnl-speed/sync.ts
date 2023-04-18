@@ -14,6 +14,8 @@ export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient?: Redis)
   );
 
   const promises = Object.values(previousEvents).map(async ({ events, fromBlock, fromTick }) => {
+  
+    // todo: what if fromBlock is > vamm initialization, needs to be handled in the get previous events function
     // todo: double check the fact that events are properly ordered sicne last time
     // checked and the initialization of the vammm didn't come up first
     // note this must be the initialization tick
