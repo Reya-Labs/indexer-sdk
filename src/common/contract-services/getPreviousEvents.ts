@@ -118,7 +118,7 @@ export const getPreviousEvents = async (
       );
 
       const extendedEvents: ExtendedEvent[] = await Promise.all(
-        events.map(async (event) => {
+        events.map((event) => {
           const extendedEvent = {
             ...event,
             type: eventType,

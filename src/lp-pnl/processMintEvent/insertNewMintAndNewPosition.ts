@@ -25,7 +25,7 @@ export const insertNewMintAndNewPosition = async (
     ${positionRow.realizedPnLFromFeesPaid},
     ${positionRow.netNotionalLocked},
     ${positionRow.netFixedRateLocked},
-    \'${secondsToBqDate(positionRow.lastUpdatedTimestamp)}\',
+    \'${secondsToBqDate(positionRow.lastUpdatedBlockNumber)}\',
     ${positionRow.notionalLiquidityProvided},                
     ${positionRow.realizedPnLFromFeesCollected},
     ${positionRow.netMarginDeposited},
@@ -33,13 +33,15 @@ export const insertNewMintAndNewPosition = async (
     \'${secondsToBqDate(positionRow.rowLastUpdatedTimestamp)}\',
     ${positionRow.fixedTokenBalance},
     ${positionRow.variableTokenBalance},
-    \'${secondsToBqDate(positionRow.positionInitializationTimestamp)}\',
+    \'${secondsToBqDate(positionRow.positionInitializationBlockNumber)}\',
     \'${positionRow.rateOracle}\',
     \'${positionRow.underlyingToken}\',
     ${positionRow.chainId},
     ${positionRow.cashflowLiFactor},
     ${positionRow.cashflowTimeFactor},
-    ${positionRow.cashflowFreeTerm}
+    ${positionRow.cashflowFreeTerm},
+    ${positionRow.liquidity},
+    ${positionRow.tickPrevious}
   `;
 
   // build and fire sql query

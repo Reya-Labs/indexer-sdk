@@ -17,10 +17,6 @@ export const getVariableFactor = async (
 
   const rateOracleContract = generateRateOracleContract(rateOracleId, provider);
 
-  if (!from || !to) {
-    console.log('from or to undefined', from, to);
-  }
-
   const fromWad = ethers.utils.parseUnits(from.toString(), 18);
   const toWad = ethers.utils.parseUnits(to.toString(), 18);
 

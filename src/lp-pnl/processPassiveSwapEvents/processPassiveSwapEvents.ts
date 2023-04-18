@@ -4,6 +4,7 @@ import {
   generateLpPositionUpdatesQuery,
   pullExistingLpPositionRows,
 } from '../../big-query-support';
+import { blockNumberToTimestamp } from '../../common/event-parsers/blockNumberToTimestamp';
 import { parseSwapEvent } from '../../common/event-parsers/parseSwapEvent';
 import { ExtendedEvent } from '../../common/types';
 import { generateLpPositionRowsFromPassiveSwaps } from './generateLpPositionRowsFromPassiveSwaps';
@@ -25,7 +26,7 @@ export const processPassiveSwapEvents = async ({
   const existingLpPositionRows = await pullExistingLpPositionRows(
     bigQuery,
     event.amm.id,
-    rootEventInfo.eventTimestamp,
+    rootEventInfo.eventBlockNumber,
   );
 
   const { passiveSwapEvents, affectedLps } = await generatePassiveSwapEvents({
@@ -39,12 +40,14 @@ export const processPassiveSwapEvents = async ({
     return;
   }
 
+  const eventTimestamp = await blockNumberToTimestamp(event.chainId, event.blockNumber);
+
   const lpPositionRows = await generateLpPositionRowsFromPassiveSwaps({
     passiveSwapEvents,
     affectedLps,
     chainId: rootEventInfo.chainId,
     amm: rootEventInfo.amm,
-    eventTimestamp: rootEventInfo.eventTimestamp,
+    eventTimestamp,
     eventBlockNumber: rootEventInfo.eventBlockNumber,
   });
 

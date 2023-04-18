@@ -61,7 +61,7 @@ export const gPassiveSwapEvents = ({
         `${priceChangeEventInfo.chainId}_${priceChangeEventInfo.vammAddress}_${ownerAddress}_${priceChangeEventInfo.eventBlockNumber}`.toLowerCase();
 
       const passiveSwapEvent: SwapEventInfo = {
-        eventId: passiveSwapEventId,
+        eventId: passiveSwapEventId.toLowerCase(),
         eventBlockNumber: priceChangeEventInfo.eventBlockNumber,
         chainId: priceChangeEventInfo.chainId,
         vammAddress: priceChangeEventInfo.vammAddress,

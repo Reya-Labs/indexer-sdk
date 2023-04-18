@@ -2,7 +2,7 @@ import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
 import { Redis } from 'ioredis';
 
-import { CACHE_SET_WINDOW, getPreviousEvents, setFromBlock } from '../common';
+import { getPreviousEvents, setFromBlock } from '../common';
 import { processLpSpeedEvent } from './processLpSpeedEvent/processLpSpeedEvent';
 
 export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient?: Redis): Promise<void> => {
@@ -18,19 +18,19 @@ export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient?: Redis)
     // todo: double check the fact that events are properly ordered sicne last time
     // checked and the initialization of the vammm didn't come up first
     // note this must be the initialization tick
-    let currentTick: number = fromTick as number;
-    const cacheSetWindow = CACHE_SET_WINDOW[events[0].chainId];
+    let currentTick = fromTick;
+    // const cacheSetWindow = CACHE_SET_WINDOW[events[0].chainId];
     let latestCachedBlock = fromBlock;
 
     for (const event of events) {
       const newTick: number = await processLpSpeedEvent(bigQuery, event, currentTick);
 
-      if (currentTick != newTick) {
+      if (currentTick !== newTick) {
         currentTick = newTick;
       }
 
-      const currentBlock = event.blockNumber;
-      const currentWindow = currentBlock - latestCachedBlock;
+      // const currentBlock = event.blockNumber;
+      // const currentWindow = currentBlock - latestCachedBlock;
 
       const isSet = await setFromBlock({
         syncProcessName: 'lp_speed',

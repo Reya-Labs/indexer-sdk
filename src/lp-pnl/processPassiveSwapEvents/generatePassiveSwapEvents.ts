@@ -3,6 +3,7 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 import { BigQueryPositionRow } from '../../big-query-support';
 import { getVariableFactor } from '../../common';
 import { generateMarginEngineContract } from '../../common/contract-services/generateMarginEngineContract';
+import { blockNumberToTimestamp } from '../../common/event-parsers/blockNumberToTimestamp';
 import { SwapEventInfo } from '../../common/event-parsers/parseSwapEvent';
 import { generatePassiveSwapEvent } from './generatePassiveSwapEvent';
 import { getOnChainFixedAndVariableTokenBalances } from './getOnChainFixedAndVariableTokenBalances';
@@ -27,12 +28,17 @@ export const generatePassiveSwapEvents = async ({
 
   const tokenDecimals = amm.underlyingToken.decimals;
 
+  const eventTimestamp = await blockNumberToTimestamp(
+    rootEventInfo.chainId,
+    rootEventInfo.eventBlockNumber,
+  );
+
   // Get variable factor before start and event timestamp (for excess balance)
   const variableFactorStartToCurrent = await getVariableFactor(
     amm.provider,
     amm.marginEngineAddress,
     startTimestamp,
-    rootEventInfo.eventTimestamp,
+    eventTimestamp,
     rootEventInfo.eventBlockNumber,
   );
 
@@ -43,7 +49,7 @@ export const generatePassiveSwapEvents = async ({
   const affectedLps: BigQueryPositionRow[] = [];
 
   for (const positionRow of existingLpPositionRows) {
-    if (positionRow.lastUpdatedTimestamp < rootEventInfo.eventTimestamp) {
+    if (positionRow.lastUpdatedBlockNumber < rootEventInfo.eventBlockNumber) {
       // position is initialized before event timestamp
       const ownerAddress = positionRow.ownerAddress;
       const tickLower = positionRow.tickLower;
@@ -71,11 +77,11 @@ export const generatePassiveSwapEvents = async ({
           ownerAddress,
           tickLower,
           tickUpper,
-          eventTimestamp: rootEventInfo.eventTimestamp,
           startTimestamp,
           maturityTimestamp,
           variableFactorStartToCurrent,
           rootEventInfo,
+          eventTimestamp,
         });
         passiveSwapEvents.push(passiveSwap);
         affectedLps.push({

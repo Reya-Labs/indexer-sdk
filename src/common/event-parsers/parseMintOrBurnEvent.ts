@@ -1,7 +1,7 @@
 import { AMM, getNotionalFromLiquidity } from '@voltz-protocol/v1-sdk';
 import { BigNumber, ethers } from 'ethers';
+
 import { ExtendedEvent } from '../types';
-import JSBI from 'jsbi';
 
 export type MintOrBurnEventInfo = {
   eventId: string;
@@ -31,14 +31,14 @@ export const parseMintOrBurnEvent = (event: ExtendedEvent): MintOrBurnEventInfo 
   const chainId = event.chainId;
 
   let notionalDelta = getNotionalFromLiquidity(amount, tickLower, tickUpper, tokenDecimals);
-  let liquidityDelta = Number(ethers.utils.formatUnits(amount as ethers.BigNumber, tokenDecimals));
+  const liquidityDelta = Number(ethers.utils.formatUnits(amount, tokenDecimals));
 
   if (event.type === 'burn') {
     notionalDelta = -1.0 * notionalDelta;
   }
 
   return {
-    eventId,
+    eventId: eventId.toLowerCase(),
     chainId,
     vammAddress: event.amm.id.toLowerCase(),
     ownerAddress: ownerAddress.toLowerCase(),

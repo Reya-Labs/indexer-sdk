@@ -1,4 +1,5 @@
 import { BigQuery, Table } from '@google-cloud/bigquery';
+
 import { DATASET_ID } from '../../common';
 
 export const getTable = async (tableName: string, bigQuery: BigQuery): Promise<Table | null> => {
@@ -6,11 +7,11 @@ export const getTable = async (tableName: string, bigQuery: BigQuery): Promise<T
 
   const [tables] = await bigQuery.dataset(DATASET_ID).getTables();
 
-  const table: Table | undefined = tables.find((table) => {
-    return table.id === tableName;
+  const table: Table | undefined = tables.find((t) => {
+    return t.id === tableName;
   });
 
-  if (table === undefined) {
+  if (!table) {
     return null;
   }
 

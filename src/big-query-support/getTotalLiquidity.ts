@@ -4,22 +4,22 @@ import { dollarAggregate } from '../api/common/dollarAggregate';
 import { bqNumericToNumber } from './utils';
 
 type Args = {
-    chainId: number;
-    mintsAndBurnsTableId: string;
-    bigQuery: BigQuery;
-    geckoKey: string;
+  chainId: number;
+  mintsAndBurnsTableId: string;
+  bigQuery: BigQuery;
+  geckoKey: string;
 };
 
 /**
  Get chain level information
  */
 export const getChainTotalLiquidity = async ({
-    chainId,
-    mintsAndBurnsTableId,
-    bigQuery,
-    geckoKey,
+  chainId,
+  mintsAndBurnsTableId,
+  bigQuery,
+  geckoKey,
 }: Args): Promise<number> => {
-    const liquidityQuery = `
+  const liquidityQuery = `
         SELECT underlyingToken, sum(notionalDelta) as amount
         FROM \`${mintsAndBurnsTableId}\`
         
@@ -28,25 +28,22 @@ export const getChainTotalLiquidity = async ({
         GROUP BY underlyingToken
     `;
 
-    const options = {
-        query: liquidityQuery,
-    };
+  const options = {
+    query: liquidityQuery,
+  };
 
-    const [rows] = await bigQuery.query(options);
+  const [rows] = await bigQuery.query(options);
 
-    if (!rows || rows.length === 0) {
-        return 0;
-    }
+  if (!rows || rows.length === 0) {
+    return 0;
+  }
 
-    const parsedRows = rows.map((row: {
-        underlyingToken: string;
-        amount: BigQueryInt;
-    }) => ({
-        underlyingToken: row.underlyingToken,
-        amount: bqNumericToNumber(row.amount),
-    }));
+  const parsedRows = rows.map((row: { underlyingToken: string; amount: BigQueryInt }) => ({
+    underlyingToken: row.underlyingToken,
+    amount: bqNumericToNumber(row.amount),
+  }));
 
-    const totalLiquidityInDollars = await dollarAggregate(parsedRows, geckoKey);
+  const totalLiquidityInDollars = await dollarAggregate(parsedRows, geckoKey);
 
-    return totalLiquidityInDollars;
+  return totalLiquidityInDollars;
 };

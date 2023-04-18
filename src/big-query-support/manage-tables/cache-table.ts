@@ -1,11 +1,12 @@
 import { BigQuery, Table } from '@google-cloud/bigquery';
+
 import { DATASET_ID } from '../../common';
 import { getTable } from './get-table';
 
 export const createCacheTable = async (tableName: string, bigQuery: BigQuery): Promise<void> => {
   const existingTable: Table | null = await getTable(tableName, bigQuery);
 
-  if (existingTable !== null) {
+  if (existingTable) {
     console.log('A cache table already exists');
     return;
   }
@@ -24,5 +25,5 @@ export const createCacheTable = async (tableName: string, bigQuery: BigQuery): P
   // Create a new table in the dataset
   const [table] = await bigQuery.dataset(DATASET_ID).createTable(tableName, options);
 
-  console.log(`Table ${table.id} created.`);
+  console.log(`Table ${table.id || ''} created.`);
 };

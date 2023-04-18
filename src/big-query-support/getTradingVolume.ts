@@ -39,15 +39,12 @@ export const getChainTradingVolume = async ({
     return 0;
   }
 
-  const parsedRows = rows.map((row: {
-    underlyingToken: string;
-    amount: BigQueryInt;
-  }) => ({
+  const parsedRows = rows.map((row: { underlyingToken: string; amount: BigQueryInt }) => ({
     underlyingToken: row.underlyingToken,
     amount: bqNumericToNumber(row.amount),
   }));
 
   const volume30DayInDollars = await dollarAggregate(parsedRows, geckoKey);
-  
+
   return volume30DayInDollars;
 };

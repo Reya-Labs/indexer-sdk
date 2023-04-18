@@ -32,7 +32,6 @@ app.get('/', (_, res) => {
 });
 
 app.get('/chains/:chainId', (req, res) => {
-
   const process = async () => {
     const chainId = Number(req.params.chainId);
 
@@ -50,24 +49,26 @@ app.get('/chains/:chainId', (req, res) => {
       geckoKey: GECKO_KEY,
     });
 
-  return {
-    volume30Day: tradingVolume,
-    totalLiquidity: totalLiquidity,
+    return {
+      volume30Day: tradingVolume,
+      totalLiquidity: totalLiquidity,
+    };
   };
-  }
 
-  process().then((output) => {
-    res.json(output);
-  }, (error) => {
-    console.log(`API query failed with message ${(error as Error).message}`);
-  });
+  process().then(
+    (output) => {
+      res.json(output);
+    },
+    (error) => {
+      console.log(`API query failed with message ${(error as Error).message}`);
+    },
+  );
 });
 
-app.get(
-  '/positions/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper',
-  async (req, res) => {
-    console.log(`Requesting information about a position`);
+app.get('/positions/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper', (req, res) => {
+  console.log(`Requesting information about a position`);
 
+  const process = async () => {
     const chainId = Number(req.params.chainId);
     const vammAddress = req.params.vammAddress;
     const ownerAddress = req.params.ownerAddress;
@@ -84,14 +85,12 @@ app.get(
     );
 
     if (!existingPosition) {
-      res.json({
-        realizedPnLFromSwaps: null,
-        realizedPnLFromFeesPaid: null,
-        realizedPnLFromFeesCollected: null,
-        unrealizedPnLFromSwaps: null,
-      });
-
-      return;
+      return {
+        realizedPnLFromSwaps: 0,
+        realizedPnLFromFeesPaid: 0,
+        realizedPnLFromFeesCollected: 0,
+        unrealizedPnLFromSwaps: 0,
+      };
     }
 
     const amm = await getAmm(chainId, vammAddress);
@@ -135,11 +134,20 @@ app.get(
       (currentFixedRate - existingPosition.netFixedRateLocked) *
       timeInYears;
 
-    res.json({
+    return {
       realizedPnLFromSwaps: rPnL,
       realizedPnLFromFeesPaid: existingPosition.realizedPnLFromFeesPaid,
       realizedPnLFromFeesCollected: existingPosition.realizedPnLFromFeesCollected,
       unrealizedPnLFromSwaps: uPnL,
-    });
-  },
-);
+    };
+  };
+
+  process().then(
+    (output) => {
+      res.json(output);
+    },
+    (error) => {
+      console.log(`API query failed with message ${(error as Error).message}`);
+    },
+  );
+});
