@@ -14,7 +14,6 @@ export const pullExistingLpPositionRows = async (
   currentBlockNumber: number,
 ): Promise<BigQueryPositionRow[]> => {
 
-  // note, since we're doing time based indexing of passive swaps, can't rely on extra details from the swap event
   const sqlQuery = `
     SELECT * FROM \`${POSITIONS_TABLE_ID}\` 
       WHERE 
@@ -34,7 +33,9 @@ export const pullExistingLpPositionRows = async (
     return [];
   }
 
+
   const lpPositionRows = rows.map((row) => {
+    
     return {
       marginEngineAddress: row.marginEngineAddress,
       vammAddress: row.vammAddress,
@@ -60,7 +61,7 @@ export const pullExistingLpPositionRows = async (
       cashflowLiFactor: bqNumericToNumber(row.cashflowLiFactor),
       cashflowTimeFactor: bqNumericToNumber(row.cashflowTimeFactor),
       cashflowFreeTerm: bqNumericToNumber(row.cashflowFreeTerm),
-      liquidity: bqNumericToNumber(row.liqudiity),
+      liquidity: bqNumericToNumber(row.liquidity),
       tickPrevious: row.tickPrevious
     };
   });
