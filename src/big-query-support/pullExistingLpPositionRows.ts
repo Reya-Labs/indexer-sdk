@@ -19,7 +19,7 @@ export const pullExistingLpPositionRows = async (
     SELECT * FROM \`${POSITIONS_TABLE_ID}\` 
       WHERE 
         notionalLiquidityProvided>0 AND 
-        positionInitializationBlockNumber<\'${currentBlockNumber}\' AND
+        positionInitializationBlockNumber<${currentBlockNumber} AND
         vammAddress=\"${vammAddress}\"
     `;
 
@@ -27,9 +27,7 @@ export const pullExistingLpPositionRows = async (
     query: sqlQuery,
   };
 
-  console.log(sqlQuery);
   const [rows] = await bigQuery.query(options);
-  console.log("success");
   
 
   if (!rows || rows.length === 0) {
