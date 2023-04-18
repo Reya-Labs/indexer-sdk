@@ -19,7 +19,7 @@ export const gPassiveSwapEvents = ({
   existingLpPositionRows,
   amm,
   priceChangeEventInfo,
-}: GPassiveSwapEventsArgs):{
+}: GPassiveSwapEventsArgs): {
   passiveSwapEvents: SwapEventInfo[];
   affectedLps: BigQueryPositionRow[];
 } => {
@@ -56,7 +56,7 @@ export const gPassiveSwapEvents = ({
       console.log(`variable token delta ${variableTokenDelta}`);
       console.log(`fixed token delta unbalanced ${fixedTokenDeltaUnbalanced}`);
 
-      // note, what if there are two in the same block... 
+      // note, what if there are two in the same block...
       const passiveSwapEventId =
         `${priceChangeEventInfo.chainId}_${priceChangeEventInfo.vammAddress}_${ownerAddress}_${priceChangeEventInfo.eventBlockNumber}`.toLowerCase();
 
@@ -75,7 +75,7 @@ export const gPassiveSwapEvents = ({
         underlyingToken: priceChangeEventInfo.underlyingToken,
         marginEngineAddress: priceChangeEventInfo.marginEngineAddress,
         amm: priceChangeEventInfo.amm,
-        type: 'swap'
+        type: 'swap',
       };
 
       passiveSwapEvents.push(passiveSwapEvent);

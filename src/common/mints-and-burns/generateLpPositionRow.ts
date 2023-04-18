@@ -31,6 +31,6 @@ export const generateLpPositionRow = (eventInfo: MintOrBurnEventInfo): BigQueryP
     cashflowTimeFactor: 0,
     cashflowFreeTerm: 0,
     tickPrevious: 0, // not relevant for this processing
-    liquidity: 0 // not relevant for this processing
+    liquidity: 0, // not relevant for this processing
   };
 };

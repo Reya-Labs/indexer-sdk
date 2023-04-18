@@ -51,6 +51,6 @@ export const parseMintOrBurnEvent = (event: ExtendedEvent): MintOrBurnEventInfo 
     amm,
     type: event.type,
     eventBlockNumber: event.blockNumber,
-    liquidityDelta
+    liquidityDelta,
   };
 };

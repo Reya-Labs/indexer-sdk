@@ -13,7 +13,6 @@ export const processVAMMPriceChangeEvent = async (
   bigQuery: BigQuery,
   priceChangeEventInfo: VAMMPriceChangeEventInfo,
 ): Promise<void> => {
-
   const existingLpPositionRows = await pullExistingLpPositionRows(
     bigQuery,
     priceChangeEventInfo.amm.id,
@@ -31,7 +30,10 @@ export const processVAMMPriceChangeEvent = async (
     return;
   }
 
-  const eventTimestamp = await blockNumberToTimestamp(priceChangeEventInfo.chainId, priceChangeEventInfo.eventBlockNumber);
+  const eventTimestamp = await blockNumberToTimestamp(
+    priceChangeEventInfo.chainId,
+    priceChangeEventInfo.eventBlockNumber,
+  );
 
   const lpPositionRows = await generateLpPositionRowsFromPassiveSwaps({
     passiveSwapEvents,

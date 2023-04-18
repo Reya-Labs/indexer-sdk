@@ -8,7 +8,7 @@ export type PassiveTokenDeltas = {
   variableTokenDelta: number; // big int (no decimals)
   fixedTokenDeltaUnbalanced: number; // big int (no decimals)
   variableTokenDeltaString: string; // big int (no decimals)
-  fixedTokenDeltaUnbalancedString: string;  // big int (no decimals)
+  fixedTokenDeltaUnbalancedString: string; // big int (no decimals)
 };
 
 const getAmount0Delta = (
@@ -56,18 +56,19 @@ const getAmount1Delta = (
     passively a variable taker, otherwise fixed taker
 */
 
-export const decimalNumberToJSBI = (decimalNumber: number): {
+export const decimalNumberToJSBI = (
+  decimalNumber: number,
+): {
   numberJSBI: JSBI;
-  precision: number; 
-} => { 
-
+  precision: number;
+} => {
   const integerAndDecimalParts: string[] = decimalNumber.toString().split('.');
   const precision: number = integerAndDecimalParts[1].length;
-  const numberNoDecimals: number = Number(integerAndDecimalParts.join('')); 
+  const numberNoDecimals: number = Number(integerAndDecimalParts.join(''));
   const numberJSBI: JSBI = JSBI.BigInt(numberNoDecimals);
 
-  return {numberJSBI, precision}
-}
+  return { numberJSBI, precision };
+};
 
 export const iaVariableTakerSwap = (tickCurrent: number, tickPrevious: number) => {
   if (tickCurrent > tickPrevious) {
@@ -86,14 +87,14 @@ export const calculatePassiveTokenDeltas = (
 ): PassiveTokenDeltas => {
   let variableTokenDelta: JSBI = ZERO;
   let fixedTokenDeltaUnbalanced: JSBI = ZERO;
-  const { numberJSBI: liquidityJSBI }  = decimalNumberToJSBI(liquidity);
+  const { numberJSBI: liquidityJSBI } = decimalNumberToJSBI(liquidity);
   let sqrtRatioA96: JSBI;
   let sqrtRatioB96: JSBI;
 
   const isVT: boolean = iaVariableTakerSwap(tickCurrent, tickPrevious);
-  console.log(`Calculating passive token deltas`); 
-  console.log(`tickPrevious: ${tickPrevious}, tickCurrent: ${tickCurrent}`); 
-  console.log(`tickLower: ${tickLower}, tickUpper: ${tickUpper}`); 
+  console.log(`Calculating passive token deltas`);
+  console.log(`tickPrevious: ${tickPrevious}, tickCurrent: ${tickCurrent}`);
+  console.log(`tickLower: ${tickLower}, tickUpper: ${tickUpper}`);
 
   if (tickPrevious < tickLower) {
     if (tickCurrent < tickLower) {

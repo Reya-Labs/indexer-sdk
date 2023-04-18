@@ -6,12 +6,11 @@ import { parseVAMMPriceChangeEvent, VAMMPriceChangeEventInfo } from './parseVAMM
 export const parseEvent = (
   event: ExtendedEvent,
 ): SwapEventInfo | MintOrBurnEventInfo | VAMMPriceChangeEventInfo => {
-  
   switch (event.type) {
     case 'mint': {
       return parseMintOrBurnEvent(event);
     }
-    case 'burn':  {
+    case 'burn': {
       // same as mint
       return parseMintOrBurnEvent(event);
     }
@@ -20,9 +19,9 @@ export const parseEvent = (
     }
     case 'swap': {
       return parseSwapEvent(event);
-    } default: {
+    }
+    default: {
       throw Error('Provide a valid event type');
     }
   }
-
 };

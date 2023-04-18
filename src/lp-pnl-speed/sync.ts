@@ -14,7 +14,6 @@ export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient?: Redis)
   );
 
   const promises = Object.values(previousEvents).map(async ({ events, fromBlock, fromTick }) => {
-  
     // todo: what if fromBlock is > vamm initialization, needs to be handled in the get previous events function
     // todo: double check the fact that events are properly ordered sicne last time
     // checked and the initialization of the vammm didn't come up first
@@ -24,9 +23,8 @@ export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient?: Redis)
     let latestCachedBlock = fromBlock;
 
     for (const event of events) {
-      
       const newTick: number = await processLpSpeedEvent(bigQuery, event, currentTick);
-       
+
       if (currentTick != newTick) {
         currentTick = newTick;
       }

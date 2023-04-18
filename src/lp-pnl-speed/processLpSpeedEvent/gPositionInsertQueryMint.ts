@@ -2,7 +2,10 @@ import { secondsToBqDate } from '../../big-query-support/utils';
 import { getTimestampInSeconds, POSITIONS_TABLE_ID } from '../../common';
 import { MintOrBurnEventInfo } from '../../common/event-parsers';
 
-export const gPositionInsertQueryMint = (eventInfo: MintOrBurnEventInfo, currentTick: number): string => {
+export const gPositionInsertQueryMint = (
+  eventInfo: MintOrBurnEventInfo,
+  currentTick: number,
+): string => {
   if (eventInfo.type === 'burn') {
     throw Error('Cannot process burn before position is initialized');
   }

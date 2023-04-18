@@ -3,8 +3,8 @@ import { Redis } from 'ioredis';
 
 import { getLastProcessedBlock } from '../../big-query-support/getLastProcessedBlock';
 import { setLastProcessedBlock } from '../../big-query-support/setLastProcessedBlock';
-import { getRedis, setRedis } from './redisService';
 import { LAST_PROCESSED_BLOCK_TABLE_ID } from '../constants';
+import { getRedis, setRedis } from './redisService';
 
 export type GetFromBlockArgs = {
   syncProcessName: string;
@@ -23,7 +23,7 @@ export const getFromBlock = async ({
 }: GetFromBlockArgs): Promise<number> => {
   const processId = `${syncProcessName}_${chainId}_${vammAddress}`;
 
-  if ((bigQuery !== undefined) && (LAST_PROCESSED_BLOCK_TABLE_ID !== '')) {
+  if (bigQuery !== undefined && LAST_PROCESSED_BLOCK_TABLE_ID !== '') {
     return await getLastProcessedBlock(bigQuery, processId);
   }
 
