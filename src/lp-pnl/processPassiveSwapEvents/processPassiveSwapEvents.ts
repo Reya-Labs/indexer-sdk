@@ -63,7 +63,7 @@ export const processPassiveSwapEvents = async ({
 
   console.log(
     `Updated ${lpPositionRows.length} LP positions from passive swap at ${new Date(
-      rootEventInfo.eventTimestamp * 1000,
+      eventTimestamp * 1000,
     ).toISOString()}`,
   );
 };
