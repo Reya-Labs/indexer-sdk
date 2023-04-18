@@ -19,9 +19,11 @@ export const processLpSpeedEvent = async (
     parseEvent(event);
 
   if ('tick' in eventInfo) {
+    console.log("processing vamm price change event");
     await processVAMMPriceChangeEvent(bigQuery, eventInfo);
     return eventInfo.tick;
-  } else if ('notionalDelta' in eventInfo) {
+  } else if ('liquidityDelta' in eventInfo) {
+    console.log("processing mint or burn event");
     await processMintOrBurnEventLpSpeed(bigQuery, eventInfo, currentTick);
     return currentTick;
   } else {

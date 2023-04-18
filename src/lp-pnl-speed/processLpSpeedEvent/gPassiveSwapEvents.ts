@@ -31,7 +31,6 @@ export const gPassiveSwapEvents = ({
   for (const positionRow of existingLpPositionRows) {
     // note, block number is not sufficient since tx ordering within the block also matters
     if (positionRow.lastUpdatedBlockNumber < priceChangeEventInfo.eventBlockNumber) {
-      // position is initialized before event timestamp
       const ownerAddress = positionRow.ownerAddress;
       const tickLower = positionRow.tickLower;
       const tickUpper = positionRow.tickUpper;
@@ -53,6 +52,9 @@ export const gPassiveSwapEvents = ({
       const fixedTokenDeltaUnbalanced = Number(
         ethers.utils.formatUnits(fixedTokenDeltaUnbalancedString, tokenDecimals),
       );
+
+      console.log(`variable token delta ${variableTokenDelta}`);
+      console.log(`fixed token delta unbalanced ${fixedTokenDeltaUnbalanced}`);
 
       // note, what if there are two in the same block... 
       const passiveSwapEventId =

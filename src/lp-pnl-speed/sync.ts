@@ -23,7 +23,7 @@ export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient?: Redis)
     const cacheSetWindow = CACHE_SET_WINDOW[events[0].chainId];
     let latestCachedBlock = fromBlock;
 
-    for (const event of events.slice(1)) {
+    for (const event of events) {
       
       const newTick: number = await processLpSpeedEvent(bigQuery, event, currentTick);
        
