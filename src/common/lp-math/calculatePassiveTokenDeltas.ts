@@ -77,6 +77,10 @@ export const calculatePassiveTokenDeltas = (
   let sqrtRatioB96: JSBI;
   const isVT: boolean = iaVariableTakerSwap(tickCurrent, tickPrevious);
 
+  console.log(`Calculating passive token deltas`); 
+  console.log(`tickPrevious: ${tickPrevious}, tickCurrent: ${tickCurrent}`); 
+  console.log(`tickLower: ${tickLower}, tickUpper: ${tickUpper}`); 
+
   if (tickPrevious < tickLower) {
     if (tickCurrent < tickLower) {
       // lp is not affected by this trade
