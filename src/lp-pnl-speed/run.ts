@@ -5,7 +5,7 @@ import { Redis } from 'ioredis';
 
 import { APR_2023_TIMESTAMP, getAmms, PROJECT_ID } from '../common';
 import { sync } from './sync';
-import { createPositionsTable } from '../big-query-support/manage-tables';
+import { createCacheTable, createPositionsTable } from '../big-query-support/manage-tables';
 
 dotenv.config();
 
@@ -23,7 +23,11 @@ export const run = async (chainIds: number[], redisClient?: Redis) => {
   }
 
   if ((process.env.POSITIONS_TABLE_ID === undefined) || (process.env.POSITIONS_TABLE_ID === '')) {
-    throw Error("Make sure a positions table id is provided as an environment variable");
+    throw Error("Make sure POSITIONS_TABLE_ID is provided as an environment variable");
+  }
+
+  if ((process.env.LAST_PROCESSED_BLOCK_TABLE_ID === undefined) || (process.env.LAST_PROCESSED_BLOCK_TABLE_ID === '')) {
+    throw Error("Make sure LAST_PROCESSED_BLOCK_TABLE_ID is provided as an environment variable");
   }
 
   // only creates a position table if it does not exist
@@ -31,6 +35,7 @@ export const run = async (chainIds: number[], redisClient?: Redis) => {
   // the matching position shares the same schema
   // todo: introduce a check on process.env.POSITIONS_TABLE_ID
   await createPositionsTable(process.env.POSITIONS_TABLE_ID, bigQuery);
+  await createCacheTable(process.env.LAST_PROCESSED_BLOCK_TABLE_ID, bigQuery);
 
   while (true) {
     try {
