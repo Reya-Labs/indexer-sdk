@@ -1,29 +1,10 @@
 import { BigQuery, Table } from "@google-cloud/bigquery";
 import { DATASET_ID } from "../../common";
-
-export const getPositionsTable = async (tableName: string, bigQuery: BigQuery): Promise<Table | null> => {
-
-    // todo: check typings and add tests 
-    
-    const [tables] = await bigQuery.dataset(DATASET_ID).getTables();
-
-    const table: Table | undefined = tables.find(
-      (table) => {
-        return table.id === tableName;
-      }
-    );
-
-    if (table === undefined) { 
-      return null;
-    }
-
-    return table;
-
-}
+import { getTable } from "./get-table";
 
 export const createPositionsTable = async (tableName: string, bigQuery: BigQuery): Promise<void> => {
 
-  const existingTable: Table | null = await getPositionsTable(tableName, bigQuery);
+  const existingTable: Table | null = await getTable(tableName, bigQuery);
 
   if (existingTable !== null) {
     console.log("A positions table already exists"); 
