@@ -63,6 +63,8 @@ export const pullExistingPositionRow = async (
     return null;
   }
 
+  // todo: operations like this one need validation
+
   return {
     marginEngineAddress: rows[0].marginEngineAddress,
     vammAddress: rows[0].vammAddress,

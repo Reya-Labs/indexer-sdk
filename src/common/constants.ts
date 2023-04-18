@@ -6,6 +6,9 @@ export const cache: string | undefined = process.env.CACHE;
 
 export const APR_2023_TIMESTAMP = 1680337863;
 
+export const PRECISION = 18;
+export const SCALE = 9; 
+
 export const GECKO_KEY = process.env.COINGECKO_API_KEY;
 export const PROJECT_ID = 'risk-monitoring-361911';
 export const DATASET_ID = 'voltz_v1_positions';

@@ -46,7 +46,7 @@ export const pullExistingLpPositionRows = async (
       realizedPnLFromFeesPaid: bqNumericToNumber(row.realizedPnLFromFeesPaid),
       netNotionalLocked: bqNumericToNumber(row.netNotionalLocked),
       netFixedRateLocked: bqNumericToNumber(row.netFixedRateLocked),
-      lastUpdatedBlockNumber: row.blockNumber,
+      lastUpdatedBlockNumber: row.lastUpdatedBlockNumber,
       notionalLiquidityProvided: bqNumericToNumber(row.notionalLiquidityProvided),
       realizedPnLFromFeesCollected: bqNumericToNumber(row.realizedPnLFromFeesCollected),
       netMarginDeposited: bqNumericToNumber(row.netMarginDeposited),

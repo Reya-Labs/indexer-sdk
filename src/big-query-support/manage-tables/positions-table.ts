@@ -11,6 +11,7 @@ export const createPositionsTable = async (tableName: string, bigQuery: BigQuery
     return; 
   }
 
+  // todo: replace precision and scale in here with the constants PRECISION & SCALE 
   const schema  = [
     {name: 'marginEngineAddress', type: 'STRING', mode: 'REQUIRED'},
     {name: 'vammAddress', type: 'STRING', mode: 'REQUIRED'},
