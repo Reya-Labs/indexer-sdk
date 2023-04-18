@@ -7,6 +7,7 @@ export const generateMintOrBurnRow = (eventInfo: MintOrBurnEventInfo): BigQueryM
 
   return {
     ...eventInfo,
+    eventTimestamp: 0,
     rowLastUpdatedTimestamp: rowLastUpdatedTimestamp,
   };
 };

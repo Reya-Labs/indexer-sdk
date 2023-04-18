@@ -4,7 +4,7 @@
 
 import { BigQuery } from '@google-cloud/bigquery';
 
-import { LAST_PROCESSED_BLOCK_TABLE_ID } from '../common';
+import { LAST_PROCESSED_BLOCK_TABLE_ID } from '../common/constants';
 
 export const getLastProcessedBlock = async (
   bigQuery: BigQuery,
