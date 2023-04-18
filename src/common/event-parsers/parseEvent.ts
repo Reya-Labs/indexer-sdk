@@ -17,6 +17,8 @@ export const parseEvent = (
     case 'swap': {
       return parseSwapEvent(event);
     } default: {
+      // todo: there's a bug atm where we get to this flow with lp speed sync
+      console.log(event.type);
       throw Error('Provide a valid event type');
     }
   }

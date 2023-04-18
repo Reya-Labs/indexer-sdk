@@ -52,7 +52,7 @@ export const createPositionsTable = async (tableName: string, bigQuery: BigQuery
     {name: 'rateOracle', type: 'STRING', mode: 'REQUIRED'},
     {name: 'underlyingToken', type: 'STRING', mode: 'REQUIRED'},
     {name: 'chainId', type: 'INTEGER', mode: 'REQUIRED'},
-    {name: 'cashflowFactor', type: 'NUMERIC', mode: 'REQUIRED', precision: '18', scale: '9'},
+    {name: 'cashflowLiFactor', type: 'NUMERIC', mode: 'REQUIRED', precision: '18', scale: '9'},
     {name: 'cashflowTimeFactor', type: 'NUMERIC', mode: 'REQUIRED', precision: '18', scale: '9'},
     {name: 'cashflowFreeTerm', type: 'NUMERIC', mode: 'REQUIRED', precision: '18', scale: '9'},
     {name: 'liquidity', type: 'NUMERIC', mode: 'REQUIRED', precision: '18', scale: '9'},
