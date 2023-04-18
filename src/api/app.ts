@@ -4,6 +4,8 @@ import * as dotenv from 'dotenv';
 import express from 'express';
 
 import { pullExistingPositionRow } from '../big-query-support';
+import { getChainTotalLiquidity } from '../big-query-support/getTotalLiquidity';
+import { getChainTradingVolume } from '../big-query-support/getTradingVolume';
 import {
   GECKO_KEY,
   getLiquidityIndex,
@@ -14,7 +16,6 @@ import {
   SWAPS_TABLE_ID,
 } from '../common';
 import { getAmm, getBlockAtTimestamp } from './common';
-import { ChainLevelInformation, getChainLevelInformation } from './common/getChainLevelInformation';
 
 dotenv.config();
 
@@ -26,28 +27,39 @@ export const app = express();
 
 app.use(cors());
 
-app.get('/', (req, res) => {
+app.get('/', (_, res) => {
   res.send('Welcome to Voltz API');
 });
 
-app.get('/chains/:chainId', async (req, res) => {
-  if (GECKO_KEY === undefined) {
-    throw Error('Make sure Coingecko Key is provided');
+app.get('/chains/:chainId', (req, res) => {
+
+  const process = async () => {
+    const chainId = Number(req.params.chainId);
+
+    const tradingVolume = await getChainTradingVolume({
+      chainId: chainId,
+      activeSwapsTableId: SWAPS_TABLE_ID,
+      bigQuery: bigQuery,
+      geckoKey: GECKO_KEY,
+    });
+
+    const totalLiquidity = await getChainTotalLiquidity({
+      chainId: chainId,
+      mintsAndBurnsTableId: MINTS_BURNS_TABLE_ID,
+      bigQuery: bigQuery,
+      geckoKey: GECKO_KEY,
+    });
+
+  return {
+    volume30Day: tradingVolume,
+    totalLiquidity: totalLiquidity,
+  };
   }
 
-  const chainId = Number(req.params.chainId);
-
-  const result: ChainLevelInformation = await getChainLevelInformation({
-    chainId: chainId,
-    activeSwapsTableId: SWAPS_TABLE_ID,
-    mintsAndBurnsTableId: MINTS_BURNS_TABLE_ID,
-    bigQuery: bigQuery,
-    geckoKey: GECKO_KEY,
-  });
-
-  res.json({
-    volume30Day: result.volume30Day,
-    totalLiquidity: result.totalLiquidity,
+  process().then((output) => {
+    res.json(output);
+  }, (error) => {
+    console.log(`API query failed with message ${(error as Error).message}`);
   });
 });
 

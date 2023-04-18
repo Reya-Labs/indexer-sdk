@@ -61,29 +61,24 @@ const getEventFilter = (vammContract: ethers.Contract, eventType: string): ether
   }
 };
 
-
-export const getFromTick = async (
-  vammContract: ethers.Contract
-): Promise<number> => {
-
+export const getFromTick = async (vammContract: ethers.Contract): Promise<number> => {
   // todo: what if fromBlock is > vamm initialization, needs to be handled in the get previous events function
-  // one of the inputs to this function should be the fromBlock which is derived in the 
+  // one of the inputs to this function should be the fromBlock which is derived in the
 
   const eventFilter: ethers.EventFilter = getEventFilter(vammContract, 'vamm_initialization');
 
   const events: ethers.Event[] = await vammContract.queryFilter(eventFilter);
 
   if (events.length < 1) {
-    throw Error("VAMM is not initialized");
+    throw Error('VAMM is not initialized');
   }
 
   if (events.length > 1) {
-    throw Error("Impossible to have more than 1 vamm initialization events");
+    throw Error('Impossible to have more than 1 vamm initialization events');
   }
 
   return events[0].args?.tick as number;
-
-}
+};
 
 // todo: test and break down
 export const getPreviousEvents = async (
@@ -95,7 +90,6 @@ export const getPreviousEvents = async (
   const totalEventsByVammAddress: VammEvents = {};
 
   const promises = amms.map(async (amm): Promise<[AMM, ExtendedEvent[], number, number]> => {
-    
     const toBlock = await amm.provider.getBlockNumber();
     const chainId = (await amm.provider.getNetwork()).chainId;
 
@@ -129,7 +123,7 @@ export const getPreviousEvents = async (
             ...event,
             type: eventType,
             amm: amm,
-            chainId: chainId
+            chainId: chainId,
           };
           return extendedEvent;
         }),
@@ -158,7 +152,7 @@ export const getPreviousEvents = async (
       totalEventsByVammAddress[amm.id] = {
         events: sortedEvents,
         fromBlock: fromBlock,
-        fromTick: fromTick
+        fromTick: fromTick,
       };
     } else {
       throw new Error(`Unable to retrieve events`);

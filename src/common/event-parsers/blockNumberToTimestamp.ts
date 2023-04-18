@@ -1,18 +1,19 @@
-import { ethers } from "ethers"
+import { ethers } from 'ethers';
 
+export const blockNumberToTimestamp = async (chainId: number, blockNumber: number) => {
+  // todo: needs testing and check if we can speed it up by using approximations
 
-export const blockNumberToTimestamp = async (chainId: number, blockNumber: number) => { 
+  let provider = new ethers.providers.JsonRpcProvider(
+    `https://arb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`,
+  );
 
-    // todo: needs testing and check if we can speed it up by using approximations
+  if (chainId === 1) {
+    provider = new ethers.providers.JsonRpcProvider(
+      `https://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`,
+    );
+  }
 
-    let  provider = new ethers.providers.JsonRpcProvider(`https://arb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`); 
+  const eventTimestamp = (await provider.getBlock(blockNumber)).timestamp;
 
-    if (chainId === 1) {
-        provider = new ethers.providers.JsonRpcProvider(`https://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_KEY}`); 
-    }
-
-    const eventTimestamp = (await provider.getBlock(blockNumber)).timestamp;
-
-    return eventTimestamp;
-
-}
+  return eventTimestamp;
+};

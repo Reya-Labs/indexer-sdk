@@ -10,7 +10,6 @@ import { createCacheTable, createPositionsTable } from '../big-query-support/man
 dotenv.config();
 
 export const run = async (chainIds: number[], redisClient?: Redis) => {
-
   const bigQuery = new BigQuery({
     projectId: PROJECT_ID,
   });
@@ -22,12 +21,15 @@ export const run = async (chainIds: number[], redisClient?: Redis) => {
     return;
   }
 
-  if ((process.env.POSITIONS_TABLE_ID === undefined) || (process.env.POSITIONS_TABLE_ID === '')) {
-    throw Error("Make sure POSITIONS_TABLE_ID is provided as an environment variable");
+  if (process.env.POSITIONS_TABLE_ID === undefined || process.env.POSITIONS_TABLE_ID === '') {
+    throw Error('Make sure POSITIONS_TABLE_ID is provided as an environment variable');
   }
 
-  if ((process.env.LAST_PROCESSED_BLOCK_TABLE_ID === undefined) || (process.env.LAST_PROCESSED_BLOCK_TABLE_ID === '')) {
-    throw Error("Make sure LAST_PROCESSED_BLOCK_TABLE_ID is provided as an environment variable");
+  if (
+    process.env.LAST_PROCESSED_BLOCK_TABLE_ID === undefined ||
+    process.env.LAST_PROCESSED_BLOCK_TABLE_ID === ''
+  ) {
+    throw Error('Make sure LAST_PROCESSED_BLOCK_TABLE_ID is provided as an environment variable');
   }
 
   // only creates a position table if it does not exist

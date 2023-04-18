@@ -32,6 +32,6 @@ export const parseVAMMPriceChangeEvent = (event: ExtendedEvent): VAMMPriceChange
     underlyingToken: event.amm.underlyingToken.name,
     marginEngineAddress: event.amm.marginEngineAddress,
     amm,
-    type: event.type
+    type: event.type,
   };
 };

@@ -13,7 +13,6 @@ export const pullExistingLpPositionRows = async (
   vammAddress: string,
   currentBlockNumber: number,
 ): Promise<BigQueryPositionRow[]> => {
-
   const sqlQuery = `
     SELECT * FROM \`${POSITIONS_TABLE_ID}\` 
       WHERE 
@@ -27,15 +26,12 @@ export const pullExistingLpPositionRows = async (
   };
 
   const [rows] = await bigQuery.query(options);
-  
 
   if (!rows || rows.length === 0) {
     return [];
   }
 
-
   const lpPositionRows = rows.map((row) => {
-    
     return {
       marginEngineAddress: row.marginEngineAddress,
       vammAddress: row.vammAddress,
@@ -62,7 +58,7 @@ export const pullExistingLpPositionRows = async (
       cashflowTimeFactor: bqNumericToNumber(row.cashflowTimeFactor),
       cashflowFreeTerm: bqNumericToNumber(row.cashflowFreeTerm),
       liquidity: bqNumericToNumber(row.liquidity),
-      tickPrevious: row.tickPrevious
+      tickPrevious: row.tickPrevious,
     };
   });
 

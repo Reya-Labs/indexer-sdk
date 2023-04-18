@@ -75,6 +75,6 @@ export const generatePositionRow = (
     cashflowTimeFactor,
     cashflowFreeTerm,
     liquidity: 0, // this event does not have an effect on liquidity
-    tickPrevious: 0 // this event does not have an effect on tickPrevious
+    tickPrevious: 0, // this event does not have an effect on tickPrevious
   };
 };
