@@ -5,10 +5,10 @@ import { NEGATIVE_ONE, ONE, Q96, ZERO } from './internalConstants';
 import { TickMath } from './tickMath';
 
 export type PassiveTokenDeltas = {
-  variableTokenDelta: number;
-  fixedTokenDeltaUnbalanced: number;
-  variableTokenDeltaString: string;
-  fixedTokenDeltaUnbalancedString: string;
+  variableTokenDelta: number; // big int (no decimals)
+  fixedTokenDeltaUnbalanced: number; // big int (no decimals)
+  variableTokenDeltaString: string; // big int (no decimals)
+  fixedTokenDeltaUnbalancedString: string;  // big int (no decimals)
 };
 
 const getAmount0Delta = (
@@ -55,6 +55,20 @@ const getAmount1Delta = (
     since the lp is taking the opposite side, they are
     passively a variable taker, otherwise fixed taker
 */
+
+export const decimalNumberToJSBI = (decimalNumber: number): {
+  numberJSBI: JSBI;
+  precision: number; 
+} => { 
+
+  const integerAndDecimalParts: string[] = decimalNumber.toString().split('.');
+  const precision: number = integerAndDecimalParts[1].length;
+  const numberNoDecimals: number = Number(integerAndDecimalParts.join('')); 
+  const numberJSBI: JSBI = JSBI.BigInt(numberNoDecimals);
+
+  return {numberJSBI, precision}
+}
+
 export const iaVariableTakerSwap = (tickCurrent: number, tickPrevious: number) => {
   if (tickCurrent > tickPrevious) {
     return true;
@@ -72,11 +86,11 @@ export const calculatePassiveTokenDeltas = (
 ): PassiveTokenDeltas => {
   let variableTokenDelta: JSBI = ZERO;
   let fixedTokenDeltaUnbalanced: JSBI = ZERO;
-  const liquidityJSBI: JSBI = JSBI.BigInt(liquidity);
+  const { numberJSBI: liquidityJSBI }  = decimalNumberToJSBI(liquidity);
   let sqrtRatioA96: JSBI;
   let sqrtRatioB96: JSBI;
-  const isVT: boolean = iaVariableTakerSwap(tickCurrent, tickPrevious);
 
+  const isVT: boolean = iaVariableTakerSwap(tickCurrent, tickPrevious);
   console.log(`Calculating passive token deltas`); 
   console.log(`tickPrevious: ${tickPrevious}, tickCurrent: ${tickCurrent}`); 
   console.log(`tickLower: ${tickLower}, tickUpper: ${tickUpper}`); 

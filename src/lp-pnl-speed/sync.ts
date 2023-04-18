@@ -34,18 +34,29 @@ export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient?: Redis)
       const currentBlock = event.blockNumber;
       const currentWindow = currentBlock - latestCachedBlock;
 
-      if (currentWindow > cacheSetWindow) {
-        const isSet = await setFromBlock({
-          syncProcessName: 'mint_burn',
-          chainId: event.chainId,
-          vammAddress: event.address,
-          lastBlock: event.blockNumber,
-          redisClient: redisClient,
-          bigQuery: bigQuery,
-        });
+      const isSet = await setFromBlock({
+        syncProcessName: 'lp_speed',
+        chainId: event.chainId,
+        vammAddress: event.address,
+        lastBlock: event.blockNumber,
+        redisClient: redisClient,
+        bigQuery: bigQuery,
+      });
 
-        latestCachedBlock = isSet ? event.blockNumber : latestCachedBlock;
-      }
+      latestCachedBlock = isSet ? event.blockNumber : latestCachedBlock;
+
+      // if (currentWindow > cacheSetWindow) {
+      //   const isSet = await setFromBlock({
+      //     syncProcessName: 'lp_speed',
+      //     chainId: event.chainId,
+      //     vammAddress: event.address,
+      //     lastBlock: event.blockNumber,
+      //     redisClient: redisClient,
+      //     bigQuery: bigQuery,
+      //   });
+
+      //   latestCachedBlock = isSet ? event.blockNumber : latestCachedBlock;
+      // }
     }
   });
 
