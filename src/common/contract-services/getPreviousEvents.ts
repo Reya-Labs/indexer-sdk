@@ -66,6 +66,9 @@ export const getFromTick = async (
   vammContract: ethers.Contract
 ): Promise<number> => {
 
+  // todo: what if fromBlock is > vamm initialization, needs to be handled in the get previous events function
+  // one of the inputs to this function should be the fromBlock which is derived in the 
+
   const eventFilter: ethers.EventFilter = getEventFilter(vammContract, 'vamm_initialization');
 
   const events: ethers.Event[] = await vammContract.queryFilter(eventFilter);
