@@ -1,4 +1,5 @@
 import { BigQuery, Table } from '@google-cloud/bigquery';
+
 import { DATASET_ID } from '../../common';
 import { getTable } from './get-table';
 
@@ -8,7 +9,7 @@ export const createPositionsTable = async (
 ): Promise<void> => {
   const existingTable: Table | null = await getTable(tableName, bigQuery);
 
-  if (existingTable !== null) {
+  if (existingTable) {
     console.log('A positions table already exists');
     return;
   }
@@ -82,5 +83,5 @@ export const createPositionsTable = async (
   // Create a new table in the dataset
   const [table] = await bigQuery.dataset(DATASET_ID).createTable(tableName, options);
 
-  console.log(`Table ${table.id} created.`);
+  console.log(`Table ${table.id || ''} created.`);
 };

@@ -3,9 +3,9 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 import * as dotenv from 'dotenv';
 import { Redis } from 'ioredis';
 
+import { createCacheTable, createPositionsTable } from '../big-query-support/manage-tables';
 import { APR_2023_TIMESTAMP, getAmms, PROJECT_ID } from '../common';
 import { sync } from './sync';
-import { createCacheTable, createPositionsTable } from '../big-query-support/manage-tables';
 
 dotenv.config();
 

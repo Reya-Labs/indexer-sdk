@@ -9,17 +9,19 @@ export const getCurrentEthER = async (geckoKey: string): Promise<number> => {
 
   try {
     return Number(data.data.ethereum.usd);
-  }
-  catch (error) {
+  } catch (error) {
     console.log(`Failed to fetch ETH price with message ${(error as Error).message}`);
     return 0;
   }
 };
 
-export async function dollarAggregate(rows: {
-  amount: number,
-  underlyingToken: string
-}[], geckoKey: string) {
+export async function dollarAggregate(
+  rows: {
+    amount: number;
+    underlyingToken: string;
+  }[],
+  geckoKey: string,
+) {
   let totalInDollars = 0;
 
   for (const { amount, underlyingToken } of rows) {

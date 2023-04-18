@@ -1,6 +1,7 @@
 import { BigQuery } from '@google-cloud/bigquery';
 
 import { pullExistingPositionRow, pullExistingSwapRow } from '../../big-query-support';
+import { blockNumberToTimestamp } from '../../common/event-parsers/blockNumberToTimestamp';
 import { parseSwapEvent } from '../../common/event-parsers/parseSwapEvent';
 import { ExtendedEvent } from '../../common/types';
 import { insertNewSwapAndNewPosition } from './insertNewSwapAndNewPosition';
@@ -26,17 +27,19 @@ export const processSwapEvent = async (bigQuery: BigQuery, event: ExtendedEvent)
     eventInfo.tickUpper,
   );
 
+  const eventTimestamp = await blockNumberToTimestamp(event.chainId, event.blockNumber);
+
   if (existingPosition) {
     // this position has already performed a swap
     await insertNewSwapAndUpdateExistingPosition(
       bigQuery,
       event.amm,
       eventInfo,
-      event.timestamp,
+      eventTimestamp,
       existingPosition,
     );
   } else {
     // this is the first swap of the position
-    await insertNewSwapAndNewPosition(bigQuery, event.amm, eventInfo, event.timestamp);
+    await insertNewSwapAndNewPosition(bigQuery, event.amm, eventInfo, eventTimestamp);
   }
 };

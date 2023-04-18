@@ -5,9 +5,9 @@ import {
   pullExistingLpPositionRows,
 } from '../../big-query-support';
 import { VAMMPriceChangeEventInfo } from '../../common/event-parsers';
+import { blockNumberToTimestamp } from '../../common/event-parsers/blockNumberToTimestamp';
 import { generateLpPositionRowsFromPassiveSwaps } from '../../lp-pnl/processPassiveSwapEvents/generateLpPositionRowsFromPassiveSwaps';
 import { gPassiveSwapEvents } from './gPassiveSwapEvents';
-import { blockNumberToTimestamp } from '../../common/event-parsers/blockNumberToTimestamp';
 
 export const processVAMMPriceChangeEvent = async (
   bigQuery: BigQuery,
