@@ -8,7 +8,11 @@ export const parseEvent = (
 ): SwapEventInfo | MintOrBurnEventInfo | VAMMPriceChangeEventInfo => {
   
   switch (event.type) {
-    case 'mint' || 'burn': {
+    case 'mint': {
+      return parseMintOrBurnEvent(event);
+    }
+    case 'burn':  {
+      // same as mint
       return parseMintOrBurnEvent(event);
     }
     case 'price_change': {
@@ -17,8 +21,6 @@ export const parseEvent = (
     case 'swap': {
       return parseSwapEvent(event);
     } default: {
-      // todo: there's a bug atm where we get to this flow with lp speed sync
-      console.log(event.type);
       throw Error('Provide a valid event type');
     }
   }
