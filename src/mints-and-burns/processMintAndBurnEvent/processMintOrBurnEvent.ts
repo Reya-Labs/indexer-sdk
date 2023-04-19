@@ -1,6 +1,6 @@
 import { BigQuery } from '@google-cloud/bigquery';
 
-import { pullExistingMintOrBurnRow } from '../../big-query-support';
+import { pullExistingMintOrBurnRow } from '../../big-query-support/pull-data/pullExistingMintOrBurnRow';
 import { insertNewMintOrBurn } from '../../big-query-support/push-data/insertNewMintOrBurn';
 import { parseMintOrBurnEvent } from '../../common/event-parsers/parseMintOrBurnEvent';
 import { ExtendedEvent } from '../../common/types';

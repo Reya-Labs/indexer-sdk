@@ -3,21 +3,19 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 import * as dotenv from 'dotenv';
 import { Redis } from 'ioredis';
 
-import {
-  createActiveSwapsTable,
-  createCacheTable,
-  createMintsAndBurnsTable,
-  createPositionsTable,
-} from '../big-query-support/manage-tables';
+import { createActiveSwapsTable } from '../big-query-support/manage-tables/active-swaps-table';
+import { createCacheTable } from '../big-query-support/manage-tables/cache-table';
+import { createMintsAndBurnsTable } from '../big-query-support/manage-tables/mints-and-burns-table';
+import { createPositionsTable } from '../big-query-support/manage-tables/positions-table';
 import {
   ACTIVE_SWAPS_TABLE_NAME,
   APR_2023_TIMESTAMP,
-  getAmms,
   LAST_PROCESSED_BLOCK_TABLE_NAME,
   MINTS_BURNS_TABLE_NAME,
   POSITIONS_TABLE_NAME,
   PROJECT_ID,
-} from '../common';
+} from '../common/constants';
+import { getAmms } from '../common/getAmms';
 import { sync } from './sync';
 
 dotenv.config();

@@ -3,7 +3,7 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
 
 import { isTestingAccount } from '../constants';
-import { getFromBlock } from '../services';
+import { getFromBlock } from '../services/cache';
 import { EventType, ExtendedEvent } from '../types';
 import { generateVAMMContract } from './generateVAMMContract';
 

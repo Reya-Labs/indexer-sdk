@@ -1,4 +1,4 @@
-import { getLockedInProfit } from '../../../../src/common/services/getLockedInProfit';
+import { getLockedInProfit } from '../../../src/common/services/getLockedInProfit';
 
 describe('get locked in profit', () => {
   const tests: [[number, number, number, number, number], number][] = [

@@ -1,6 +1,7 @@
 import { BigNumber, Event } from 'ethers';
 
-import { MintOrBurnEventInfo , parseMintOrBurnEvent } from '../../../src/common/event-parsers';
+import { parseMintOrBurnEvent } from '../../../src/common/event-parsers/parseMintOrBurnEvent';
+import { MintOrBurnEventInfo } from '../../../src/common/event-parsers/types';
 import { ExtendedEvent } from '../../../src/common/types';
 import { mockedAMM } from '../../utils';
 

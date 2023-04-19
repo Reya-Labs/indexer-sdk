@@ -1,12 +1,10 @@
 import { BigQuery } from '@google-cloud/bigquery';
 
-import {
-  generateLpPositionUpdatesQuery,
-  pullExistingLpPositionRows,
-} from '../../big-query-support';
-import { blockNumberToTimestamp, getLiquidityIndex } from '../../common';
-import { VAMMPriceChangeEventInfo } from '../../common/event-parsers';
-import { generatePositionRow } from '../../common/swaps/generatePositionRow';
+import { pullExistingLpPositionRows } from '../../big-query-support/pull-data/pullExistingLpPositionRows';
+import { generateLpPositionUpdatesQuery } from '../../big-query-support/push-data/generateLpPositionUpdatesQuery';
+import { generatePositionRow } from '../../big-query-support/push-data/generatePositionRow';
+import { VAMMPriceChangeEventInfo } from '../../common/event-parsers/types';
+import { getLiquidityIndex } from '../../common/services/getLiquidityIndex';
 import { generatePassiveSwapEvents } from './generatePassiveSwapEvents';
 
 export const processVAMMPriceChangeEvent = async (
@@ -34,10 +32,9 @@ export const processVAMMPriceChangeEvent = async (
   console.log(`Updating ${passiveSwapEvents.length} LPs due to tick change.`);
 
   // Retrieve event timestamp
-  const eventTimestamp = await blockNumberToTimestamp(
-    priceChangeEventInfo.amm.provider,
-    priceChangeEventInfo.eventBlockNumber,
-  );
+  const eventTimestamp = (
+    await priceChangeEventInfo.amm.provider.getBlock(priceChangeEventInfo.eventBlockNumber)
+  ).timestamp;
 
   // Retrieve liquidity index at the event block
   const liquidityIndexAtRootEvent = await getLiquidityIndex(
@@ -48,7 +45,7 @@ export const processVAMMPriceChangeEvent = async (
   );
 
   // Generate all passive swap events
-  const lpPositionRows = passiveSwapEvents.map(({ affectedLP, passiveSwapEvent}) =>
+  const lpPositionRows = passiveSwapEvents.map(({ affectedLP, passiveSwapEvent }) =>
     generatePositionRow(
       priceChangeEventInfo.amm,
       passiveSwapEvent,

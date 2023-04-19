@@ -1,9 +1,11 @@
 import { BigQuery } from '@google-cloud/bigquery';
 
-import { BigQueryPositionRow, pullExistingPositionRow } from '../../big-query-support';
+import { pullExistingPositionRow } from '../../big-query-support/pull-data/pullExistingPositionRow';
+import { BigQueryPositionRow } from '../../big-query-support/pull-data/types';
 import { secondsToBqDate } from '../../big-query-support/utils';
-import { getTimestampInSeconds, POSITIONS_TABLE_ID } from '../../common';
-import { MintOrBurnEventInfo } from '../../common/event-parsers';
+import { POSITIONS_TABLE_ID } from '../../common/constants';
+import { MintOrBurnEventInfo } from '../../common/event-parsers/types';
+import { getTimestampInSeconds } from '../../common/utils';
 
 const getPositionUpdateQuery = (
   existingPosition: BigQueryPositionRow,

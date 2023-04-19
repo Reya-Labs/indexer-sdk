@@ -1,8 +1,7 @@
 import { BigQuery } from '@google-cloud/bigquery';
 
-import { MINTS_BURNS_TABLE_ID } from '../../common';
-import { MintOrBurnEventInfo } from '../../common/event-parsers';
-import { BigQueryMintOrBurnRow } from '..';
+import { MINTS_BURNS_TABLE_ID } from '../../common/constants';
+import { MintOrBurnEventInfo } from '../../common/event-parsers/types';
 import { secondsToBqDate } from '../utils';
 import { generateMintOrBurnRow } from './generateMintOrBurnRow';
 
@@ -11,7 +10,7 @@ export const insertNewMintOrBurn = async (
   eventInfo: MintOrBurnEventInfo,
 ): Promise<void> => {
   // console.log('Inserting a new mint or burn');
-  const mintOrBurnRow: BigQueryMintOrBurnRow = generateMintOrBurnRow(eventInfo);
+  const mintOrBurnRow = generateMintOrBurnRow(eventInfo);
 
   const rawMintOrBurnRow = `
     \"${mintOrBurnRow.eventId}\",

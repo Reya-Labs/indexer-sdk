@@ -1,10 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
 import { BigQuery } from '@google-cloud/bigquery';
 
-import { MINTS_BURNS_TABLE_ID } from '../../common';
+import { MINTS_BURNS_TABLE_ID } from '../../common/constants';
 import { mapToBigQueryMintOrBurnRow } from './mappers';
 import { BigQueryMintOrBurnRow } from './types';
 

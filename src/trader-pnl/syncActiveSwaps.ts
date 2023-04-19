@@ -2,17 +2,19 @@ import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
 import { Redis } from 'ioredis';
 
-import { CACHE_SET_WINDOW, getPreviousEvents, setFromBlock } from '../common';
-import { processSwapEvent } from './processSwapEvent';
+import { CACHE_SET_WINDOW } from '../common/constants';
+import { getPreviousEvents } from '../common/contract-services/getPreviousEvents';
+import { setFromBlock } from '../common/services/cache';
+import { processSwapEvent } from './processSwapEvent/processSwapEvent';
 
 export const syncActiveSwaps = async (
   bigQuery: BigQuery,
   amms: AMM[],
   redisClient?: Redis,
 ): Promise<void> => {
-  const previousSwapEvents = await getPreviousEvents('active_swaps', amms, ['swap'], bigQuery);
+  const promises = amms.map(async (amm) => {
+    const { events, fromBlock } = await getPreviousEvents('active_swaps', amm, ['swap'], bigQuery);
 
-  const promises = Object.values(previousSwapEvents).map(async ({ events, fromBlock }) => {
     const cacheSetWindow = CACHE_SET_WINDOW[events[0].chainId];
     let latestCachedBlock = fromBlock;
 

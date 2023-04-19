@@ -18,12 +18,22 @@ export const sleep = (ms: number): Promise<void> => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
-export const blockNumberToTimestamp = async (
-  provider: ethers.providers.Provider,
-  blockNumber: number,
-) => {
-  // todo: needs testing and check if we can speed it up by using approximations
-  const eventTimestamp = (await provider.getBlock(blockNumber)).timestamp;
+export async function getBlockAtTimestamp(provider: ethers.providers.Provider, timestamp: number) {
+  let lo = 0;
+  let hi = (await provider.getBlock('latest')).number;
+  let answer = 0;
 
-  return eventTimestamp;
-};
+  while (lo <= hi) {
+    const mid = Math.floor((lo + hi) / 2);
+    const midBlock = await provider.getBlock(mid);
+
+    if (midBlock.timestamp >= timestamp) {
+      answer = midBlock.number;
+      hi = mid - 1;
+    } else {
+      lo = mid + 1;
+    }
+  }
+
+  return answer;
+}

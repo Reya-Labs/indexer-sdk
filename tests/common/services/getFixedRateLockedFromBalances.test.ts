@@ -1,4 +1,4 @@
-import { getFixedTokenDeltaUnbalanced } from '../../../../src/common';
+import { getFixedTokenDeltaUnbalanced } from '../../../src/common/services/getFixedTokenDeltaUnbalanced';
 
 describe('fixed rate locked from balances', () => {
   it('variable tokens > 0, in the middle of 2-year pool', () => {

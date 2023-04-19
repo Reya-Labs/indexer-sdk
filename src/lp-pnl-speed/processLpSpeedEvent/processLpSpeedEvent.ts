@@ -1,6 +1,7 @@
 import { BigQuery } from '@google-cloud/bigquery';
 
-import { parseMintOrBurnEvent, parseVAMMPriceChangeEvent } from '../../common/event-parsers';
+import { parseMintOrBurnEvent } from '../../common/event-parsers/parseMintOrBurnEvent';
+import { parseVAMMPriceChangeEvent } from '../../common/event-parsers/parseVAMMPriceChangeEvent';
 import { ExtendedEvent } from '../../common/types';
 import { processMintOrBurnEventLpSpeed } from './processMintOrBurnEventLpSpeed';
 import { processVAMMPriceChangeEvent } from './processVAMMPriceChangeEvent';

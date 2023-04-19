@@ -1,7 +1,10 @@
+// todo-dependency
+
 import { BigQuery } from '@google-cloud/bigquery';
 import { Redis } from 'ioredis';
 
-import { getLastProcessedBlock, setLastProcessedBlock } from '../../big-query-support';
+import { getLastProcessedBlock } from '../../big-query-support/pull-data/getLastProcessedBlock';
+import { setLastProcessedBlock } from '../../big-query-support/push-data/setLastProcessedBlock';
 import { LAST_PROCESSED_BLOCK_TABLE_ID } from '../constants';
 import { getRedis, setRedis } from './redisService';
 

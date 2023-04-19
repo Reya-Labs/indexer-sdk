@@ -1,6 +1,6 @@
 import { Storage } from '@google-cloud/storage';
 
-import { PROJECT_ID } from './common';
+import { PROJECT_ID } from './common/constants';
 import { run as runLpsSpeed } from './lp-pnl-speed/run';
 
 async function authenticateImplicitWithAdc() {

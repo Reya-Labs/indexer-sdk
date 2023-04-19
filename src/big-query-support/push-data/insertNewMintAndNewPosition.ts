@@ -1,9 +1,9 @@
 import { BigQuery } from '@google-cloud/bigquery';
 
-import { POSITIONS_TABLE_ID } from '../../common';
-import { MintOrBurnEventInfo } from '../../common/event-parsers';
-import { generateLpPositionRow } from '../../common/mints-and-burns/generateLpPositionRow';
+import { POSITIONS_TABLE_ID } from '../../common/constants';
+import { MintOrBurnEventInfo } from '../../common/event-parsers/types';
 import { secondsToBqDate } from '../utils';
+import { generateLpPositionRow } from './generateLpPositionRow';
 
 export const insertNewMintAndNewPosition = async (
   bigQuery: BigQuery,

@@ -1,6 +1,6 @@
 import { BigQuery } from '@google-cloud/bigquery';
 
-import { POSITIONS_TABLE_ID } from '../../common';
+import { POSITIONS_TABLE_ID } from '../../common/constants';
 import { mapToBigQueryPositionRow } from './mappers';
 import { BigQueryPositionRow } from './types';
 

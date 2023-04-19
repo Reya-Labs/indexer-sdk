@@ -1,5 +1,5 @@
-import { BigQueryPositionRow } from '../../big-query-support';
-import { SwapEventInfo, VAMMPriceChangeEventInfo } from '../../common/event-parsers';
+import { BigQueryPositionRow } from '../../big-query-support/pull-data/types';
+import { SwapEventInfo, VAMMPriceChangeEventInfo } from '../../common/event-parsers/types';
 import { calculatePassiveTokenDeltas } from '../../common/services/calculatePassiveTokenDeltas';
 
 type Args = {

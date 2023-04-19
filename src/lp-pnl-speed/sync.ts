@@ -2,7 +2,8 @@ import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
 import { Redis } from 'ioredis';
 
-import { getPreviousEvents, setFromBlock } from '../common';
+import { getPreviousEvents } from '../common/contract-services/getPreviousEvents';
+import { setFromBlock } from '../common/services/cache';
 import { processLpSpeedEvent } from './processLpSpeedEvent/processLpSpeedEvent';
 
 export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient?: Redis): Promise<void> => {

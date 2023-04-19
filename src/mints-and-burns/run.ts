@@ -2,7 +2,9 @@ import { BigQuery } from '@google-cloud/bigquery';
 import * as dotenv from 'dotenv';
 import { Redis } from 'ioredis';
 
-import { APR_2023_TIMESTAMP, getAmms, PROJECT_ID, sleep } from '../common';
+import { APR_2023_TIMESTAMP, PROJECT_ID } from '../common/constants';
+import { getAmms } from '../common/getAmms';
+import { sleep } from '../common/utils';
 import { sync } from './sync';
 
 dotenv.config();

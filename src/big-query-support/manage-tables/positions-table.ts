@@ -1,6 +1,6 @@
 import { BigQuery, Table } from '@google-cloud/bigquery';
 
-import { DATASET_ID } from '../../common';
+import { DATASET_ID } from '../../common/constants';
 import { getTable } from './get-table';
 
 export const createPositionsTable = async (

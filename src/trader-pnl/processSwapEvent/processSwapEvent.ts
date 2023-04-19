@@ -1,11 +1,11 @@
 import { BigQuery } from '@google-cloud/bigquery';
 
-import { pullExistingPositionRow, pullExistingSwapRow } from '../../big-query-support';
+import { pullExistingPositionRow } from '../../big-query-support/pull-data/pullExistingPositionRow';
+import { pullExistingSwapRow } from '../../big-query-support/pull-data/pullExistingSwapRow';
 import { insertNewSwapAndNewPosition } from '../../big-query-support/push-data/insertNewSwapAndNewPosition';
-import { blockNumberToTimestamp } from '../../common/event-parsers/blockNumberToTimestamp';
+import { insertNewSwapAndUpdateExistingPosition } from '../../big-query-support/push-data/insertNewSwapAndUpdateExistingPosition';
 import { parseSwapEvent } from '../../common/event-parsers/parseSwapEvent';
 import { ExtendedEvent } from '../../common/types';
-import { insertNewSwapAndUpdateExistingPosition } from './insertNewSwapAndUpdateExistingPosition';
 
 export const processSwapEvent = async (bigQuery: BigQuery, event: ExtendedEvent): Promise<void> => {
   const eventInfo = parseSwapEvent(event);
@@ -27,7 +27,7 @@ export const processSwapEvent = async (bigQuery: BigQuery, event: ExtendedEvent)
     eventInfo.tickUpper,
   );
 
-  const eventTimestamp = await blockNumberToTimestamp(event.chainId, event.blockNumber);
+  const eventTimestamp = (await event.amm.provider.getBlock(event.blockNumber)).timestamp;
 
   if (existingPosition) {
     // this position has already performed a swap
