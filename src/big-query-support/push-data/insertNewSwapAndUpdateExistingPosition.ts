@@ -3,8 +3,8 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 
 import { BigQueryPositionRow } from '../../big-query-support';
 import { secondsToBqDate } from '../../big-query-support/utils';
-import { getLiquidityIndex, POSITIONS_TABLE_ID, SWAPS_TABLE_ID } from '../../common';
-import { SwapEventInfo } from '../../common/event-parsers/parseSwapEvent';
+import { ACTIVE_SWAPS_TABLE_ID,getLiquidityIndex, POSITIONS_TABLE_ID } from '../../common';
+import { SwapEventInfo } from '../../common/event-parsers';
 import { generatePositionRow } from '../../common/swaps/generatePositionRow';
 import { generateSwapRow } from './generateSwapRow';
 
@@ -52,7 +52,7 @@ export const insertNewSwapAndUpdateExistingPosition = async (
   `;
 
   const sqlTransactionQuery = `
-    INSERT INTO \`${SWAPS_TABLE_ID}\` VALUES (${rawSwapRow});
+    INSERT INTO \`${ACTIVE_SWAPS_TABLE_ID}\` VALUES (${rawSwapRow});
                 
     UPDATE \`${POSITIONS_TABLE_ID}\`
       SET realizedPnLFromSwaps=${positionRow.realizedPnLFromSwaps},

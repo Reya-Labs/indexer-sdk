@@ -1,28 +1,7 @@
-import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
 
 import { ExtendedEvent } from '../types';
-
-export type SwapEventInfo = {
-  eventId: string;
-  eventBlockNumber: number;
-
-  chainId: number;
-  vammAddress: string;
-  ownerAddress: string;
-  tickLower: number;
-  tickUpper: number;
-
-  variableTokenDelta: number;
-  fixedTokenDeltaUnbalanced: number;
-  feePaidToLps: number;
-
-  rateOracle: string;
-  underlyingToken: string;
-  marginEngineAddress: string;
-  amm: AMM;
-  type: string;
-};
+import { SwapEventInfo } from './types';
 
 export const parseSwapEvent = (event: ExtendedEvent): SwapEventInfo => {
   const eventId = `${event.blockHash}_${event.transactionHash}_${event.logIndex}`;

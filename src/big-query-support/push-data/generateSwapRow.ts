@@ -1,6 +1,6 @@
 import { BigQuerySwapRow } from '../../big-query-support';
 import { getTimestampInSeconds } from '../../common';
-import { SwapEventInfo } from '../../common/event-parsers/parseSwapEvent';
+import { SwapEventInfo } from '../../common/event-parsers';
 
 export const generateSwapRow = (
   eventInfo: SwapEventInfo,

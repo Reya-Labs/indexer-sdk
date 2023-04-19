@@ -1,24 +1,8 @@
-import { AMM, getNotionalFromLiquidity } from '@voltz-protocol/v1-sdk';
+import { getNotionalFromLiquidity } from '@voltz-protocol/v1-sdk';
 import { BigNumber, ethers } from 'ethers';
 
 import { ExtendedEvent } from '../types';
-
-export type MintOrBurnEventInfo = {
-  eventId: string;
-  chainId: number;
-  vammAddress: string;
-  ownerAddress: string;
-  tickLower: number;
-  tickUpper: number;
-  notionalDelta: number;
-  rateOracle: string;
-  underlyingToken: string;
-  marginEngineAddress: string;
-  amm: AMM;
-  type: string;
-  eventBlockNumber: number;
-  liquidityDelta: number;
-};
+import { MintOrBurnEventInfo } from './types';
 
 export const parseMintOrBurnEvent = (event: ExtendedEvent): MintOrBurnEventInfo => {
   const eventId = `${event.blockHash}_${event.transactionHash}_${event.logIndex}`;
@@ -30,12 +14,8 @@ export const parseMintOrBurnEvent = (event: ExtendedEvent): MintOrBurnEventInfo 
   const amm = event.amm;
   const chainId = event.chainId;
 
-  let notionalDelta = getNotionalFromLiquidity(amount, tickLower, tickUpper, tokenDecimals);
+  const notionalDelta = getNotionalFromLiquidity(amount, tickLower, tickUpper, tokenDecimals);
   const liquidityDelta = Number(ethers.utils.formatUnits(amount, tokenDecimals));
-
-  if (event.type === 'burn') {
-    notionalDelta = -1.0 * notionalDelta;
-  }
 
   return {
     eventId: eventId.toLowerCase(),
@@ -44,13 +24,13 @@ export const parseMintOrBurnEvent = (event: ExtendedEvent): MintOrBurnEventInfo 
     ownerAddress: ownerAddress.toLowerCase(),
     tickLower,
     tickUpper,
-    notionalDelta,
+    notionalDelta : (event.type === 'burn') ? -notionalDelta : notionalDelta,
     rateOracle: event.amm.rateOracle.protocol,
     underlyingToken: event.amm.underlyingToken.name,
     marginEngineAddress: event.amm.marginEngineAddress,
     amm,
     type: event.type,
     eventBlockNumber: event.blockNumber,
-    liquidityDelta,
+    liquidityDelta: (event.type === 'burn') ? -liquidityDelta : liquidityDelta,
   };
 };

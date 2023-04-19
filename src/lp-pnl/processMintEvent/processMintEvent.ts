@@ -1,9 +1,9 @@
 import { BigQuery } from '@google-cloud/bigquery';
 
 import { pullExistingPositionRow } from '../../big-query-support';
+import { insertNewMintAndNewPosition } from '../../big-query-support/push-data/insertNewMintAndNewPosition';
 import { parseMintOrBurnEvent } from '../../common/event-parsers/parseMintOrBurnEvent';
 import { ExtendedEvent } from '../../common/types';
-import { insertNewMintAndNewPosition } from './insertNewMintAndNewPosition';
 
 export const processMintEvent = async (bigQuery: BigQuery, event: ExtendedEvent): Promise<void> => {
   const eventInfo = parseMintOrBurnEvent(event);

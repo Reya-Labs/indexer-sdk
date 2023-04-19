@@ -1,10 +1,10 @@
 import { BigQuery } from '@google-cloud/bigquery';
 
 import { pullExistingPositionRow, pullExistingSwapRow } from '../../big-query-support';
+import { insertNewSwapAndNewPosition } from '../../big-query-support/push-data/insertNewSwapAndNewPosition';
 import { blockNumberToTimestamp } from '../../common/event-parsers/blockNumberToTimestamp';
 import { parseSwapEvent } from '../../common/event-parsers/parseSwapEvent';
 import { ExtendedEvent } from '../../common/types';
-import { insertNewSwapAndNewPosition } from './insertNewSwapAndNewPosition';
 import { insertNewSwapAndUpdateExistingPosition } from './insertNewSwapAndUpdateExistingPosition';
 
 export const processSwapEvent = async (bigQuery: BigQuery, event: ExtendedEvent): Promise<void> => {

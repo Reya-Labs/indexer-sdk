@@ -2,7 +2,7 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 
 import { BigQueryPositionRow } from '../../big-query-support';
 import { getCashflowInfo, getTimestampInSeconds, SECONDS_IN_YEAR } from '..';
-import { SwapEventInfo } from '../event-parsers/parseSwapEvent';
+import { SwapEventInfo } from '../event-parsers';
 
 export const generatePositionRow = (
   amm: AMM,

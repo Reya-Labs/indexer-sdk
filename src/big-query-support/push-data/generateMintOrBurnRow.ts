@@ -1,6 +1,6 @@
-import { BigQueryMintOrBurnRow } from '../../big-query-support';
 import { getTimestampInSeconds } from '../../common';
-import { MintOrBurnEventInfo } from '../../common/event-parsers/parseMintOrBurnEvent';
+import { MintOrBurnEventInfo } from '../../common/event-parsers';
+import { BigQueryMintOrBurnRow } from '..';
 
 export const generateMintOrBurnRow = (eventInfo: MintOrBurnEventInfo): BigQueryMintOrBurnRow => {
   const rowLastUpdatedTimestamp = getTimestampInSeconds();

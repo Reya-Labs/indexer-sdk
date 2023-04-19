@@ -1,7 +1,8 @@
 import { ExtendedEvent } from '../types';
-import { MintOrBurnEventInfo, parseMintOrBurnEvent } from './parseMintOrBurnEvent';
-import { parseSwapEvent, SwapEventInfo } from './parseSwapEvent';
-import { parseVAMMPriceChangeEvent, VAMMPriceChangeEventInfo } from './parseVAMMPriceChangeEvent';
+import { parseMintOrBurnEvent } from './parseMintOrBurnEvent';
+import { parseSwapEvent } from './parseSwapEvent';
+import { parseVAMMPriceChangeEvent } from './parseVAMMPriceChangeEvent';
+import { MintOrBurnEventInfo, SwapEventInfo, VAMMPriceChangeEventInfo } from './types';
 
 export const parseEvent = (
   event: ExtendedEvent,

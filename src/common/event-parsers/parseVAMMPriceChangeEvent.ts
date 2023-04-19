@@ -1,21 +1,5 @@
-import { AMM } from '@voltz-protocol/v1-sdk';
-
 import { ExtendedEvent } from '../types';
-
-export type VAMMPriceChangeEventInfo = {
-  eventId: string;
-  eventBlockNumber: number;
-  chainId: number;
-  vammAddress: string;
-
-  tick: number;
-
-  rateOracle: string;
-  underlyingToken: string;
-  marginEngineAddress: string;
-  amm: AMM;
-  type: string;
-};
+import { VAMMPriceChangeEventInfo } from './types';
 
 export const parseVAMMPriceChangeEvent = (event: ExtendedEvent): VAMMPriceChangeEventInfo => {
   const eventId = `${event.blockHash}_${event.transactionHash}_${event.logIndex}`;

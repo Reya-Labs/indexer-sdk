@@ -1,9 +1,9 @@
 import { BigQuery } from '@google-cloud/bigquery';
 
-import { BigQueryMintOrBurnRow } from '../../big-query-support';
-import { secondsToBqDate } from '../../big-query-support/utils';
 import { MINTS_BURNS_TABLE_ID } from '../../common';
-import { MintOrBurnEventInfo } from '../../common/event-parsers/parseMintOrBurnEvent';
+import { MintOrBurnEventInfo } from '../../common/event-parsers';
+import { BigQueryMintOrBurnRow } from '..';
+import { secondsToBqDate } from '../utils';
 import { generateMintOrBurnRow } from './generateMintOrBurnRow';
 
 export const insertNewMintOrBurn = async (

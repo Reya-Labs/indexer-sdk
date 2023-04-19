@@ -1,8 +1,8 @@
-import { BigQuery } from "@google-cloud/bigquery";
+import { BigQuery } from '@google-cloud/bigquery';
 
-import { POSITIONS_TABLE_ID } from "../../common";
-import { mapToBigQueryPositionRow } from "./mappers";
-import { BigQueryPositionRow } from "./types";
+import { POSITIONS_TABLE_ID } from '../../common';
+import { mapToBigQueryPositionRow } from './mappers';
+import { BigQueryPositionRow } from './types';
 
 export const pullExistingPositionRow = async (
   bigQuery: BigQuery,

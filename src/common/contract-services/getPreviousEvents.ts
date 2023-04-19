@@ -35,7 +35,10 @@ export const applyProcessingWindow = (
   return filteredEvents;
 };
 
-const getEventFilter = (vammContract: ethers.Contract, eventType: EventType | 'vamm_initialization'): ethers.EventFilter => {
+const getEventFilter = (
+  vammContract: ethers.Contract,
+  eventType: EventType | 'vamm_initialization',
+): ethers.EventFilter => {
   switch (eventType) {
     case 'mint': {
       return vammContract.filters.Mint();

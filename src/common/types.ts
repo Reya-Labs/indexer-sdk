@@ -7,4 +7,4 @@ export interface ExtendedEvent extends Event {
   amm: AMM;
   chainId: number;
   type: EventType;
-};
+}

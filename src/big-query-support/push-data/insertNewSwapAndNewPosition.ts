@@ -1,10 +1,10 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
 
-import { secondsToBqDate } from '../../big-query-support/utils';
-import { getLiquidityIndex, POSITIONS_TABLE_ID, SWAPS_TABLE_ID } from '../../common';
-import { SwapEventInfo } from '../../common/event-parsers/parseSwapEvent';
+import { ACTIVE_SWAPS_TABLE_ID, getLiquidityIndex, POSITIONS_TABLE_ID } from '../../common';
+import { SwapEventInfo } from '../../common/event-parsers';
 import { generatePositionRow } from '../../common/swaps/generatePositionRow';
+import { secondsToBqDate } from '../utils';
 import { generateSwapRow } from './generateSwapRow';
 
 export const insertNewSwapAndNewPosition = async (
@@ -82,7 +82,7 @@ export const insertNewSwapAndNewPosition = async (
 
   // build and fire sql query
   const sqlTransactionQuery = `
-    INSERT INTO \`${SWAPS_TABLE_ID}\` VALUES (${rawSwapRow});
+    INSERT INTO \`${ACTIVE_SWAPS_TABLE_ID}\` VALUES (${rawSwapRow});
     INSERT INTO \`${POSITIONS_TABLE_ID}\` VALUES(${rawPositionRow});          
   `;
 

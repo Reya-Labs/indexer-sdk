@@ -2,8 +2,7 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
 
 import { BigQueryPositionRow } from '../../big-query-support';
-import { VAMMPriceChangeEventInfo } from '../../common/event-parsers';
-import { SwapEventInfo } from '../../common/event-parsers/parseSwapEvent';
+import { SwapEventInfo, VAMMPriceChangeEventInfo } from '../../common/event-parsers';
 import {
   calculatePassiveTokenDeltas,
   PassiveTokenDeltas,
@@ -52,9 +51,6 @@ export const gPassiveSwapEvents = ({
       const fixedTokenDeltaUnbalanced = Number(
         ethers.utils.formatUnits(fixedTokenDeltaUnbalancedString, tokenDecimals),
       );
-
-      console.log(`variable token delta ${variableTokenDelta}`);
-      console.log(`fixed token delta unbalanced ${fixedTokenDeltaUnbalanced}`);
 
       // note, what if there are two in the same block...
       const passiveSwapEventId =

@@ -1,3 +1,5 @@
+import { ethers } from 'ethers';
+
 import { SECONDS_IN_YEAR } from './constants';
 
 export const getTimestampInSeconds = (): number => {
@@ -14,4 +16,14 @@ export const getTimeInYearsBetweenTimestamps = (from: number, to: number): numbe
 
 export const sleep = (ms: number): Promise<void> => {
   return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
+export const blockNumberToTimestamp = async (
+  provider: ethers.providers.Provider,
+  blockNumber: number,
+) => {
+  // todo: needs testing and check if we can speed it up by using approximations
+  const eventTimestamp = (await provider.getBlock(blockNumber)).timestamp;
+
+  return eventTimestamp;
 };

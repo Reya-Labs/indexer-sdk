@@ -1,6 +1,6 @@
 import { BigQueryPositionRow } from '../../big-query-support';
 import { getTimestampInSeconds } from '..';
-import { MintOrBurnEventInfo } from '../event-parsers/parseMintOrBurnEvent';
+import { MintOrBurnEventInfo } from '../event-parsers';
 
 export const generateLpPositionRow = (eventInfo: MintOrBurnEventInfo): BigQueryPositionRow => {
   const rowLastUpdatedTimestamp = getTimestampInSeconds();

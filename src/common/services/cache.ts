@@ -1,8 +1,7 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import { Redis } from 'ioredis';
 
-import { getLastProcessedBlock } from '../../big-query-support/getLastProcessedBlock';
-import { setLastProcessedBlock } from '../../big-query-support/setLastProcessedBlock';
+import { getLastProcessedBlock, setLastProcessedBlock } from '../../big-query-support';
 import { LAST_PROCESSED_BLOCK_TABLE_ID } from '../constants';
 import { getRedis, setRedis } from './redisService';
 
