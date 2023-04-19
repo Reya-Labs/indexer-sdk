@@ -11,7 +11,8 @@ async function authenticateImplicitWithAdc() {
   await storage.getBuckets();
 }
 
-const chainIds = [1, 42161];
+const chainIds = [1];
+// const chainIds = [1, 42161];
 
 const main = async () => {
   await authenticateImplicitWithAdc();

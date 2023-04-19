@@ -4,7 +4,7 @@
 
 import { BigQuery } from '@google-cloud/bigquery';
 
-import { SWAPS_TABLE_ID } from '../common';
+import { ACTIVE_SWAPS_TABLE_ID } from '../common';
 import { bqNumericToNumber, bqTimestampToUnixSeconds } from './utils';
 
 export type BigQuerySwapRow = {
@@ -28,7 +28,7 @@ export const pullExistingSwapRow = async (
   bigQuery: BigQuery,
   eventId: string,
 ): Promise<BigQuerySwapRow | null> => {
-  const sqlQuery = `SELECT * FROM \`${SWAPS_TABLE_ID}\` WHERE eventId=\"${eventId}\"`;
+  const sqlQuery = `SELECT * FROM \`${ACTIVE_SWAPS_TABLE_ID}\` WHERE eventId=\"${eventId}\"`;
 
   const options = {
     query: sqlQuery,

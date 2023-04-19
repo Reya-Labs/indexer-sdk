@@ -24,12 +24,12 @@ const getTableID = (tableName: string) => {
     throw new Error('Table name is not specified');
   }
 
-  return `${PROJECT_ID}.${DATASET_ID}.${tableName}`
+  return `${PROJECT_ID}.${DATASET_ID}.${tableName}`;
 };
 
 // Active Swaps Table Name and ID
 export const ACTIVE_SWAPS_TABLE_NAME = process.env.ACTIVE_SWAPS_TABLE_ID || '';
-export const ACTIVE_SWAPS_TABLE_ID = getTableID(ACTIVE_SWAPS_TABLE_ID);
+export const ACTIVE_SWAPS_TABLE_ID = getTableID(ACTIVE_SWAPS_TABLE_NAME);
 
 // Mints and Burns Table Name and ID
 export const MINTS_BURNS_TABLE_NAME = process.env.MINTS_BURNS_TABLE_ID || '';
@@ -42,7 +42,6 @@ export const POSITIONS_TABLE_ID = getTableID(POSITIONS_TABLE_NAME);
 // Last Processed Blocks Table ID
 export const LAST_PROCESSED_BLOCK_TABLE_NAME = process.env.LAST_PROCESSED_BLOCK_TABLE_ID || '';
 export const LAST_PROCESSED_BLOCK_TABLE_ID = getTableID(LAST_PROCESSED_BLOCK_TABLE_NAME);
-
 
 // LP processing block windows
 export const LP_PROCESSING_WINDOW: { [chainId: number]: number } = {

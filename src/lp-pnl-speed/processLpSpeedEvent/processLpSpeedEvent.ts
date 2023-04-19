@@ -1,10 +1,7 @@
 import { BigQuery } from '@google-cloud/bigquery';
 
 import {
-  MintOrBurnEventInfo,
   parseEvent,
-  SwapEventInfo,
-  VAMMPriceChangeEventInfo,
 } from '../../common/event-parsers';
 import { ExtendedEvent } from '../../common/types';
 import { processMintOrBurnEventLpSpeed } from './processMintOrBurnEventLpSpeed';
@@ -15,8 +12,7 @@ export const processLpSpeedEvent = async (
   event: ExtendedEvent,
   currentTick: number,
 ): Promise<number> => {
-  const eventInfo: VAMMPriceChangeEventInfo | MintOrBurnEventInfo | SwapEventInfo =
-    parseEvent(event);
+  const eventInfo = parseEvent(event);
 
   if ('tick' in eventInfo) {
     console.log('processing vamm price change event');

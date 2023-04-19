@@ -21,7 +21,7 @@ export const createActiveSwapsTable = async (
     { name: 'ownerAddress', type: 'STRING', mode: 'REQUIRED' },
     { name: 'tickLower', type: 'INTEGER', mode: 'REQUIRED' },
     { name: 'tickUpper', type: 'INTEGER', mode: 'REQUIRED' },
-    
+
     {
       name: 'variableTokenDelta',
       type: 'NUMERIC',
