@@ -7,7 +7,7 @@ type Args = {
   priceChangeEventInfo: VAMMPriceChangeEventInfo;
 };
 
-export const gPassiveSwapEvents = ({
+export const generatePassiveSwapEvents = ({
   existingLpPositionRows,
   priceChangeEventInfo,
 }: Args): {

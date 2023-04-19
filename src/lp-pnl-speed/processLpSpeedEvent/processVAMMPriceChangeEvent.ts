@@ -7,7 +7,7 @@ import {
 import { blockNumberToTimestamp, getLiquidityIndex } from '../../common';
 import { VAMMPriceChangeEventInfo } from '../../common/event-parsers';
 import { generatePositionRow } from '../../common/swaps/generatePositionRow';
-import { gPassiveSwapEvents } from './gPassiveSwapEvents';
+import { generatePassiveSwapEvents } from './generatePassiveSwapEvents';
 
 export const processVAMMPriceChangeEvent = async (
   bigQuery: BigQuery,
@@ -21,23 +21,25 @@ export const processVAMMPriceChangeEvent = async (
   );
 
   // Generate passive swap events
-  const { passiveSwapEvents, affectedLps } = gPassiveSwapEvents({
+  const passiveSwapEvents = generatePassiveSwapEvents({
     existingLpPositionRows,
     priceChangeEventInfo,
   });
 
   // Skip if there is no affected LP
-  if (affectedLps.length === 0) {
+  if (passiveSwapEvents.length === 0) {
     return;
   }
 
-  console.log(`Updating ${affectedLps.length} LPs due to tick change.`);
+  console.log(`Updating ${passiveSwapEvents.length} LPs due to tick change.`);
 
+  // Retrieve event timestamp
   const eventTimestamp = await blockNumberToTimestamp(
     priceChangeEventInfo.amm.provider,
     priceChangeEventInfo.eventBlockNumber,
   );
 
+  // Retrieve liquidity index at the event block
   const liquidityIndexAtRootEvent = await getLiquidityIndex(
     priceChangeEventInfo.chainId,
     priceChangeEventInfo.amm.provider,
@@ -45,16 +47,18 @@ export const processVAMMPriceChangeEvent = async (
     priceChangeEventInfo.eventBlockNumber,
   );
 
-  const lpPositionRows = affectedLps.map((affectedLp, i) =>
+  // Generate all passive swap events
+  const lpPositionRows = passiveSwapEvents.map(({ affectedLP, passiveSwapEvent}) =>
     generatePositionRow(
       priceChangeEventInfo.amm,
-      passiveSwapEvents[i],
+      passiveSwapEvent,
       eventTimestamp,
-      affectedLp,
+      affectedLP,
       liquidityIndexAtRootEvent,
     ),
   );
 
+  // Update all affected LPs
   const sqlTransactionQuery = generateLpPositionUpdatesQuery(lpPositionRows);
 
   const options = {
