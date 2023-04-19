@@ -20,15 +20,15 @@ export const getAmms = async (chainIds: number[], activeAtTimestamp: number): Pr
       throw new Error(`Couldn't fetch AMMs from voltz-SDK for chain id ${chainId}.`);
     }
 
-    // // Filter out the inactive pools
-    // const activeAmms = amms.filter((item) => {
-    //   return item.termEndTimestampInMS / 1000 > activeAtTimestamp;
-    // });
-
-    // todo: remove this after testing
+    // Filter out the inactive pools
     const activeAmms = amms.filter((item) => {
-      return item.id.toLowerCase() === '0x7DF7Aa512F1EB4dd5C1b69486f45FE895ba41ECe'.toLowerCase();
+      return item.termEndTimestampInMS / 1000 > activeAtTimestamp;
     });
+
+    // // todo: remove this after testing
+    // const activeAmms = amms.filter((item) => {
+    //   return item.id.toLowerCase() === '0x7DF7Aa512F1EB4dd5C1b69486f45FE895ba41ECe'.toLowerCase();
+    // });
 
     allAmms.push(...activeAmms);
   }
