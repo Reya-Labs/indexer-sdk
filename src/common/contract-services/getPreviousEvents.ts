@@ -1,6 +1,6 @@
-import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
+import { Redis } from 'ioredis';
 
 import { isTestingAccount } from '../constants';
 import { getFromBlock } from '../services/cache';
@@ -83,7 +83,7 @@ export const getPreviousEvents = async (
   syncProcessName: 'active_swaps' | 'mints_lp' | 'passive_swaps_lp' | 'mint_burn' | 'lp_speed',
   amm: AMM,
   eventTypes: EventType[],
-  bigQuery: BigQuery,
+  redisClient: Redis,
 ): Promise<VammEvents> => {
   const toBlock = await amm.provider.getBlockNumber();
   const chainId = (await amm.provider.getNetwork()).chainId;
@@ -92,7 +92,7 @@ export const getPreviousEvents = async (
     syncProcessName,
     chainId,
     vammAddress: amm.id,
-    bigQuery: bigQuery,
+    redisClient,
   });
 
   const vammContract = generateVAMMContract(amm.id, amm.provider);

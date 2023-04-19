@@ -1,19 +1,12 @@
-// todo-dependency
-
-import { BigQuery } from '@google-cloud/bigquery';
 import { Redis } from 'ioredis';
 
-import { getLastProcessedBlock } from '../../big-query-support/pull-data/getLastProcessedBlock';
-import { setLastProcessedBlock } from '../../big-query-support/push-data/setLastProcessedBlock';
-import { LAST_PROCESSED_BLOCK_TABLE_ID } from '../constants';
 import { getRedis, setRedis } from './redisService';
 
 export type GetFromBlockArgs = {
   syncProcessName: string;
   chainId: number;
   vammAddress: string;
-  redisClient?: Redis;
-  bigQuery?: BigQuery;
+  redisClient: Redis;
 };
 
 export const getFromBlock = async ({
@@ -21,19 +14,10 @@ export const getFromBlock = async ({
   chainId,
   vammAddress,
   redisClient,
-  bigQuery,
 }: GetFromBlockArgs): Promise<number> => {
   const processId = `${syncProcessName}_${chainId}_${vammAddress}`;
 
-  if (bigQuery !== undefined && LAST_PROCESSED_BLOCK_TABLE_ID !== '') {
-    return await getLastProcessedBlock(bigQuery, processId);
-  }
-
-  if (redisClient !== undefined) {
-    return await getRedis(processId, redisClient);
-  }
-
-  return 0;
+  return await getRedis(processId, redisClient);
 };
 
 export type SetFromBlockArgs = {
@@ -41,8 +25,7 @@ export type SetFromBlockArgs = {
   chainId: number;
   vammAddress: string;
   lastBlock: number;
-  redisClient?: Redis;
-  bigQuery?: BigQuery;
+  redisClient: Redis;
 };
 
 export const setFromBlock = async ({
@@ -51,17 +34,8 @@ export const setFromBlock = async ({
   vammAddress,
   lastBlock,
   redisClient,
-  bigQuery,
 }: SetFromBlockArgs): Promise<boolean> => {
   const processId = `${syncProcessName}_${chainId}_${vammAddress}`;
 
-  if (bigQuery !== undefined) {
-    return await setLastProcessedBlock(bigQuery, processId, lastBlock);
-  }
-
-  if (redisClient !== undefined) {
-    return await setRedis(processId, lastBlock, redisClient);
-  }
-
-  return false;
+  return await setRedis(processId, lastBlock, redisClient);
 };

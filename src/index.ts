@@ -1,6 +1,7 @@
 import { Storage } from '@google-cloud/storage';
 
 import { PROJECT_ID } from './common/constants';
+import { getRedisClient } from './common/services/redisService';
 import { run as runLpsSpeed } from './lp-pnl-speed/run';
 
 async function authenticateImplicitWithAdc() {
@@ -19,9 +20,11 @@ const main = async () => {
 
   let promises: Promise<void>[] = [];
 
+  const redisClient = getRedisClient();
+
   // promises = promises.concat(runMintsAndBurns(chainIds));
   // promises = promises.concat(runTraders(chainIds));
-  promises = promises.concat(runLpsSpeed(chainIds));
+  promises = promises.concat(runLpsSpeed(chainIds, redisClient));
 
   console.log(`Number of parallel calls ${promises.length}`);
 

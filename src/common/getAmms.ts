@@ -3,6 +3,7 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const getAmms = async (chainIds: number[], activeAtTimestamp: number): Promise<AMM[]> => {
   const allAmms: AMM[] = [];
 
@@ -26,7 +27,7 @@ export const getAmms = async (chainIds: number[], activeAtTimestamp: number): Pr
 
     // todo: remove this after testing
     const activeAmms = amms.filter((item) => {
-      return item.id.toLowerCase() === '0xEF05Af8b766B33e8c0FE768278deE326946a4858'.toLowerCase();
+      return item.id.toLowerCase() === '0x7DF7Aa512F1EB4dd5C1b69486f45FE895ba41ECe'.toLowerCase();
     });
 
     allAmms.push(...activeAmms);

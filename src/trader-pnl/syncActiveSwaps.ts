@@ -10,10 +10,15 @@ import { processSwapEvent } from './processSwapEvent/processSwapEvent';
 export const syncActiveSwaps = async (
   bigQuery: BigQuery,
   amms: AMM[],
-  redisClient?: Redis,
+  redisClient: Redis,
 ): Promise<void> => {
   const promises = amms.map(async (amm) => {
-    const { events, fromBlock } = await getPreviousEvents('active_swaps', amm, ['swap'], bigQuery);
+    const { events, fromBlock } = await getPreviousEvents(
+      'active_swaps',
+      amm,
+      ['swap'],
+      redisClient,
+    );
 
     const cacheSetWindow = CACHE_SET_WINDOW[events[0].chainId];
     let latestCachedBlock = fromBlock;
@@ -30,8 +35,7 @@ export const syncActiveSwaps = async (
           chainId: event.chainId,
           vammAddress: event.address,
           lastBlock: event.blockNumber,
-          redisClient: redisClient,
-          bigQuery: bigQuery,
+          redisClient,
         });
 
         latestCachedBlock = isSet ? event.blockNumber : latestCachedBlock;

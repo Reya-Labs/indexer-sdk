@@ -6,7 +6,7 @@ import { getPreviousEvents } from '../common/contract-services/getPreviousEvents
 import { setFromBlock } from '../common/services/cache';
 import { processLpSpeedEvent } from './processLpSpeedEvent/processLpSpeedEvent';
 
-export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient?: Redis): Promise<void> => {
+export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient: Redis): Promise<void> => {
   const promises = amms.map(async (amm) => {
     console.log(`Fetching events for AMM ${amm.id}`);
 
@@ -14,7 +14,7 @@ export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient?: Redis)
       'lp_speed',
       amm,
       ['mint', 'burn', 'price_change'],
-      bigQuery,
+      redisClient,
     );
 
     let currentTick = fromTick;
@@ -34,7 +34,6 @@ export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient?: Redis)
         vammAddress: event.address,
         lastBlock: event.blockNumber,
         redisClient: redisClient,
-        bigQuery: bigQuery,
       });
 
       latestCachedBlock = isSet ? event.blockNumber : latestCachedBlock;

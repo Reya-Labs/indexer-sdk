@@ -7,13 +7,13 @@ import { getPreviousEvents } from '../common/contract-services/getPreviousEvents
 import { setFromBlock } from '../common/services/cache';
 import { processMintOrBurnEvent } from './processMintAndBurnEvent/processMintOrBurnEvent';
 
-export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient?: Redis): Promise<void> => {
+export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient: Redis): Promise<void> => {
   const promises = amms.map(async (amm) => {
     const { events, fromBlock } = await getPreviousEvents(
       'mint_burn',
       amm,
       ['mint', 'burn'],
-      bigQuery,
+      redisClient,
     );
 
     // since all events that belong to a given vamm have the same chain id
@@ -32,7 +32,6 @@ export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient?: Redis)
           vammAddress: event.address,
           lastBlock: event.blockNumber,
           redisClient: redisClient,
-          bigQuery: bigQuery,
         });
 
         latestCachedBlock = isSet ? event.blockNumber : latestCachedBlock;

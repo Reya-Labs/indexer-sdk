@@ -2,8 +2,14 @@ import { Redis } from 'ioredis';
 export const REDISHOST = process.env.REDISHOST || 'localhost';
 export const REDISPORT: number = Number(process.env.REDISPORT) || 6379;
 
+export const getRedisClient = (): Redis => {
+  const redisClient = new Redis(REDISPORT, REDISHOST);
+  return redisClient;
+};
+
 export const getRedis = async (key: string, redisClient: Redis): Promise<number> => {
-  return Number(await redisClient.get(key));
+  const value = await redisClient.get(key);
+  return Number(value || '0');
 };
 
 export const setRedis = async (

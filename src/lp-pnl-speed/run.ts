@@ -4,13 +4,11 @@ import * as dotenv from 'dotenv';
 import { Redis } from 'ioredis';
 
 import { createActiveSwapsTable } from '../big-query-support/manage-tables/active-swaps-table';
-import { createCacheTable } from '../big-query-support/manage-tables/cache-table';
 import { createMintsAndBurnsTable } from '../big-query-support/manage-tables/mints-and-burns-table';
 import { createPositionsTable } from '../big-query-support/manage-tables/positions-table';
 import {
   ACTIVE_SWAPS_TABLE_NAME,
   APR_2023_TIMESTAMP,
-  LAST_PROCESSED_BLOCK_TABLE_NAME,
   MINTS_BURNS_TABLE_NAME,
   POSITIONS_TABLE_NAME,
   PROJECT_ID,
@@ -20,7 +18,7 @@ import { sync } from './sync';
 
 dotenv.config();
 
-export const run = async (chainIds: number[], redisClient?: Redis) => {
+export const run = async (chainIds: number[], redisClient: Redis) => {
   const bigQuery = new BigQuery({
     projectId: PROJECT_ID,
   });
@@ -35,7 +33,6 @@ export const run = async (chainIds: number[], redisClient?: Redis) => {
   await createActiveSwapsTable(ACTIVE_SWAPS_TABLE_NAME, bigQuery);
   await createMintsAndBurnsTable(MINTS_BURNS_TABLE_NAME, bigQuery);
   await createPositionsTable(POSITIONS_TABLE_NAME, bigQuery);
-  await createCacheTable(LAST_PROCESSED_BLOCK_TABLE_NAME, bigQuery);
 
   while (true) {
     try {

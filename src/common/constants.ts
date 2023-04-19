@@ -39,10 +39,6 @@ export const MINTS_BURNS_TABLE_ID = getTableID(MINTS_BURNS_TABLE_NAME);
 export const POSITIONS_TABLE_NAME = process.env.POSITIONS_TABLE_ID || '';
 export const POSITIONS_TABLE_ID = getTableID(POSITIONS_TABLE_NAME);
 
-// Last Processed Blocks Table ID
-export const LAST_PROCESSED_BLOCK_TABLE_NAME = process.env.LAST_PROCESSED_BLOCK_TABLE_ID || '';
-export const LAST_PROCESSED_BLOCK_TABLE_ID = getTableID(LAST_PROCESSED_BLOCK_TABLE_NAME);
-
 // LP processing block windows
 export const LP_PROCESSING_WINDOW: { [chainId: number]: number } = {
   1: 24 * 300,
