@@ -3,7 +3,7 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 
 import { BigQueryPositionRow } from '../../big-query-support';
 import { secondsToBqDate } from '../../big-query-support/utils';
-import { ACTIVE_SWAPS_TABLE_ID,getLiquidityIndex, POSITIONS_TABLE_ID } from '../../common';
+import { ACTIVE_SWAPS_TABLE_ID, getLiquidityIndex, POSITIONS_TABLE_ID } from '../../common';
 import { SwapEventInfo } from '../../common/event-parsers';
 import { generatePositionRow } from '../../common/swaps/generatePositionRow';
 import { generateSwapRow } from './generateSwapRow';

@@ -2,7 +2,7 @@ import { BigQuery } from '@google-cloud/bigquery';
 
 import { BigQueryPositionRow, pullExistingPositionRow } from '../../big-query-support';
 import { secondsToBqDate } from '../../big-query-support/utils';
-import { getTimestampInSeconds,POSITIONS_TABLE_ID } from '../../common';
+import { getTimestampInSeconds, POSITIONS_TABLE_ID } from '../../common';
 import { MintOrBurnEventInfo } from '../../common/event-parsers';
 
 const getPositionUpdateQuery = (
@@ -30,10 +30,7 @@ const getPositionUpdateQuery = (
   return query;
 };
 
-const getPositionInsertQuery = (
-  eventInfo: MintOrBurnEventInfo,
-  currentTick: number,
-): string => {
+const getPositionInsertQuery = (eventInfo: MintOrBurnEventInfo, currentTick: number): string => {
   const rowLastUpdatedTimestamp = getTimestampInSeconds();
 
   const row = `
@@ -75,6 +72,8 @@ export const processMintOrBurnEventLpSpeed = async (
   eventInfo: MintOrBurnEventInfo,
   currentTick: number,
 ): Promise<void> => {
+  console.log(`Operating on ${eventInfo.ownerAddress}`);
+
   const existingPosition: BigQueryPositionRow | null = await pullExistingPositionRow(
     bigQuery,
     eventInfo.chainId,
@@ -84,8 +83,8 @@ export const processMintOrBurnEventLpSpeed = async (
     eventInfo.tickUpper,
   );
 
-  const query = (existingPosition) 
-    ? getPositionUpdateQuery(existingPosition, eventInfo) 
+  const query = existingPosition
+    ? getPositionUpdateQuery(existingPosition, eventInfo)
     : getPositionInsertQuery(eventInfo, currentTick);
 
   const options = {

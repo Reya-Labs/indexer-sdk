@@ -1,89 +1,63 @@
-import { AMM } from '@voltz-protocol/v1-sdk';
-import { ethers } from 'ethers';
-
 import { BigQueryPositionRow } from '../../big-query-support';
 import { SwapEventInfo, VAMMPriceChangeEventInfo } from '../../common/event-parsers';
-import {
-  calculatePassiveTokenDeltas,
-  PassiveTokenDeltas,
-} from '../../common/lp-math/calculatePassiveTokenDeltas';
+import { calculatePassiveTokenDeltas } from '../../common/services/calculatePassiveTokenDeltas';
 
-type GPassiveSwapEventsArgs = {
+type Args = {
   existingLpPositionRows: BigQueryPositionRow[];
-  amm: AMM;
   priceChangeEventInfo: VAMMPriceChangeEventInfo;
 };
 
 export const gPassiveSwapEvents = ({
   existingLpPositionRows,
-  amm,
   priceChangeEventInfo,
-}: GPassiveSwapEventsArgs): {
-  passiveSwapEvents: SwapEventInfo[];
-  affectedLps: BigQueryPositionRow[];
-} => {
-  const tokenDecimals = amm.underlyingToken.decimals;
+}: Args): {
+  affectedLP: BigQueryPositionRow;
+  passiveSwapEvent: SwapEventInfo;
+}[] => {
+  const affectedLPs = existingLpPositionRows.map((affectedLP) => {
+    const { ownerAddress, tickLower, tickUpper, tickPrevious, liquidity } = affectedLP;
+    const currentTick = priceChangeEventInfo.tick;
 
-  const passiveSwapEvents: SwapEventInfo[] = [];
-  const affectedLps: BigQueryPositionRow[] = [];
+    const { variableTokenDelta, fixedTokenDeltaUnbalanced } = calculatePassiveTokenDeltas(
+      liquidity,
+      tickLower,
+      tickUpper,
+      tickPrevious,
+      currentTick,
+    );
 
-  for (const positionRow of existingLpPositionRows) {
-    // note, block number is not sufficient since tx ordering within the block also matters
-    if (positionRow.lastUpdatedBlockNumber < priceChangeEventInfo.eventBlockNumber) {
-      const ownerAddress = positionRow.ownerAddress;
-      const tickLower = positionRow.tickLower;
-      const tickUpper = positionRow.tickUpper;
-      const tickPrevious = positionRow.tickPrevious;
+    const passiveSwapEventId = `${priceChangeEventInfo.chainId}_${priceChangeEventInfo.vammAddress}_${ownerAddress}_${priceChangeEventInfo.eventBlockNumber}`;
 
-      const { variableTokenDeltaString, fixedTokenDeltaUnbalancedString }: PassiveTokenDeltas =
-        calculatePassiveTokenDeltas(
-          positionRow.liquidity,
-          tickUpper,
-          tickLower,
-          priceChangeEventInfo.tick,
-          tickPrevious,
-        );
+    const passiveSwapEvent: SwapEventInfo = {
+      eventId: passiveSwapEventId.toLowerCase(),
+      type: 'swap',
+      eventBlockNumber: priceChangeEventInfo.eventBlockNumber,
 
-      const variableTokenDelta = Number(
-        ethers.utils.formatUnits(variableTokenDeltaString, tokenDecimals),
-      );
+      chainId: priceChangeEventInfo.chainId,
+      vammAddress: priceChangeEventInfo.vammAddress,
+      amm: priceChangeEventInfo.amm,
 
-      const fixedTokenDeltaUnbalanced = Number(
-        ethers.utils.formatUnits(fixedTokenDeltaUnbalancedString, tokenDecimals),
-      );
+      rateOracle: priceChangeEventInfo.rateOracle,
+      underlyingToken: priceChangeEventInfo.underlyingToken,
+      marginEngineAddress: priceChangeEventInfo.marginEngineAddress,
 
-      // note, what if there are two in the same block...
-      const passiveSwapEventId =
-        `${priceChangeEventInfo.chainId}_${priceChangeEventInfo.vammAddress}_${ownerAddress}_${priceChangeEventInfo.eventBlockNumber}`.toLowerCase();
+      ownerAddress,
+      tickLower,
+      tickUpper,
 
-      const passiveSwapEvent: SwapEventInfo = {
-        eventId: passiveSwapEventId.toLowerCase(),
-        eventBlockNumber: priceChangeEventInfo.eventBlockNumber,
-        chainId: priceChangeEventInfo.chainId,
-        vammAddress: priceChangeEventInfo.vammAddress,
-        ownerAddress,
-        tickLower,
-        tickUpper,
-        variableTokenDelta,
-        fixedTokenDeltaUnbalanced,
-        feePaidToLps: 0, // does not apply to passive swaps
-        rateOracle: priceChangeEventInfo.rateOracle,
-        underlyingToken: priceChangeEventInfo.underlyingToken,
-        marginEngineAddress: priceChangeEventInfo.marginEngineAddress,
-        amm: priceChangeEventInfo.amm,
-        type: 'swap',
-      };
+      variableTokenDelta,
+      fixedTokenDeltaUnbalanced,
+      feePaidToLps: 0, // does not apply to passive swaps
+    };
 
-      passiveSwapEvents.push(passiveSwapEvent);
-
-      affectedLps.push({
-        ...positionRow,
+    return {
+      affectedLP: {
+        ...affectedLP,
         tickPrevious: priceChangeEventInfo.tick,
-      });
-    } else {
-      throw Error('Position is in the future');
-    }
-  }
+      },
+      passiveSwapEvent,
+    };
+  });
 
-  return { passiveSwapEvents, affectedLps };
+  return affectedLPs;
 };

@@ -19,9 +19,14 @@ export const getAmms = async (chainIds: number[], activeAtTimestamp: number): Pr
       throw new Error(`Couldn't fetch AMMs from voltz-SDK for chain id ${chainId}.`);
     }
 
-    // Filter out the inactive pools
+    // // Filter out the inactive pools
+    // const activeAmms = amms.filter((item) => {
+    //   return item.termEndTimestampInMS / 1000 > activeAtTimestamp;
+    // });
+
+    // todo: remove this after testing
     const activeAmms = amms.filter((item) => {
-      return item.termEndTimestampInMS / 1000 > activeAtTimestamp;
+      return item.id.toLowerCase() === '0xEF05Af8b766B33e8c0FE768278deE326946a4858'.toLowerCase();
     });
 
     allAmms.push(...activeAmms);

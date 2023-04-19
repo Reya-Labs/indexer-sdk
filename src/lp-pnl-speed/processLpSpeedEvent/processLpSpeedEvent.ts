@@ -10,20 +10,16 @@ export const processLpSpeedEvent = async (
   event: ExtendedEvent,
   currentTick: number,
 ): Promise<number> => {
-  
   switch (event.type) {
-    case 'mint': 
+    case 'mint':
     case 'burn': {
-      console.log('processing mint or burn event');
-      
       const eventInfo = parseMintOrBurnEvent(event);
 
       await processMintOrBurnEventLpSpeed(bigQuery, eventInfo, currentTick);
+
       return currentTick;
     }
     case 'price_change': {
-      console.log('processing vamm price change event');
-
       const eventInfo = parseVAMMPriceChangeEvent(event);
 
       await processVAMMPriceChangeEvent(bigQuery, eventInfo);

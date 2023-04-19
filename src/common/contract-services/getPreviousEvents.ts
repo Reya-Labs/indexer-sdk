@@ -2,6 +2,7 @@ import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
 
+import { isTestingAccount } from '../constants';
 import { getFromBlock } from '../services';
 import { EventType, ExtendedEvent } from '../types';
 import { generateVAMMContract } from './generateVAMMContract';
@@ -104,7 +105,15 @@ export const getPreviousEvents = async (
 
   for (const eventType of eventTypes) {
     const eventFilter = getEventFilter(vammContract, eventType);
-    const events = await vammContract.queryFilter(eventFilter, fromBlock, toBlock);
+    let events = await vammContract.queryFilter(eventFilter, fromBlock, toBlock);
+
+    if (eventType === 'mint' || eventType === 'burn') {
+      events = events.filter((e) => isTestingAccount(e.args?.owner as string));
+    }
+
+    if (eventType === 'swap') {
+      events = events.filter((e) => isTestingAccount(e.args?.recipient as string));
+    }
 
     const extendedEvents = events.map((event) => {
       const extendedEvent: ExtendedEvent = {
