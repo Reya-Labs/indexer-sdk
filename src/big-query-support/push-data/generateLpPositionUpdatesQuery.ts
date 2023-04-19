@@ -1,6 +1,6 @@
-import { POSITIONS_TABLE_ID } from '../common';
-import { BigQueryPositionRow } from '.';
-import { secondsToBqDate } from './utils';
+import { POSITIONS_TABLE_ID } from '../../common';
+import { BigQueryPositionRow } from '..';
+import { secondsToBqDate } from '../utils';
 
 export const generateLpPositionUpdatesQuery = (lpPositionRows: BigQueryPositionRow[]): string => {
   const query = lpPositionRows

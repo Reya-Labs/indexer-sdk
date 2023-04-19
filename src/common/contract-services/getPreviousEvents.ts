@@ -3,10 +3,8 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
 
 import { getFromBlock } from '../services';
-import { ExtendedEvent } from '../types';
+import { EventType, ExtendedEvent } from '../types';
 import { generateVAMMContract } from './generateVAMMContract';
-
-type EventType = 'mint' | 'burn' | 'swap' | 'price_change';
 
 export type VammEvents = {
   events: ExtendedEvent[];

@@ -1,7 +1,7 @@
 import { BigQuery, BigQueryInt } from '@google-cloud/bigquery';
 
-import { dollarAggregate } from '../api/common/dollarAggregate';
-import { bqNumericToNumber } from './utils';
+import { dollarAggregate } from '../../api/common/dollarAggregate';
+import { bqNumericToNumber } from '../utils';
 
 type Args = {
   chainId: number;
@@ -20,14 +20,14 @@ export const getChainTradingVolume = async ({
   geckoKey,
 }: Args): Promise<number> => {
   const volumeQuery = `
-        SELECT underlyingToken, sum(abs(variableTokenDelta)) as amount
-        FROM \`${activeSwapsTableId}\`
-        
-        WHERE (eventTimestamp > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 30 DAY)) 
-        AND (chainId=${chainId})
-        
-        GROUP BY underlyingToken
-    `;
+    SELECT underlyingToken, sum(abs(variableTokenDelta)) as amount
+      FROM \`${activeSwapsTableId}\`
+          
+      WHERE (eventTimestamp > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 30 DAY)) AND 
+            (chainId=${chainId})
+          
+      GROUP BY underlyingToken
+  `;
 
   const options = {
     query: volumeQuery,

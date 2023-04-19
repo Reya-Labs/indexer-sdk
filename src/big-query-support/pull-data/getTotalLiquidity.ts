@@ -1,7 +1,7 @@
 import { BigQuery, BigQueryInt } from '@google-cloud/bigquery';
 
-import { dollarAggregate } from '../api/common/dollarAggregate';
-import { bqNumericToNumber } from './utils';
+import { dollarAggregate } from '../../api/common/dollarAggregate';
+import { bqNumericToNumber } from '../utils';
 
 type Args = {
   chainId: number;
@@ -11,7 +11,7 @@ type Args = {
 };
 
 /**
- Get chain level information
+ Get chain total liquidity
  */
 export const getChainTotalLiquidity = async ({
   chainId,
@@ -20,13 +20,11 @@ export const getChainTotalLiquidity = async ({
   geckoKey,
 }: Args): Promise<number> => {
   const liquidityQuery = `
-        SELECT underlyingToken, sum(notionalDelta) as amount
-        FROM \`${mintsAndBurnsTableId}\`
-        
-        WHERE chainId=${chainId}
-        
-        GROUP BY underlyingToken
-    `;
+    SELECT underlyingToken, sum(notionalDelta) as amount
+      FROM \`${mintsAndBurnsTableId}\`
+      WHERE chainId=${chainId}
+      GROUP BY underlyingToken
+  `;
 
   const options = {
     query: liquidityQuery,

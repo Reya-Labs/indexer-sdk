@@ -7,7 +7,7 @@ export const createCacheTable = async (tableName: string, bigQuery: BigQuery): P
   const existingTable: Table | null = await getTable(tableName, bigQuery);
 
   if (existingTable) {
-    console.log('A cache table already exists');
+    console.log(`${tableName} already exists`);
     return;
   }
 

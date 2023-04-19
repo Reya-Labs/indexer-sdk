@@ -10,7 +10,7 @@ export const createActiveSwapsTable = async (
   const existingTable: Table | null = await getTable(tableName, bigQuery);
 
   if (existingTable) {
-    console.log('A positions table already exists');
+    console.log(`${tableName} already exists`);
     return;
   }
 

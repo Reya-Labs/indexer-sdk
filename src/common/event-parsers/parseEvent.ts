@@ -20,8 +20,5 @@ export const parseEvent = (
     case 'swap': {
       return parseSwapEvent(event);
     }
-    default: {
-      throw Error('Provide a valid event type');
-    }
   }
 };

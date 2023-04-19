@@ -46,8 +46,6 @@ export const processVAMMPriceChangeEvent = async (
 
   const sqlTransactionQuery = generateLpPositionUpdatesQuery(lpPositionRows);
 
-  console.log(sqlTransactionQuery);
-
   const options = {
     query: sqlTransactionQuery,
     timeoutMs: 100000,

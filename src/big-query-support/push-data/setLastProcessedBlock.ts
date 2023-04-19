@@ -4,8 +4,8 @@
 
 import { BigQuery } from '@google-cloud/bigquery';
 
-import { LAST_PROCESSED_BLOCK_TABLE_ID } from '../common/constants';
-import { getLastProcessedBlock } from './getLastProcessedBlock';
+import { LAST_PROCESSED_BLOCK_TABLE_ID } from '../../common/constants';
+import { getLastProcessedBlock } from '../pull-data/getLastProcessedBlock';
 
 const getInsertQuery = (tableId: string, processId: string, lastBlock: number): string => {
   const sqlQuery = `INSERT INTO \`${tableId}\` VALUES(\"${processId}\",${lastBlock});`;
