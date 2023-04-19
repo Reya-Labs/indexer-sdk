@@ -6,9 +6,7 @@ import {
   applyProcessingWindow,
   CACHE_SET_WINDOW,
   getPreviousEvents,
-  setFromBlock,
-} from '../common';
-import { LP_PROCESSING_WINDOW } from '../common';
+ LP_PROCESSING_WINDOW,  setFromBlock } from '../common';
 import { processPassiveSwapEvents } from './processPassiveSwapEvents';
 
 export const syncPassiveSwaps = async (

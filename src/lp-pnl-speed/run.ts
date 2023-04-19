@@ -3,8 +3,8 @@ import { AMM } from '@voltz-protocol/v1-sdk';
 import * as dotenv from 'dotenv';
 import { Redis } from 'ioredis';
 
-import { createCacheTable, createPositionsTable } from '../big-query-support/manage-tables';
-import { APR_2023_TIMESTAMP, getAmms, PROJECT_ID } from '../common';
+import { createActiveSwapsTable, createCacheTable, createMintsAndBurnsTable, createPositionsTable } from '../big-query-support/manage-tables';
+import { ACTIVE_SWAPS_TABLE_NAME, APR_2023_TIMESTAMP, getAmms, LAST_PROCESSED_BLOCK_TABLE_NAME, MINTS_BURNS_TABLE_NAME, POSITIONS_TABLE_NAME, PROJECT_ID } from '../common';
 import { sync } from './sync';
 
 dotenv.config();
@@ -21,23 +21,10 @@ export const run = async (chainIds: number[], redisClient?: Redis) => {
     return;
   }
 
-  if (process.env.POSITIONS_TABLE_ID === undefined || process.env.POSITIONS_TABLE_ID === '') {
-    throw Error('Make sure POSITIONS_TABLE_ID is provided as an environment variable');
-  }
-
-  if (
-    process.env.LAST_PROCESSED_BLOCK_TABLE_ID === undefined ||
-    process.env.LAST_PROCESSED_BLOCK_TABLE_ID === ''
-  ) {
-    throw Error('Make sure LAST_PROCESSED_BLOCK_TABLE_ID is provided as an environment variable');
-  }
-
-  // only creates a position table if it does not exist
-  // note, atm the create position table script does not check wether
-  // the matching position shares the same schema
-  // todo: introduce a check on process.env.POSITIONS_TABLE_ID
-  await createPositionsTable(process.env.POSITIONS_TABLE_ID, bigQuery);
-  await createCacheTable(process.env.LAST_PROCESSED_BLOCK_TABLE_ID, bigQuery);
+  await createActiveSwapsTable(ACTIVE_SWAPS_TABLE_NAME, bigQuery);
+  await createMintsAndBurnsTable(MINTS_BURNS_TABLE_NAME, bigQuery);
+  await createPositionsTable(POSITIONS_TABLE_NAME, bigQuery);
+  await createCacheTable(LAST_PROCESSED_BLOCK_TABLE_NAME, bigQuery);
 
   while (true) {
     try {
