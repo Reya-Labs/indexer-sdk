@@ -26,6 +26,10 @@ export const generatePassiveSwapEvents = ({
       currentTick,
     );
 
+    // console.log(`Tick has moved from ${tickPrevious} to ${currentTick}...`);
+    // console.log(`generating ${variableTokenDelta} VT and ${fixedTokenDeltaUnbalanced} uFT`);
+    // console.log();
+
     const passiveSwapEventId = `${priceChangeEventInfo.chainId}_${priceChangeEventInfo.vammAddress}_${ownerAddress}_${priceChangeEventInfo.eventBlockNumber}`;
 
     const passiveSwapEvent: SwapEventInfo = {
@@ -53,7 +57,7 @@ export const generatePassiveSwapEvents = ({
     return {
       affectedLP: {
         ...affectedLP,
-        tickPrevious: priceChangeEventInfo.tick,
+        tickPrevious: currentTick,
       },
       passiveSwapEvent,
     };

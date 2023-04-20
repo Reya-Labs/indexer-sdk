@@ -11,6 +11,9 @@ export const processVAMMPriceChangeEvent = async (
   bigQuery: BigQuery,
   priceChangeEventInfo: VAMMPriceChangeEventInfo,
 ): Promise<void> => {
+
+  let trackingTime = Date.now().valueOf();
+
   // Pull all LP positions
   const existingLpPositionRows = await pullExistingLpPositionRows(
     bigQuery,
@@ -18,11 +21,17 @@ export const processVAMMPriceChangeEvent = async (
     priceChangeEventInfo.eventBlockNumber,
   );
 
+  console.log(`Update tick: Fetching all positions took ${Date.now().valueOf() - trackingTime} ms`);
+  trackingTime = Date.now().valueOf();
+
   // Generate passive swap events
   const passiveSwapEvents = generatePassiveSwapEvents({
     existingLpPositionRows,
     priceChangeEventInfo,
   });
+
+  console.log(`Update tick: Generating passive swaps took ${Date.now().valueOf() - trackingTime} ms`);
+  trackingTime = Date.now().valueOf();
 
   // Skip if there is no affected LP
   if (passiveSwapEvents.length === 0) {
@@ -36,6 +45,9 @@ export const processVAMMPriceChangeEvent = async (
     await priceChangeEventInfo.amm.provider.getBlock(priceChangeEventInfo.eventBlockNumber)
   ).timestamp;
 
+  console.log(`Update tick: Grabbing block event timestamp took ${Date.now().valueOf() - trackingTime} ms`);
+  trackingTime = Date.now().valueOf();
+
   // Retrieve liquidity index at the event block
   const liquidityIndexAtRootEvent = await getLiquidityIndex(
     priceChangeEventInfo.chainId,
@@ -43,6 +55,9 @@ export const processVAMMPriceChangeEvent = async (
     priceChangeEventInfo.amm.marginEngineAddress,
     priceChangeEventInfo.eventBlockNumber,
   );
+
+  console.log(`Update tick: Fetching liquidity index took ${Date.now().valueOf() - trackingTime} ms`);
+  trackingTime = Date.now().valueOf();
 
   // Generate all passive swap events
   const lpPositionRows = passiveSwapEvents.map(({ affectedLP, passiveSwapEvent }) =>
@@ -55,6 +70,9 @@ export const processVAMMPriceChangeEvent = async (
     ),
   );
 
+  console.log(`Update tick: Generating position rows took ${Date.now().valueOf() - trackingTime} ms`);
+  trackingTime = Date.now().valueOf();
+
   // Update all affected LPs
   const sqlTransactionQuery = generateLpPositionUpdatesQuery(lpPositionRows);
 
@@ -65,4 +83,7 @@ export const processVAMMPriceChangeEvent = async (
   };
 
   await bigQuery.query(options);
+
+  console.log(`Update tick: BigQuery update took ${Date.now().valueOf() - trackingTime} ms`);
+  trackingTime = Date.now().valueOf();
 };

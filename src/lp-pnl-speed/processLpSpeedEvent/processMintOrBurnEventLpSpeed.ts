@@ -12,15 +12,18 @@ const getPositionUpdateQuery = (
   eventInfo: MintOrBurnEventInfo,
 ): string => {
   const rowLastUpdatedTimestamp = getTimestampInSeconds();
+  
   const notionalLiquidityProvided =
     existingPosition.notionalLiquidityProvided + eventInfo.notionalDelta;
 
+  const liquidity = existingPosition.liquidity + eventInfo.liquidityDelta;
+
   const query = `
     UPDATE \`${POSITIONS_TABLE_ID}\`
-        SET notionalLiquidityProvided=${notionalLiquidityProvided},
-        rowLastUpdatedTimestamp=\'${secondsToBqDate(rowLastUpdatedTimestamp)}\',
-        lastUpdatedBlockNumber=${eventInfo.eventBlockNumber}
-
+        SET lastUpdatedBlockNumber=${eventInfo.eventBlockNumber},
+            notionalLiquidityProvided=${notionalLiquidityProvided},
+            rowLastUpdatedTimestamp=\'${secondsToBqDate(rowLastUpdatedTimestamp)}\',
+            liquidity=${liquidity}
     WHERE 
         chainId=${existingPosition.chainId} AND
         vammAddress=\"${existingPosition.vammAddress}\" AND 

@@ -37,6 +37,7 @@ export const run = async (chainIds: number[], redisClient: Redis) => {
   while (true) {
     try {
       await sync(bigQuery, amms, redisClient);
+      break;
     } catch (error) {
       console.log(`Loop has failed with message: ${(error as Error).message}. It will retry...`);
     }

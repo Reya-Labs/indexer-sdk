@@ -7,8 +7,7 @@ export const generateLpPositionUpdatesQuery = (lpPositionRows: BigQueryPositionR
     .map((positionRow) => {
       return `
       UPDATE \`${POSITIONS_TABLE_ID}\`
-        SET marginEngineAddress=\"${positionRow.marginEngineAddress}\",
-            realizedPnLFromSwaps=${positionRow.realizedPnLFromSwaps},
+        SET realizedPnLFromSwaps=${positionRow.realizedPnLFromSwaps},
             realizedPnLFromFeesPaid=${positionRow.realizedPnLFromFeesPaid},
             netNotionalLocked=${positionRow.netNotionalLocked},
             netFixedRateLocked=${positionRow.netFixedRateLocked},
@@ -21,7 +20,9 @@ export const generateLpPositionUpdatesQuery = (lpPositionRows: BigQueryPositionR
             variableTokenBalance=${positionRow.variableTokenBalance},
             cashflowLiFactor=${positionRow.cashflowLiFactor},
             cashflowTimeFactor=${positionRow.cashflowTimeFactor},
-            cashflowFreeTerm=${positionRow.cashflowFreeTerm}
+            cashflowFreeTerm=${positionRow.cashflowFreeTerm},
+            tickPrevious=${positionRow.tickPrevious},
+            liquidity=${positionRow.liquidity}
         WHERE chainId=${positionRow.chainId} AND
               vammAddress=\"${positionRow.vammAddress}\" AND 
               ownerAddress=\"${positionRow.ownerAddress}\" AND

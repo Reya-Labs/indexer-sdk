@@ -22,11 +22,17 @@ export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient: Redis):
 
     console.log(`Processing ${events.length} events from block ${fromBlock}...`);
 
-    for (const event of events) {
-      console.log(`Processing event: ${event.type}`);
+    for (let i = 0; i < events.length; i++) {
+      const event = events[i];
+      console.log(`Processing event: ${event.type} (${i+1}/${events.length})`);
+
+      let trackingTime = Date.now().valueOf();
 
       const newTick = await processLpSpeedEvent(bigQuery, event, currentTick);
       currentTick = newTick;
+
+      console.log(`Event processing took ${Date.now().valueOf() - trackingTime} ms`);
+      trackingTime = Date.now().valueOf();
 
       const isSet = await setFromBlock({
         syncProcessName: 'lp_speed',
@@ -37,6 +43,9 @@ export const sync = async (bigQuery: BigQuery, amms: AMM[], redisClient: Redis):
       });
 
       latestCachedBlock = isSet ? event.blockNumber : latestCachedBlock;
+
+      console.log(`Setting in redis cache took ${Date.now().valueOf() - trackingTime} ms`);
+      trackingTime = Date.now().valueOf();
 
       console.log();
     }

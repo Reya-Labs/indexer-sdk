@@ -57,11 +57,11 @@ export const isTestingAccount = (address: string): boolean => {
   return true;
   // const testingAccounts = [
   //   '0xb527e950fc7c4f581160768f48b3bfa66a7de1f0',
-  //   '0xF8F6B70a36f4398f0853a311dC6699Aba8333Cc1',
-  //   '0x0960Da039bb8151cacfeF620476e8bAf34Bd9565',
-  //   '0x8DC15493a8041f059f18ddBA98ee7dcf93b838Ad',
-  //   '0xbea9419e51bbd1b7f564c9f0891187a5822974ab',
-  //   '0xFD4295c1A0b07e6b706f0Ab83dC9eB461b7f17B3',
+  //   // '0xF8F6B70a36f4398f0853a311dC6699Aba8333Cc1',
+  //   // '0x0960Da039bb8151cacfeF620476e8bAf34Bd9565',
+  //   // '0x8DC15493a8041f059f18ddBA98ee7dcf93b838Ad',
+  //   // '0xbea9419e51bbd1b7f564c9f0891187a5822974ab',
+  //   // '0xFD4295c1A0b07e6b706f0Ab83dC9eB461b7f17B3',
   // ];
 
   // return testingAccounts.map((item) => item.toLowerCase()).includes(address.toLowerCase());
