@@ -1,163 +1,84 @@
-import { BigQuery } from '@google-cloud/bigquery';
 import { AMM } from '@voltz-protocol/v1-sdk';
-import { ethers } from 'ethers';
 
-import { getFromBlock } from '../services';
-import { ExtendedEvent } from '../types';
+import { isTestingAccount } from '../constants';
+import { parseMintOrBurnEvent } from '../event-parsers/parseMintOrBurnEvent';
+import { parseSwapEvent } from '../event-parsers/parseSwapEvent';
+import { parseVAMMPriceChangeEvent } from '../event-parsers/parseVAMMPriceChangeEvent';
+import { EventInfo, EventType } from '../types';
 import { generateVAMMContract } from './generateVAMMContract';
 
-export type VammEvents = {
-  [ammId: string]: {
-    events: ExtendedEvent[];
-    fromBlock: number;
-    fromTick: number;
-  };
-};
-
-// todo: test
-export const applyProcessingWindow = (
-  events: ExtendedEvent[],
-  blockWindow: number,
-): ExtendedEvent[] => {
-  if (events.length === 0) {
-    return [];
-  }
-
-  const filteredEvents: ExtendedEvent[] = [];
-  const latestBlock = 0;
-
-  for (let i = 0; i < events.length; i++) {
-    const currentEvent = events[i];
-    const blocksSinceLatestEvent = currentEvent.blockNumber - latestBlock;
-
-    if (blocksSinceLatestEvent >= blockWindow) {
-      filteredEvents.push(currentEvent);
-    }
-  }
-
-  return filteredEvents;
-};
-
-const getEventFilter = (vammContract: ethers.Contract, eventType: string): ethers.EventFilter => {
-  switch (eventType) {
-    case 'mint': {
-      return vammContract.filters.Mint();
-    }
-    case 'swap': {
-      return vammContract.filters.Swap();
-    }
-    case 'burn': {
-      return vammContract.filters.Burn();
-    }
-    case 'price_change': {
-      return vammContract.filters.VAMMPriceChange();
-    }
-    case 'vamm_initialization': {
-      return vammContract.filters.VAMMInitialization();
-    }
-    default: {
-      throw new Error(`Unknown event type ${eventType}.`);
-    }
-  }
-};
-
-export const getFromTick = async (vammContract: ethers.Contract): Promise<number> => {
-  // todo: what if fromBlock is > vamm initialization, needs to be handled in the get previous events function
-  // one of the inputs to this function should be the fromBlock which is derived in the
-
-  const eventFilter: ethers.EventFilter = getEventFilter(vammContract, 'vamm_initialization');
-
-  const events: ethers.Event[] = await vammContract.queryFilter(eventFilter);
-
-  if (events.length < 1) {
-    throw Error('VAMM is not initialized');
-  }
-
-  if (events.length > 1) {
-    throw Error('Impossible to have more than 1 vamm initialization events');
-  }
-
-  return events[0].args?.tick as number;
-};
-
-// todo: test and break down
 export const getPreviousEvents = async (
-  syncProcessName: 'active_swaps' | 'mints_lp' | 'passive_swaps_lp' | 'mint_burn' | 'lp_speed',
-  amms: AMM[],
-  eventTypes: ('mint' | 'burn' | 'swap' | 'price_change')[],
-  bigQuery: BigQuery,
-): Promise<VammEvents> => {
-  const totalEventsByVammAddress: VammEvents = {};
+  amm: AMM,
+  eventTypes: EventType[],
+  chainId: number,
+  fromBlock: number,
+  toBlock: number,
+): Promise<EventInfo[]> => {
+  const allEvents: EventInfo[] = [];
+  const vammContract = generateVAMMContract(amm.id, amm.provider);
 
-  const promises = amms.map(async (amm): Promise<[AMM, ExtendedEvent[], number, number]> => {
-    const toBlock = await amm.provider.getBlockNumber();
-    const chainId = (await amm.provider.getNetwork()).chainId;
+  if (eventTypes.includes('mint')) {
+    const eventFilter = vammContract.filters.Mint();
+    let events = await vammContract.queryFilter(eventFilter, fromBlock, toBlock);
 
-    const fromBlock = await getFromBlock({
-      syncProcessName,
-      chainId,
-      vammAddress: amm.id,
-      bigQuery: bigQuery,
-    });
+    events = events.filter((e) => isTestingAccount(e.args?.owner as string));
 
-    const vammContract = generateVAMMContract(amm.id, amm.provider);
+    const extendedEvents = events.map((event) => parseMintOrBurnEvent(event, amm, chainId, true));
 
-    // note fromTick is only relevant for lp speed events however this function
-    // is more general purpose
-    const fromTick = await getFromTick(vammContract);
+    allEvents.push(...extendedEvents);
+  }
 
-    const allEvents = [];
+  if (eventTypes.includes('burn')) {
+    const eventFilter = vammContract.filters.Burn();
+    let events = await vammContract.queryFilter(eventFilter, fromBlock, toBlock);
 
-    for (let i = 0; i < eventTypes.length; i++) {
-      const eventType: 'mint' | 'burn' | 'swap' | 'price_change' = eventTypes[i];
-      const eventFilter: ethers.EventFilter = getEventFilter(vammContract, eventType);
-      const events: ethers.Event[] = await vammContract.queryFilter(
-        eventFilter,
-        fromBlock,
-        toBlock,
-      );
+    events = events.filter((e) => isTestingAccount(e.args?.owner as string));
 
-      const extendedEvents: ExtendedEvent[] = await Promise.all(
-        events.map((event) => {
-          const extendedEvent = {
-            ...event,
-            type: eventType,
-            amm: amm,
-            chainId: chainId,
-          };
-          return extendedEvent;
-        }),
-      );
+    const extendedEvents = events.map((event) => parseMintOrBurnEvent(event, amm, chainId, false));
 
-      allEvents.push(...extendedEvents);
+    allEvents.push(...extendedEvents);
+  }
+
+  if (eventTypes.includes('swap')) {
+    const eventFilter = vammContract.filters.Swap();
+    let events = await vammContract.queryFilter(eventFilter, fromBlock, toBlock);
+
+    events = events.filter((e) => isTestingAccount(e.args?.recipient as string));
+
+    const extendedEvents = events.map((event) => parseSwapEvent(event, amm, chainId));
+
+    allEvents.push(...extendedEvents);
+  }
+
+  if (eventTypes.includes('price_change')) {
+    const eventFilter = vammContract.filters.VAMMPriceChange();
+    const events = await vammContract.queryFilter(eventFilter, fromBlock, toBlock);
+
+    const extendedEvents = events.map((event) =>
+      parseVAMMPriceChangeEvent(event, amm, chainId, false),
+    );
+
+    allEvents.push(...extendedEvents);
+  }
+
+  if (eventTypes.includes('price_change')) {
+    const eventFilter = vammContract.filters.VAMMInitialization();
+    const events = await vammContract.queryFilter(eventFilter, fromBlock, toBlock);
+
+    const extendedEvents = events.map((event) =>
+      parseVAMMPriceChangeEvent(event, amm, chainId, true),
+    );
+
+    allEvents.push(...extendedEvents);
+  }
+
+  const sortedEvents = allEvents.sort((a, b) => {
+    if (a.blockNumber === b.blockNumber) {
+      return a.transactionIndex - b.transactionIndex;
     }
 
-    return [amm, allEvents, fromBlock, fromTick];
+    return a.blockNumber - b.blockNumber;
   });
 
-  const response = await Promise.allSettled(promises);
-
-  response.forEach((ammResponse) => {
-    if (ammResponse.status === 'fulfilled') {
-      const [amm, events, fromBlock, fromTick] = ammResponse.value;
-
-      const sortedEvents = events.sort((a, b) => {
-        if (a.blockNumber === b.blockNumber) {
-          return a.transactionIndex - b.transactionIndex;
-        }
-
-        return a.blockNumber - b.blockNumber;
-      });
-
-      totalEventsByVammAddress[amm.id] = {
-        events: sortedEvents,
-        fromBlock: fromBlock,
-        fromTick: fromTick,
-      };
-    } else {
-      throw new Error(`Unable to retrieve events`);
-    }
-  });
-
-  return totalEventsByVammAddress;
+  return sortedEvents;
 };

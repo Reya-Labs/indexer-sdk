@@ -4,7 +4,7 @@ dotenv.config();
 
 import { Storage } from '@google-cloud/storage';
 
-import { PROJECT_ID } from '../common';
+import { PROJECT_ID } from '../common/constants';
 import { app } from './app';
 
 async function authenticateImplicitWithAdc() {

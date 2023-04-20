@@ -3,19 +3,19 @@ import cors from 'cors';
 import * as dotenv from 'dotenv';
 import express from 'express';
 
-import { pullExistingPositionRow } from '../big-query-support';
-import { getChainTotalLiquidity } from '../big-query-support/getTotalLiquidity';
-import { getChainTradingVolume } from '../big-query-support/getTradingVolume';
+import { getChainTotalLiquidity } from '../big-query-support/pull-data/getTotalLiquidity';
+import { getChainTradingVolume } from '../big-query-support/pull-data/getTradingVolume';
+import { pullExistingPositionRow } from '../big-query-support/pull-data/pullExistingPositionRow';
 import {
+  ACTIVE_SWAPS_TABLE_ID,
   GECKO_KEY,
-  getLiquidityIndex,
-  getTimeInYearsBetweenTimestamps,
   MINTS_BURNS_TABLE_ID,
   PROJECT_ID,
   SECONDS_IN_YEAR,
-  SWAPS_TABLE_ID,
-} from '../common';
-import { getAmm, getBlockAtTimestamp } from './common';
+} from '../common/constants';
+import { getLiquidityIndex } from '../common/services/getLiquidityIndex';
+import { getBlockAtTimestamp, getTimeInYearsBetweenTimestamps } from '../common/utils';
+import { getAmm } from './common/getAMM';
 
 dotenv.config();
 
@@ -37,7 +37,7 @@ app.get('/chains/:chainId', (req, res) => {
 
     const tradingVolume = await getChainTradingVolume({
       chainId: chainId,
-      activeSwapsTableId: SWAPS_TABLE_ID,
+      activeSwapsTableId: ACTIVE_SWAPS_TABLE_ID,
       bigQuery: bigQuery,
       geckoKey: GECKO_KEY,
     });
@@ -76,7 +76,6 @@ app.get('/positions/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper', 
     const tickUpper = Number(req.params.tickUpper);
 
     const existingPosition = await pullExistingPositionRow(
-      bigQuery,
       chainId,
       vammAddress,
       ownerAddress,

@@ -1,9 +1,10 @@
-import { BigQuery, Table } from '@google-cloud/bigquery';
+import { Table } from '@google-cloud/bigquery';
 
-import { DATASET_ID } from '../../common';
+import { DATASET_ID } from '../../common/constants';
+import { getBigQuery } from '../../global';
 
-export const getTable = async (tableName: string, bigQuery: BigQuery): Promise<Table | null> => {
-  // todo: check typings and add tests
+export const getTable = async (tableName: string): Promise<Table | null> => {
+  const bigQuery = getBigQuery();
 
   const [tables] = await bigQuery.dataset(DATASET_ID).getTables();
 

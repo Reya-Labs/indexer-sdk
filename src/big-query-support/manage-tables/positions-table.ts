@@ -1,16 +1,15 @@
-import { BigQuery, Table } from '@google-cloud/bigquery';
+import { Table } from '@google-cloud/bigquery';
 
-import { DATASET_ID } from '../../common';
+import { DATASET_ID } from '../../common/constants';
+import { getBigQuery } from '../../global';
 import { getTable } from './get-table';
 
-export const createPositionsTable = async (
-  tableName: string,
-  bigQuery: BigQuery,
-): Promise<void> => {
-  const existingTable: Table | null = await getTable(tableName, bigQuery);
+export const createPositionsTable = async (tableName: string): Promise<void> => {
+  const bigQuery = getBigQuery();
+  const existingTable: Table | null = await getTable(tableName);
 
   if (existingTable) {
-    console.log('A positions table already exists');
+    console.log(`${tableName} already exists`);
     return;
   }
 
@@ -71,7 +70,6 @@ export const createPositionsTable = async (
     { name: 'cashflowTimeFactor', type: 'NUMERIC', mode: 'REQUIRED', precision: '18', scale: '9' },
     { name: 'cashflowFreeTerm', type: 'NUMERIC', mode: 'REQUIRED', precision: '18', scale: '9' },
     { name: 'liquidity', type: 'NUMERIC', mode: 'REQUIRED', precision: '18', scale: '9' },
-    { name: 'tickPrevious', type: 'INTEGER', mode: 'REQUIRED' },
   ];
 
   // For all options, see https://cloud.google.com/bigquery/docs/reference/v2/tables#resource

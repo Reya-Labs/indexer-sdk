@@ -1,58 +1,85 @@
-import { BigQuery } from '@google-cloud/bigquery';
-
-import {
-  generateLpPositionUpdatesQuery,
-  pullExistingLpPositionRows,
-} from '../../big-query-support';
-import { VAMMPriceChangeEventInfo } from '../../common/event-parsers';
-import { blockNumberToTimestamp } from '../../common/event-parsers/blockNumberToTimestamp';
-import { generateLpPositionRowsFromPassiveSwaps } from '../../lp-pnl/processPassiveSwapEvents/generateLpPositionRowsFromPassiveSwaps';
-import { gPassiveSwapEvents } from './gPassiveSwapEvents';
+import { TrackedBigQueryPositionRow } from '../../big-query-support/pull-data/pullAllPositions';
+import { generatePositionRow } from '../../big-query-support/push-data/generatePositionRow';
+import { SwapEventInfo, VAMMPriceChangeEventInfo } from '../../common/event-parsers/types';
+import { calculatePassiveTokenDeltas } from '../../common/services/calculatePassiveTokenDeltas';
+import { getLiquidityIndex } from '../../common/services/getLiquidityIndex';
 
 export const processVAMMPriceChangeEvent = async (
-  bigQuery: BigQuery,
+  currentPositions: TrackedBigQueryPositionRow[],
   priceChangeEventInfo: VAMMPriceChangeEventInfo,
+  previousTick: number,
 ): Promise<void> => {
-  const existingLpPositionRows = await pullExistingLpPositionRows(
-    bigQuery,
-    priceChangeEventInfo.amm.id,
-    priceChangeEventInfo.eventBlockNumber,
-  );
+  const currentTick = priceChangeEventInfo.tick;
 
-  const { passiveSwapEvents, affectedLps } = gPassiveSwapEvents({
-    existingLpPositionRows,
-    amm: priceChangeEventInfo.amm,
-    priceChangeEventInfo,
-  });
+  // Retrieve event timestamp
+  const eventTimestamp = (
+    await priceChangeEventInfo.amm.provider.getBlock(priceChangeEventInfo.blockNumber)
+  ).timestamp;
 
-  if (affectedLps.length === 0) {
-    // since the latest checkpoint, no lps were affected by passive swaps
-    return;
-  }
-
-  const eventTimestamp = await blockNumberToTimestamp(
+  // Retrieve liquidity index at the event block
+  const liquidityIndexAtRootEvent = await getLiquidityIndex(
     priceChangeEventInfo.chainId,
-    priceChangeEventInfo.eventBlockNumber,
+    priceChangeEventInfo.amm.provider,
+    priceChangeEventInfo.amm.marginEngineAddress,
+    priceChangeEventInfo.blockNumber,
   );
 
-  const lpPositionRows = await generateLpPositionRowsFromPassiveSwaps({
-    passiveSwapEvents,
-    affectedLps,
-    chainId: priceChangeEventInfo.chainId,
-    amm: priceChangeEventInfo.amm,
-    eventTimestamp: eventTimestamp,
-    eventBlockNumber: priceChangeEventInfo.eventBlockNumber,
-  });
+  for (let i = 0; i < currentPositions.length; i++) {
+    const { position } = currentPositions[i];
 
-  const sqlTransactionQuery = generateLpPositionUpdatesQuery(lpPositionRows);
+    if (!(position.vammAddress === priceChangeEventInfo.amm.id)) {
+      continue;
+    }
 
-  console.log(sqlTransactionQuery);
+    if (position.notionalLiquidityProvided <= 0) {
+      continue;
+    }
 
-  const options = {
-    query: sqlTransactionQuery,
-    timeoutMs: 100000,
-    useLegacySql: false,
-  };
+    if (position.positionInitializationBlockNumber >= priceChangeEventInfo.blockNumber) {
+      continue;
+    }
 
-  await bigQuery.query(options);
+    const { ownerAddress, tickLower, tickUpper, liquidity } = position;
+
+    const { variableTokenDelta, fixedTokenDeltaUnbalanced } = calculatePassiveTokenDeltas(
+      liquidity,
+      tickLower,
+      tickUpper,
+      previousTick,
+      currentTick,
+    );
+
+    console.log(`Tick has moved from ${previousTick} to ${currentTick}...`);
+    console.log(`generating ${variableTokenDelta} VT and ${fixedTokenDeltaUnbalanced} uFT`);
+    console.log();
+
+    // todo: enhance this ID -> not high pro as long as we do not add them to the table
+    const passiveSwapEventId = `id`;
+
+    const passiveSwapEvent: SwapEventInfo = {
+      ...priceChangeEventInfo,
+
+      eventId: passiveSwapEventId.toLowerCase(),
+      type: 'swap',
+
+      ownerAddress,
+      tickLower,
+      tickUpper,
+
+      variableTokenDelta,
+      fixedTokenDeltaUnbalanced,
+      feePaidToLps: 0, // does not apply to passive swaps
+    };
+
+    // Generate all passive swap events
+
+    currentPositions[i].modified = true;
+    currentPositions[i].position = generatePositionRow(
+      priceChangeEventInfo.amm,
+      passiveSwapEvent,
+      eventTimestamp,
+      position,
+      liquidityIndexAtRootEvent,
+    );
+  }
 };

@@ -51,6 +51,16 @@ Branch names can start with the prefixes found in the regex under '.husky/pre-co
 **Candidate branches:**
 * commits on branches that follow the pattern `feat/*`, `fix/*`, `chore/*`, `refactor/*` and `test/*`
 
+### Connect to Redis on localhost (on mac):
+
+** Install redis-server **
+* `brew install redis`
+* `brew services start redis`
+* `brew services info redis` - to check
+* `npx redis-cli ping` - it should respond pong
+* `brew services stop redis` - to terminate the connection
+
+
 # Terms & Conditions
 The Voltz Protocol, and any products or services associated therewith, is offered only to persons (aged 18 years or older) or entities who are not residents of, citizens of, are incorporated in, owned or controlled by a person or entity in, located in, or have a registered office or principal place of business in any “Restricted Territory.”
 

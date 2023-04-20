@@ -22,21 +22,19 @@ export async function dollarAggregate(
   }[],
   geckoKey: string,
 ) {
-  let totalInDollars = 0;
+  const ethToUsdER = await getCurrentEthER(geckoKey);
 
-  for (const { amount, underlyingToken } of rows) {
-    let amountInDollars = Number(amount.toString());
-
-    if (
-      underlyingToken === '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' ||
-      underlyingToken === 'ETH'
-    ) {
-      const ethToUsdER = await getCurrentEthER(geckoKey);
-      amountInDollars = amountInDollars * ethToUsdER;
+  const totalInUSD = rows.reduce((total, { amount, underlyingToken }) => {
+    if (underlyingToken.startsWith('0x')) {
+      throw new Error('Underlying token is passed as address');
     }
 
-    totalInDollars += amountInDollars;
-  }
+    if (underlyingToken === 'ETH') {
+      return total + amount * ethToUsdER;
+    }
 
-  return totalInDollars;
+    return total + amount;
+  }, 0);
+
+  return totalInUSD;
 }

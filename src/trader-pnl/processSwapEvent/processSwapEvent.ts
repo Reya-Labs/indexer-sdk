@@ -1,45 +1,59 @@
-import { BigQuery } from '@google-cloud/bigquery';
+import { TrackedBigQueryPositionRow } from '../../big-query-support/pull-data/pullAllPositions';
+import { generatePositionRow } from '../../big-query-support/push-data/generatePositionRow';
+import { SwapEventInfo } from '../../common/event-parsers/types';
+import { getLiquidityIndex } from '../../common/services/getLiquidityIndex';
 
-import { pullExistingPositionRow, pullExistingSwapRow } from '../../big-query-support';
-import { blockNumberToTimestamp } from '../../common/event-parsers/blockNumberToTimestamp';
-import { parseSwapEvent } from '../../common/event-parsers/parseSwapEvent';
-import { ExtendedEvent } from '../../common/types';
-import { insertNewSwapAndNewPosition } from './insertNewSwapAndNewPosition';
-import { insertNewSwapAndUpdateExistingPosition } from './insertNewSwapAndUpdateExistingPosition';
+export const processSwapEvent = async (
+  currentPositions: TrackedBigQueryPositionRow[],
+  event: SwapEventInfo,
+): Promise<void> => {
+  const eventTimestamp = (await event.amm.provider.getBlock(event.blockNumber)).timestamp;
 
-export const processSwapEvent = async (bigQuery: BigQuery, event: ExtendedEvent): Promise<void> => {
-  const eventInfo = parseSwapEvent(event);
+  const liquidityIndexAtRootEvent = await getLiquidityIndex(
+    event.chainId,
+    event.amm.provider,
+    event.amm.marginEngineAddress,
+    event.blockNumber,
+  );
 
-  const swapRow = await pullExistingSwapRow(bigQuery, eventInfo.eventId);
+  const existingPositionIndex = currentPositions.findIndex(({ position }) => {
+    return (
+      position.chainId === event.chainId &&
+      position.vammAddress === event.vammAddress &&
+      position.ownerAddress === event.ownerAddress &&
+      position.tickLower === event.tickLower &&
+      position.tickUpper === event.tickUpper
+    );
+  });
 
-  if (swapRow) {
-    // console.log('Swap already processed. Skipped.');
+  if (existingPositionIndex === -1) {
+    // Position does not exist in the table, add new one
+
+    const newPosition = generatePositionRow(
+      event.amm,
+      event,
+      eventTimestamp,
+      null,
+      liquidityIndexAtRootEvent,
+    );
+
+    currentPositions.push({
+      position: newPosition,
+      added: true,
+      modified: true,
+    });
+
     return;
   }
 
-  // check if a position already exists in the positions table
-  const existingPosition = await pullExistingPositionRow(
-    bigQuery,
-    eventInfo.chainId,
-    eventInfo.vammAddress,
-    eventInfo.ownerAddress,
-    eventInfo.tickLower,
-    eventInfo.tickUpper,
+  const newPosition = generatePositionRow(
+    event.amm,
+    event,
+    eventTimestamp,
+    currentPositions[existingPositionIndex].position,
+    liquidityIndexAtRootEvent,
   );
 
-  const eventTimestamp = await blockNumberToTimestamp(event.chainId, event.blockNumber);
-
-  if (existingPosition) {
-    // this position has already performed a swap
-    await insertNewSwapAndUpdateExistingPosition(
-      bigQuery,
-      event.amm,
-      eventInfo,
-      eventTimestamp,
-      existingPosition,
-    );
-  } else {
-    // this is the first swap of the position
-    await insertNewSwapAndNewPosition(bigQuery, event.amm, eventInfo, eventTimestamp);
-  }
+  currentPositions[existingPositionIndex].modified = true;
+  currentPositions[existingPositionIndex].position = newPosition;
 };
