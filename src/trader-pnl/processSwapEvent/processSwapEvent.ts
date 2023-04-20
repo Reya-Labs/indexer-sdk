@@ -50,7 +50,7 @@ export const processSwapEvent = async (
     event.amm,
     event,
     eventTimestamp,
-    null,
+    currentPositions[existingPositionIndex].position,
     liquidityIndexAtRootEvent,
   );
 

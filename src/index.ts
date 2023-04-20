@@ -1,8 +1,8 @@
 import { Storage } from '@google-cloud/storage';
 
 import { PROJECT_ID } from './common/constants';
-// import { run as runLpsSpeed } from './lp-pnl-speed/run';
-// import { run as runMintsAndBurns } from './mints-and-burns/run';
+import { run as runLpsSpeed } from './lp-pnl-speed/run';
+import { run as runMintsAndBurns } from './mints-and-burns/run';
 import { run as runTraders } from './trader-pnl/run';
 
 async function authenticateImplicitWithAdc() {
@@ -13,17 +13,17 @@ async function authenticateImplicitWithAdc() {
   await storage.getBuckets();
 }
 
-const chainIds = [1];
-// const chainIds = [1, 42161];
+// const chainIds = [1];
+const chainIds = [1, 42161];
 
 const main = async () => {
   await authenticateImplicitWithAdc();
 
   let promises: Promise<void>[] = [];
 
-  // promises = promises.concat(runMintsAndBurns(chainIds));
+  promises = promises.concat(runMintsAndBurns(chainIds));
   promises = promises.concat(runTraders(chainIds));
-  // promises = promises.concat(runLpsSpeed(chainIds));
+  promises = promises.concat(runLpsSpeed(chainIds));
 
   console.log(`Number of parallel calls ${promises.length}`);
 
