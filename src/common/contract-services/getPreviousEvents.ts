@@ -12,7 +12,7 @@ export const getPreviousEvents = async (
   eventTypes: EventType[],
   chainId: number,
   fromBlock: number,
-  toBlock: number
+  toBlock: number,
 ): Promise<EventInfo[]> => {
   const allEvents: EventInfo[] = [];
   const vammContract = generateVAMMContract(amm.id, amm.provider);
@@ -23,12 +23,7 @@ export const getPreviousEvents = async (
 
     events = events.filter((e) => isTestingAccount(e.args?.owner as string));
 
-    const extendedEvents = events.map((event) => parseMintOrBurnEvent(
-      event,
-      amm,
-      chainId,
-      true,
-    ));
+    const extendedEvents = events.map((event) => parseMintOrBurnEvent(event, amm, chainId, true));
 
     allEvents.push(...extendedEvents);
   }
@@ -39,12 +34,7 @@ export const getPreviousEvents = async (
 
     events = events.filter((e) => isTestingAccount(e.args?.owner as string));
 
-    const extendedEvents = events.map((event) => parseMintOrBurnEvent(
-      event,
-      amm,
-      chainId,
-      false,
-    ));
+    const extendedEvents = events.map((event) => parseMintOrBurnEvent(event, amm, chainId, false));
 
     allEvents.push(...extendedEvents);
   }
@@ -55,11 +45,7 @@ export const getPreviousEvents = async (
 
     events = events.filter((e) => isTestingAccount(e.args?.owner as string));
 
-    const extendedEvents = events.map((event) => parseSwapEvent(
-      event,
-      amm,
-      chainId,
-    ));
+    const extendedEvents = events.map((event) => parseSwapEvent(event, amm, chainId));
 
     allEvents.push(...extendedEvents);
   }
@@ -67,13 +53,10 @@ export const getPreviousEvents = async (
   if (eventTypes.includes('price_change')) {
     const eventFilter = vammContract.filters.VAMMPriceChange();
     const events = await vammContract.queryFilter(eventFilter, fromBlock, toBlock);
-    
-    const extendedEvents = events.map((event) => parseVAMMPriceChangeEvent(
-      event,
-      amm,
-      chainId,
-      false
-    ));
+
+    const extendedEvents = events.map((event) =>
+      parseVAMMPriceChangeEvent(event, amm, chainId, false),
+    );
 
     allEvents.push(...extendedEvents);
   }
@@ -82,12 +65,9 @@ export const getPreviousEvents = async (
     const eventFilter = vammContract.filters.VAMMInitialization();
     const events = await vammContract.queryFilter(eventFilter, fromBlock, toBlock);
 
-    const extendedEvents = events.map((event) => parseVAMMPriceChangeEvent(
-      event,
-      amm,
-      chainId,
-      true
-    ));
+    const extendedEvents = events.map((event) =>
+      parseVAMMPriceChangeEvent(event, amm, chainId, true),
+    );
 
     allEvents.push(...extendedEvents);
   }

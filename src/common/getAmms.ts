@@ -5,7 +5,6 @@ import { ALCHEMY_API_KEY } from './constants';
 // import { APR_2023_TIMESTAMP } from './constants';
 
 export const getAmms = async (chainId: number): Promise<AMM[]> => {
-
   // Get AMMs
   const { amms, error } = await getAMMs({
     chainId: chainId,

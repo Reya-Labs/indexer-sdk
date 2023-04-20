@@ -1,99 +1,72 @@
-import { pullExistingPositionRow } from '../../big-query-support/pull-data/pullExistingPositionRow';
-import { BigQueryPositionRow } from '../../big-query-support/pull-data/types';
-import { secondsToBqDate } from '../../big-query-support/utils';
-import { POSITIONS_TABLE_ID } from '../../common/constants';
+import { TrackedBigQueryPositionRow } from '../../big-query-support/pull-data/pullAllPositions';
 import { MintOrBurnEventInfo } from '../../common/event-parsers/types';
 import { getTimestampInSeconds } from '../../common/utils';
-import { getBigQuery } from '../../global';
 
-const getPositionUpdateQuery = (
+export const processMintOrBurnEventLpSpeed = (
+  currentPositions: TrackedBigQueryPositionRow[],
   eventInfo: MintOrBurnEventInfo,
-  existingPosition: BigQueryPositionRow,
-): string => {
-  const rowLastUpdatedTimestamp = getTimestampInSeconds();
-  
-  const notionalLiquidityProvided =
-    existingPosition.notionalLiquidityProvided + eventInfo.notionalDelta;
-
-  const liquidity = existingPosition.liquidity + eventInfo.liquidityDelta;
-
-  const query = `
-    UPDATE \`${POSITIONS_TABLE_ID}\`
-        SET lastUpdatedBlockNumber=${eventInfo.blockNumber},
-            notionalLiquidityProvided=${notionalLiquidityProvided},
-            rowLastUpdatedTimestamp=\'${secondsToBqDate(rowLastUpdatedTimestamp)}\',
-            liquidity=${liquidity}
-    WHERE 
-        chainId=${existingPosition.chainId} AND
-        vammAddress=\"${existingPosition.vammAddress}\" AND 
-        ownerAddress=\"${existingPosition.ownerAddress}\" AND
-        tickLower=${existingPosition.tickLower} AND 
-        tickUpper=${existingPosition.tickUpper};
-    `;
-
-  return query;
-};
-
-const getPositionInsertQuery = (eventInfo: MintOrBurnEventInfo): string => {
-  const rowLastUpdatedTimestamp = getTimestampInSeconds();
-
-  const row = `
-    \"${eventInfo.marginEngineAddress}\",
-    \"${eventInfo.vammAddress}\",
-    \"${eventInfo.ownerAddress}\",
-    ${eventInfo.tickLower},
-    ${eventInfo.tickUpper},
-    ${0},
-    ${0},
-    ${0},
-    ${0},
-    ${eventInfo.blockNumber},
-    ${eventInfo.notionalDelta},                
-    ${0},
-    ${0},
-    ${eventInfo.amm.rateOracle.protocolId},
-    \'${secondsToBqDate(rowLastUpdatedTimestamp)}\',
-    ${0},
-    ${0},
-    ${eventInfo.blockNumber},
-    \'${eventInfo.amm.rateOracle.protocol}\',
-    \'${eventInfo.amm.underlyingToken.name}\',
-    ${eventInfo.chainId},
-    ${0},
-    ${0},
-    ${0},
-    ${eventInfo.liquidityDelta}
-  `;
-
-  const query = `INSERT INTO \`${POSITIONS_TABLE_ID}\` VALUES(${row})`;
-
-  return query;
-};
-
-export const processMintOrBurnEventLpSpeed = async (
-  eventInfo: MintOrBurnEventInfo,
-): Promise<void> => {
-  const bigQuery = getBigQuery();
+): void => {
+  const currentTimestamp = getTimestampInSeconds();
 
   console.log(`Operating on ${eventInfo.ownerAddress}`);
 
-  const existingPosition: BigQueryPositionRow | null = await pullExistingPositionRow(
-    eventInfo.chainId,
-    eventInfo.vammAddress,
-    eventInfo.ownerAddress,
-    eventInfo.tickLower,
-    eventInfo.tickUpper,
-  );
+  const existingPositionIndex = currentPositions.findIndex(({ position }) => {
+    return (
+      position.chainId === eventInfo.chainId &&
+      position.vammAddress === eventInfo.vammAddress &&
+      position.ownerAddress === eventInfo.ownerAddress &&
+      position.tickLower === eventInfo.tickLower &&
+      position.tickUpper === eventInfo.tickUpper
+    );
+  });
 
-  const query = existingPosition
-    ? getPositionUpdateQuery(eventInfo, existingPosition)
-    : getPositionInsertQuery(eventInfo);
+  if (existingPositionIndex === -1) {
+    // Position does not exist in the table, add new one
+    currentPositions.push({
+      position: {
+        marginEngineAddress: eventInfo.marginEngineAddress,
+        vammAddress: eventInfo.vammAddress,
+        ownerAddress: eventInfo.ownerAddress,
+        tickLower: eventInfo.tickLower,
+        tickUpper: eventInfo.tickUpper,
+        realizedPnLFromSwaps: 0,
+        realizedPnLFromFeesPaid: 0,
+        netNotionalLocked: 0,
+        netFixedRateLocked: 0,
+        lastUpdatedBlockNumber: eventInfo.blockNumber,
+        notionalLiquidityProvided: eventInfo.notionalDelta,
+        realizedPnLFromFeesCollected: 0,
+        netMarginDeposited: 0,
+        rateOracleIndex: eventInfo.amm.rateOracle.protocolId,
+        rowLastUpdatedTimestamp: currentTimestamp,
+        fixedTokenBalance: 0,
+        variableTokenBalance: 0,
+        positionInitializationBlockNumber: eventInfo.blockNumber,
+        rateOracle: eventInfo.amm.rateOracle.protocol,
+        underlyingToken: eventInfo.amm.underlyingToken.name,
+        chainId: eventInfo.chainId,
+        cashflowLiFactor: 0,
+        cashflowTimeFactor: 0,
+        cashflowFreeTerm: 0,
+        liquidity: eventInfo.liquidityDelta,
+      },
+      added: true,
+      modified: true,
+    });
+  } else {
+    const notionalLiquidityProvided =
+      currentPositions[existingPositionIndex].position.notionalLiquidityProvided +
+      eventInfo.notionalDelta;
 
-  const options = {
-    query: query,
-    timeoutMs: 100000,
-    useLegacySql: false,
-  };
+    const liquidity =
+      currentPositions[existingPositionIndex].position.liquidity + eventInfo.liquidityDelta;
 
-  await bigQuery.query(options);
+    // Update the exisiting position
+    currentPositions[existingPositionIndex].modified = true;
+    currentPositions[existingPositionIndex].position.lastUpdatedBlockNumber = eventInfo.blockNumber;
+    currentPositions[existingPositionIndex].position.notionalLiquidityProvided =
+      notionalLiquidityProvided;
+    currentPositions[existingPositionIndex].position.rowLastUpdatedTimestamp = currentTimestamp;
+    currentPositions[existingPositionIndex].position.liquidity = liquidity;
+  }
 };

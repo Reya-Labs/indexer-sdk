@@ -1,18 +1,25 @@
-
+import { pullAllPositions } from '../big-query-support/pull-data/pullAllPositions';
+import { updatePositions } from '../big-query-support/push-data/updatePositions';
 import { getPreviousEvents } from '../common/contract-services/getPreviousEvents';
 import { MintOrBurnEventInfo, VAMMPriceChangeEventInfo } from '../common/event-parsers/types';
 import { getAmms } from '../common/getAmms';
-import { getLatestProcessedBlock, getLatestProcessedTick, setLatestProcessedTick } from '../common/services/redisService';
+import {
+  getLatestProcessedBlock,
+  getLatestProcessedTick,
+  setLatestProcessedBlock,
+  setLatestProcessedTick,
+} from '../common/services/redisService';
 import { processMintOrBurnEventLpSpeed } from './processLpSpeedEvent/processMintOrBurnEventLpSpeed';
 import { processVAMMPriceChangeEvent } from './processLpSpeedEvent/processVAMMPriceChangeEvent';
 
 export const sync = async (chainIds: number[]): Promise<void> => {
+  const lastProcessedTicks: { [poolId: string]: number } = {};
+  const lastProcessedBlocks: { [processId: string]: number } = {};
 
-  // Fetch last processed blocks from Redis
+  const currentPositions = await pullAllPositions();
+  console.log(`Number of current positions:`, currentPositions.length);
+
   let promises: Promise<void>[] = [];
-  
-  const currentProcessedTicks: { [poolId: string]: number } = {};
-
   for (const chainId of chainIds) {
     const amms = await getAmms(chainId);
     const processId = `lp_speed_${chainId}`;
@@ -20,59 +27,72 @@ export const sync = async (chainIds: number[]): Promise<void> => {
     if (amms.length === 0) {
       continue;
     }
-    
+
     const fromBlock = (await getLatestProcessedBlock(processId)) + 1;
     const toBlock = await amms[0].provider.getBlockNumber();
+
+    if (fromBlock >= toBlock) {
+      continue;
+    }
+
+    lastProcessedBlocks[processId] = toBlock;
 
     console.log(`Processing between blocks ${fromBlock}-${toBlock} for ${chainId}`);
 
     const chainPromises = amms.map(async (amm) => {
       console.log(`Fetching events for AMM ${amm.id}`);
 
-      const poolId = `${chainId}_${amm.id.toLowerCase()}`;
-      currentProcessedTicks[poolId] = await getLatestProcessedTick(poolId);
-  
       const events = await getPreviousEvents(
         amm,
         ['mint', 'burn', 'price_change'],
         chainId,
         fromBlock,
-        toBlock
+        toBlock,
       );
-  
+
+      if (events.length === 0) {
+        return;
+      }
+
+      const poolId = `${chainId}_${amm.id.toLowerCase()}`;
+      lastProcessedTicks[poolId] = await getLatestProcessedTick(poolId);
+
       console.log(`Processing ${events.length} events from block ${fromBlock}...`);
-  
+
       for (let i = 0; i < events.length; i++) {
         const event = events[i];
-        console.log(`Processing event: ${event.type} (${i+1}/${events.length})`);
-  
+        console.log(`Processing event: ${event.type} (${i + 1}/${events.length})`);
+
         let trackingTime = Date.now().valueOf();
 
         switch (event.type) {
           case 'mint':
           case 'burn': {
-            await processMintOrBurnEventLpSpeed(event as MintOrBurnEventInfo);
+            processMintOrBurnEventLpSpeed(currentPositions, event as MintOrBurnEventInfo);
             break;
           }
-          case 'price_change': {            
-            await processVAMMPriceChangeEvent(event as VAMMPriceChangeEventInfo, currentProcessedTicks[poolId]);
+          case 'price_change': {
+            await processVAMMPriceChangeEvent(
+              currentPositions,
+              event as VAMMPriceChangeEventInfo,
+              lastProcessedTicks[poolId],
+            );
 
-            currentProcessedTicks[poolId] = (event as VAMMPriceChangeEventInfo).tick;
+            lastProcessedTicks[poolId] = (event as VAMMPriceChangeEventInfo).tick;
             break;
           }
-          case 'vamm_initialization':
-          {
-            currentProcessedTicks[poolId] = (event as VAMMPriceChangeEventInfo).tick;
+          case 'vamm_initialization': {
+            lastProcessedTicks[poolId] = (event as VAMMPriceChangeEventInfo).tick;
             break;
           }
           default: {
             throw new Error(`Unrecognized event type: ${event.type}`);
           }
         }
-  
+
         console.log(`Event processing took ${Date.now().valueOf() - trackingTime} ms`);
         trackingTime = Date.now().valueOf();
-  
+
         console.log();
       }
     });
@@ -87,12 +107,17 @@ export const sync = async (chainIds: number[]): Promise<void> => {
     }
   });
 
-  // todo: Push update to BigQuery
+  // Push update to BigQuery
+  await updatePositions(currentPositions);
 
   // Update Redis
 
   console.log(`Writing to Redis...`);
-  for (const [poolId, tick] of Object.entries(currentProcessedTicks)) {
+  for (const [processId, lastProcessedBlock] of Object.entries(lastProcessedBlocks)) {
+    await setLatestProcessedBlock(processId, lastProcessedBlock);
+  }
+
+  for (const [poolId, tick] of Object.entries(lastProcessedTicks)) {
     await setLatestProcessedTick(poolId, tick);
   }
 };

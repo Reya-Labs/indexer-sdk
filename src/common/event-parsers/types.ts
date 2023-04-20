@@ -23,7 +23,7 @@ export interface MintOrBurnEventInfo extends BaseEventInfo {
 
   notionalDelta: number;
   liquidityDelta: number;
-};
+}
 
 export interface SwapEventInfo extends BaseEventInfo {
   ownerAddress: string;
@@ -33,9 +33,9 @@ export interface SwapEventInfo extends BaseEventInfo {
   variableTokenDelta: number;
   fixedTokenDeltaUnbalanced: number;
   feePaidToLps: number;
-};
+}
 
 export interface VAMMPriceChangeEventInfo extends BaseEventInfo {
   isInitial: boolean;
   tick: number;
-};
+}

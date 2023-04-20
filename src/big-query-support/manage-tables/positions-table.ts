@@ -4,9 +4,7 @@ import { DATASET_ID } from '../../common/constants';
 import { getBigQuery } from '../../global';
 import { getTable } from './get-table';
 
-export const createPositionsTable = async (
-  tableName: string,
-): Promise<void> => {
+export const createPositionsTable = async (tableName: string): Promise<void> => {
   const bigQuery = getBigQuery();
   const existingTable: Table | null = await getTable(tableName);
 
@@ -71,7 +69,7 @@ export const createPositionsTable = async (
     { name: 'cashflowLiFactor', type: 'NUMERIC', mode: 'REQUIRED', precision: '18', scale: '9' },
     { name: 'cashflowTimeFactor', type: 'NUMERIC', mode: 'REQUIRED', precision: '18', scale: '9' },
     { name: 'cashflowFreeTerm', type: 'NUMERIC', mode: 'REQUIRED', precision: '18', scale: '9' },
-    { name: 'liquidity', type: 'NUMERIC', mode: 'REQUIRED', precision: '18', scale: '9' }
+    { name: 'liquidity', type: 'NUMERIC', mode: 'REQUIRED', precision: '18', scale: '9' },
   ];
 
   // For all options, see https://cloud.google.com/bigquery/docs/reference/v2/tables#resource

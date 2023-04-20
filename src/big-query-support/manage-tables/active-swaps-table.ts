@@ -4,9 +4,7 @@ import { DATASET_ID } from '../../common/constants';
 import { getBigQuery } from '../../global';
 import { getTable } from './get-table';
 
-export const createActiveSwapsTable = async (
-  tableName: string,
-): Promise<void> => {
+export const createActiveSwapsTable = async (tableName: string): Promise<void> => {
   const bigQuery = getBigQuery();
 
   const existingTable: Table | null = await getTable(tableName);

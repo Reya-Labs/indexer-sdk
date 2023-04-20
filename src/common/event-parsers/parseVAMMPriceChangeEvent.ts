@@ -3,7 +3,12 @@ import { ethers } from 'ethers';
 
 import { VAMMPriceChangeEventInfo } from './types';
 
-export const parseVAMMPriceChangeEvent = (event: ethers.Event, amm: AMM, chainId: number, isInitial: boolean): VAMMPriceChangeEventInfo => {
+export const parseVAMMPriceChangeEvent = (
+  event: ethers.Event,
+  amm: AMM,
+  chainId: number,
+  isInitial: boolean,
+): VAMMPriceChangeEventInfo => {
   const eventId = `${event.blockHash}_${event.transactionHash}_${event.logIndex}`;
   const tick = event.args?.tick as number;
 

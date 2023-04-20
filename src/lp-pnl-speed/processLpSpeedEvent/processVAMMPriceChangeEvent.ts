@@ -1,52 +1,21 @@
-import { pullExistingLpPositionRows } from '../../big-query-support/pull-data/pullExistingLpPositionRows';
-import { generateLpPositionUpdatesQuery } from '../../big-query-support/push-data/generateLpPositionUpdatesQuery';
+import { TrackedBigQueryPositionRow } from '../../big-query-support/pull-data/pullAllPositions';
 import { generatePositionRow } from '../../big-query-support/push-data/generatePositionRow';
-import { VAMMPriceChangeEventInfo } from '../../common/event-parsers/types';
+import { SECONDS_IN_YEAR } from '../../common/constants';
+import { SwapEventInfo, VAMMPriceChangeEventInfo } from '../../common/event-parsers/types';
+import { calculatePassiveTokenDeltas } from '../../common/services/calculatePassiveTokenDeltas';
 import { getLiquidityIndex } from '../../common/services/getLiquidityIndex';
-import { getBigQuery } from '../../global';
-import { generatePassiveSwapEvents } from './generatePassiveSwapEvents';
 
 export const processVAMMPriceChangeEvent = async (
+  currentPositions: TrackedBigQueryPositionRow[],
   priceChangeEventInfo: VAMMPriceChangeEventInfo,
-  previousTick: number
+  previousTick: number,
 ): Promise<void> => {
-  const bigQuery = getBigQuery();
-
-  let trackingTime = Date.now().valueOf();
-
-  // Pull all LP positions
-  const existingLpPositionRows = await pullExistingLpPositionRows(
-    priceChangeEventInfo.amm.id,
-    priceChangeEventInfo.blockNumber,
-  );
-
-  console.log(`Update tick: Fetching all positions took ${Date.now().valueOf() - trackingTime} ms`);
-  trackingTime = Date.now().valueOf();
-
-  // Generate passive swap events
-  const passiveSwapEvents = generatePassiveSwapEvents({
-    existingLpPositionRows,
-    priceChangeEventInfo,
-    previousTick,
-  });
-
-  console.log(`Update tick: Generating passive swaps took ${Date.now().valueOf() - trackingTime} ms`);
-  trackingTime = Date.now().valueOf();
-
-  // Skip if there is no affected LP
-  if (passiveSwapEvents.length === 0) {
-    return;
-  }
-
-  console.log(`Updating ${passiveSwapEvents.length} LPs due to tick change.`);
+  const currentTick = priceChangeEventInfo.tick;
 
   // Retrieve event timestamp
   const eventTimestamp = (
     await priceChangeEventInfo.amm.provider.getBlock(priceChangeEventInfo.blockNumber)
   ).timestamp;
-
-  console.log(`Update tick: Grabbing block event timestamp took ${Date.now().valueOf() - trackingTime} ms`);
-  trackingTime = Date.now().valueOf();
 
   // Retrieve liquidity index at the event block
   const liquidityIndexAtRootEvent = await getLiquidityIndex(
@@ -56,34 +25,72 @@ export const processVAMMPriceChangeEvent = async (
     priceChangeEventInfo.blockNumber,
   );
 
-  console.log(`Update tick: Fetching liquidity index took ${Date.now().valueOf() - trackingTime} ms`);
-  trackingTime = Date.now().valueOf();
+  for (let i = 0; i < currentPositions.length; i++) {
+    const { position } = currentPositions[i];
 
-  // Generate all passive swap events
-  const lpPositionRows = passiveSwapEvents.map(({ affectedLP, passiveSwapEvent }) =>
-    generatePositionRow(
+    if (!(position.vammAddress === priceChangeEventInfo.amm.id)) {
+      continue;
+    }
+
+    if (position.notionalLiquidityProvided <= 0) {
+      continue;
+    }
+
+    if (position.positionInitializationBlockNumber >= priceChangeEventInfo.blockNumber) {
+      continue;
+    }
+
+    const { ownerAddress, tickLower, tickUpper, liquidity } = position;
+
+    const { variableTokenDelta, fixedTokenDeltaUnbalanced } = calculatePassiveTokenDeltas(
+      liquidity,
+      tickLower,
+      tickUpper,
+      previousTick,
+      currentTick,
+    );
+
+    console.log(`Tick has moved from ${previousTick} to ${currentTick}...`);
+    console.log(`generating ${variableTokenDelta} VT and ${fixedTokenDeltaUnbalanced} uFT`);
+    console.log();
+
+    // todo: enhance this ID -> not high pro as long as we do not add them to the table
+    const passiveSwapEventId = `id`;
+
+    const passiveSwapEvent: SwapEventInfo = {
+      ...priceChangeEventInfo,
+
+      eventId: passiveSwapEventId.toLowerCase(),
+      type: 'swap',
+
+      ownerAddress,
+      tickLower,
+      tickUpper,
+
+      variableTokenDelta,
+      fixedTokenDeltaUnbalanced,
+      feePaidToLps: 0, // does not apply to passive swaps
+    };
+
+    // Generate all passive swap events
+
+    currentPositions[i].modified = true;
+    currentPositions[i].position = generatePositionRow(
       priceChangeEventInfo.amm,
       passiveSwapEvent,
       eventTimestamp,
-      affectedLP,
+      position,
       liquidityIndexAtRootEvent,
-    ),
-  );
+    );
 
-  console.log(`Update tick: Generating position rows took ${Date.now().valueOf() - trackingTime} ms`);
-  trackingTime = Date.now().valueOf();
-
-  // Update all affected LPs
-  const sqlTransactionQuery = generateLpPositionUpdatesQuery(lpPositionRows);
-
-  const options = {
-    query: sqlTransactionQuery,
-    timeoutMs: 100000,
-    useLegacySql: false,
-  };
-
-  await bigQuery.query(options);
-
-  console.log(`Update tick: BigQuery update took ${Date.now().valueOf() - trackingTime} ms`);
-  trackingTime = Date.now().valueOf();
+    {
+      const { cashflowLiFactor, cashflowTimeFactor, cashflowFreeTerm } =
+        currentPositions[i].position;
+      const uPnL =
+        liquidityIndexAtRootEvent * cashflowLiFactor +
+        eventTimestamp * cashflowTimeFactor / SECONDS_IN_YEAR +
+        cashflowFreeTerm;
+      console.log(`current uPnL of position ${i}: ${uPnL}`);
+    }
+  }
 };
