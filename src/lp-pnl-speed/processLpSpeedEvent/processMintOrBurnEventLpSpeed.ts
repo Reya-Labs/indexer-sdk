@@ -1,15 +1,14 @@
-import { BigQuery } from '@google-cloud/bigquery';
-
 import { pullExistingPositionRow } from '../../big-query-support/pull-data/pullExistingPositionRow';
 import { BigQueryPositionRow } from '../../big-query-support/pull-data/types';
 import { secondsToBqDate } from '../../big-query-support/utils';
 import { POSITIONS_TABLE_ID } from '../../common/constants';
 import { MintOrBurnEventInfo } from '../../common/event-parsers/types';
 import { getTimestampInSeconds } from '../../common/utils';
+import { getBigQuery } from '../../global';
 
 const getPositionUpdateQuery = (
-  existingPosition: BigQueryPositionRow,
   eventInfo: MintOrBurnEventInfo,
+  existingPosition: BigQueryPositionRow,
 ): string => {
   const rowLastUpdatedTimestamp = getTimestampInSeconds();
   
@@ -20,7 +19,7 @@ const getPositionUpdateQuery = (
 
   const query = `
     UPDATE \`${POSITIONS_TABLE_ID}\`
-        SET lastUpdatedBlockNumber=${eventInfo.eventBlockNumber},
+        SET lastUpdatedBlockNumber=${eventInfo.blockNumber},
             notionalLiquidityProvided=${notionalLiquidityProvided},
             rowLastUpdatedTimestamp=\'${secondsToBqDate(rowLastUpdatedTimestamp)}\',
             liquidity=${liquidity}
@@ -35,7 +34,7 @@ const getPositionUpdateQuery = (
   return query;
 };
 
-const getPositionInsertQuery = (eventInfo: MintOrBurnEventInfo, currentTick: number): string => {
+const getPositionInsertQuery = (eventInfo: MintOrBurnEventInfo): string => {
   const rowLastUpdatedTimestamp = getTimestampInSeconds();
 
   const row = `
@@ -48,7 +47,7 @@ const getPositionInsertQuery = (eventInfo: MintOrBurnEventInfo, currentTick: num
     ${0},
     ${0},
     ${0},
-    ${eventInfo.eventBlockNumber},
+    ${eventInfo.blockNumber},
     ${eventInfo.notionalDelta},                
     ${0},
     ${0},
@@ -56,15 +55,14 @@ const getPositionInsertQuery = (eventInfo: MintOrBurnEventInfo, currentTick: num
     \'${secondsToBqDate(rowLastUpdatedTimestamp)}\',
     ${0},
     ${0},
-    ${eventInfo.eventBlockNumber},
+    ${eventInfo.blockNumber},
     \'${eventInfo.amm.rateOracle.protocol}\',
     \'${eventInfo.amm.underlyingToken.name}\',
     ${eventInfo.chainId},
     ${0},
     ${0},
     ${0},
-    ${eventInfo.liquidityDelta},
-    ${currentTick}
+    ${eventInfo.liquidityDelta}
   `;
 
   const query = `INSERT INTO \`${POSITIONS_TABLE_ID}\` VALUES(${row})`;
@@ -73,14 +71,13 @@ const getPositionInsertQuery = (eventInfo: MintOrBurnEventInfo, currentTick: num
 };
 
 export const processMintOrBurnEventLpSpeed = async (
-  bigQuery: BigQuery,
   eventInfo: MintOrBurnEventInfo,
-  currentTick: number,
 ): Promise<void> => {
+  const bigQuery = getBigQuery();
+
   console.log(`Operating on ${eventInfo.ownerAddress}`);
 
   const existingPosition: BigQueryPositionRow | null = await pullExistingPositionRow(
-    bigQuery,
     eventInfo.chainId,
     eventInfo.vammAddress,
     eventInfo.ownerAddress,
@@ -89,8 +86,8 @@ export const processMintOrBurnEventLpSpeed = async (
   );
 
   const query = existingPosition
-    ? getPositionUpdateQuery(existingPosition, eventInfo)
-    : getPositionInsertQuery(eventInfo, currentTick);
+    ? getPositionUpdateQuery(eventInfo, existingPosition)
+    : getPositionInsertQuery(eventInfo);
 
   const options = {
     query: query,

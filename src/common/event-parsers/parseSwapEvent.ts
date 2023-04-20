@@ -1,16 +1,16 @@
+import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
 
-import { ExtendedEvent } from '../types';
 import { SwapEventInfo } from './types';
 
-export const parseSwapEvent = (event: ExtendedEvent): SwapEventInfo => {
+export const parseSwapEvent = (event: ethers.Event, amm: AMM, chainId: number): SwapEventInfo => {
   const eventId = `${event.blockHash}_${event.transactionHash}_${event.logIndex}`;
 
   const ownerAddress = event.args?.recipient as string;
   const tickLower = event.args?.tickLower as number;
   const tickUpper = event.args?.tickUpper as number;
 
-  const tokenDecimals = event.amm.underlyingToken.decimals;
+  const tokenDecimals = amm.underlyingToken.decimals;
 
   const variableTokenDelta = Number(
     ethers.utils.formatUnits(event.args?.variableTokenDelta as ethers.BigNumber, tokenDecimals),
@@ -26,17 +26,17 @@ export const parseSwapEvent = (event: ExtendedEvent): SwapEventInfo => {
   );
 
   return {
+    ...event,
     eventId: eventId.toLowerCase(),
-    type: event.type,
-    eventBlockNumber: event.blockNumber,
+    type: 'swap',
 
-    chainId: event.chainId,
-    vammAddress: event.amm.id.toLowerCase(),
-    amm: event.amm,
+    chainId: chainId,
+    vammAddress: amm.id.toLowerCase(),
+    amm,
 
-    rateOracle: event.amm.rateOracle.protocol,
-    underlyingToken: event.amm.underlyingToken.name,
-    marginEngineAddress: event.amm.marginEngineAddress,
+    rateOracle: amm.rateOracle.protocol,
+    underlyingToken: amm.underlyingToken.name,
+    marginEngineAddress: amm.marginEngineAddress,
 
     ownerAddress: ownerAddress.toLowerCase(),
     tickLower,

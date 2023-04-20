@@ -61,7 +61,7 @@ export const generatePositionRow = (
       (existingPosition?.realizedPnLFromFeesPaid || 0) - eventInfo.feePaidToLps,
     netNotionalLocked,
     netFixedRateLocked,
-    lastUpdatedBlockNumber: eventInfo.eventBlockNumber,
+    lastUpdatedBlockNumber: eventInfo.blockNumber,
     notionalLiquidityProvided: existingPosition?.notionalLiquidityProvided || 0, // todo: track
     realizedPnLFromFeesCollected: existingPosition?.realizedPnLFromFeesCollected || 0, // todo: track
     netMarginDeposited: existingPosition?.netMarginDeposited || 0, // todo: track
@@ -70,13 +70,12 @@ export const generatePositionRow = (
     fixedTokenBalance: existingPosition?.fixedTokenBalance || 0, // todo: track
     variableTokenBalance: existingPosition?.variableTokenBalance || 0, // todo: track
     positionInitializationBlockNumber:
-      existingPosition?.positionInitializationBlockNumber || eventInfo.eventBlockNumber,
+      existingPosition?.positionInitializationBlockNumber || eventInfo.blockNumber,
     rateOracle: existingPosition?.rateOracle || amm.rateOracle.protocol,
     underlyingToken: existingPosition?.underlyingToken || amm.underlyingToken.name,
     cashflowLiFactor,
     cashflowTimeFactor,
     cashflowFreeTerm,
     liquidity: existingPosition?.liquidity || 0,
-    tickPrevious: existingPosition?.tickPrevious || 0,
   };
 };

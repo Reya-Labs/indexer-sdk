@@ -32,7 +32,6 @@ export const mapToBigQueryPositionRow = (row: any): BigQueryPositionRow => ({
   cashflowTimeFactor: bqNumericToNumber(row.cashflowTimeFactor),
   cashflowFreeTerm: bqNumericToNumber(row.cashflowFreeTerm),
   liquidity: bqNumericToNumber(row.liquidity),
-  tickPrevious: bqNumericToNumber(row.tickPrevious),
 });
 
 export const mapToBigQueryMintOrBurnRow = (row: any): BigQueryMintOrBurnRow => ({

@@ -1,10 +1,5 @@
-import { AMM } from '@voltz-protocol/v1-sdk';
-import { Event } from 'ethers';
+import { MintOrBurnEventInfo, SwapEventInfo, VAMMPriceChangeEventInfo } from "./event-parsers/types";
 
-export type EventType = 'mint' | 'burn' | 'swap' | 'price_change';
+export type EventType = 'mint' | 'burn' | 'swap' | 'price_change' | 'vamm_initialization';
 
-export interface ExtendedEvent extends Event {
-  amm: AMM;
-  chainId: number;
-  type: EventType;
-}
+export type EventInfo = MintOrBurnEventInfo | SwapEventInfo | VAMMPriceChangeEventInfo;

@@ -1,22 +1,22 @@
 import { AMM } from '@voltz-protocol/v1-sdk';
+import { Event } from 'ethers';
 
 import { EventType } from '../types';
 
-type BaseEventInfo = {
+interface BaseEventInfo extends Event {
   eventId: string;
   type: EventType;
-  eventBlockNumber: number;
 
   chainId: number;
-  vammAddress: string;
+  vammAddress: string; // todo: deprecate because we have amm
   amm: AMM;
 
-  rateOracle: string;
-  underlyingToken: string;
-  marginEngineAddress: string;
-};
+  rateOracle: string; // todo: deprecate because we have amm
+  underlyingToken: string; // todo: deprecate because we have amm
+  marginEngineAddress: string; // todo: deprecate because we have amm
+}
 
-export type MintOrBurnEventInfo = BaseEventInfo & {
+export interface MintOrBurnEventInfo extends BaseEventInfo {
   ownerAddress: string;
   tickLower: number;
   tickUpper: number;
@@ -25,7 +25,7 @@ export type MintOrBurnEventInfo = BaseEventInfo & {
   liquidityDelta: number;
 };
 
-export type SwapEventInfo = BaseEventInfo & {
+export interface SwapEventInfo extends BaseEventInfo {
   ownerAddress: string;
   tickLower: number;
   tickUpper: number;
@@ -35,6 +35,7 @@ export type SwapEventInfo = BaseEventInfo & {
   feePaidToLps: number;
 };
 
-export type VAMMPriceChangeEventInfo = BaseEventInfo & {
+export interface VAMMPriceChangeEventInfo extends BaseEventInfo {
+  isInitial: boolean;
   tick: number;
 };

@@ -1,17 +1,17 @@
-import { BigQuery } from '@google-cloud/bigquery';
-
 import { POSITIONS_TABLE_ID } from '../../common/constants';
+import { getBigQuery } from '../../global';
 import { mapToBigQueryPositionRow } from './mappers';
 import { BigQueryPositionRow } from './types';
 
 export const pullExistingPositionRow = async (
-  bigQuery: BigQuery,
   chainId: number,
   vammAddress: string,
   recipient: string,
   tickLower: number,
   tickUpper: number,
 ): Promise<BigQueryPositionRow | null> => {
+  const bigQuery = getBigQuery();
+
   const sqlQuery = `
     SELECT * FROM \`${POSITIONS_TABLE_ID}\` 
       WHERE chainId=${chainId} AND

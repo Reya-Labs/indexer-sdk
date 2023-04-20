@@ -21,7 +21,6 @@ export const generateLpPositionUpdatesQuery = (lpPositionRows: BigQueryPositionR
             cashflowLiFactor=${positionRow.cashflowLiFactor},
             cashflowTimeFactor=${positionRow.cashflowTimeFactor},
             cashflowFreeTerm=${positionRow.cashflowFreeTerm},
-            tickPrevious=${positionRow.tickPrevious},
             liquidity=${positionRow.liquidity}
         WHERE chainId=${positionRow.chainId} AND
               vammAddress=\"${positionRow.vammAddress}\" AND 

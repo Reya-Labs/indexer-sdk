@@ -39,8 +39,7 @@ export const insertNewMintAndNewPosition = async (
     ${positionRow.cashflowLiFactor},
     ${positionRow.cashflowTimeFactor},
     ${positionRow.cashflowFreeTerm},
-    ${positionRow.liquidity},
-    ${positionRow.tickPrevious}
+    ${positionRow.liquidity}
   `;
 
   // build and fire sql query

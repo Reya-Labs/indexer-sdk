@@ -40,7 +40,7 @@ export const insertNewSwapAndNewPosition = async (
     eventInfo.chainId,
     amm.provider,
     amm.marginEngineAddress,
-    eventInfo.eventBlockNumber,
+    eventInfo.blockNumber,
   );
 
   // generate position row
@@ -77,8 +77,7 @@ export const insertNewSwapAndNewPosition = async (
     ${positionRow.cashflowLiFactor},
     ${positionRow.cashflowTimeFactor},
     ${positionRow.cashflowFreeTerm},
-    ${positionRow.liquidity},
-    ${positionRow.tickPrevious}
+    ${positionRow.liquidity}
   `;
 
   // build and fire sql query

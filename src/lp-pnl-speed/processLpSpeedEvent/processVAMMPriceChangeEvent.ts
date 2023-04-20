@@ -1,24 +1,23 @@
-import { BigQuery } from '@google-cloud/bigquery';
-
 import { pullExistingLpPositionRows } from '../../big-query-support/pull-data/pullExistingLpPositionRows';
 import { generateLpPositionUpdatesQuery } from '../../big-query-support/push-data/generateLpPositionUpdatesQuery';
 import { generatePositionRow } from '../../big-query-support/push-data/generatePositionRow';
 import { VAMMPriceChangeEventInfo } from '../../common/event-parsers/types';
 import { getLiquidityIndex } from '../../common/services/getLiquidityIndex';
+import { getBigQuery } from '../../global';
 import { generatePassiveSwapEvents } from './generatePassiveSwapEvents';
 
 export const processVAMMPriceChangeEvent = async (
-  bigQuery: BigQuery,
   priceChangeEventInfo: VAMMPriceChangeEventInfo,
+  previousTick: number
 ): Promise<void> => {
+  const bigQuery = getBigQuery();
 
   let trackingTime = Date.now().valueOf();
 
   // Pull all LP positions
   const existingLpPositionRows = await pullExistingLpPositionRows(
-    bigQuery,
     priceChangeEventInfo.amm.id,
-    priceChangeEventInfo.eventBlockNumber,
+    priceChangeEventInfo.blockNumber,
   );
 
   console.log(`Update tick: Fetching all positions took ${Date.now().valueOf() - trackingTime} ms`);
@@ -28,6 +27,7 @@ export const processVAMMPriceChangeEvent = async (
   const passiveSwapEvents = generatePassiveSwapEvents({
     existingLpPositionRows,
     priceChangeEventInfo,
+    previousTick,
   });
 
   console.log(`Update tick: Generating passive swaps took ${Date.now().valueOf() - trackingTime} ms`);
@@ -42,7 +42,7 @@ export const processVAMMPriceChangeEvent = async (
 
   // Retrieve event timestamp
   const eventTimestamp = (
-    await priceChangeEventInfo.amm.provider.getBlock(priceChangeEventInfo.eventBlockNumber)
+    await priceChangeEventInfo.amm.provider.getBlock(priceChangeEventInfo.blockNumber)
   ).timestamp;
 
   console.log(`Update tick: Grabbing block event timestamp took ${Date.now().valueOf() - trackingTime} ms`);
@@ -53,7 +53,7 @@ export const processVAMMPriceChangeEvent = async (
     priceChangeEventInfo.chainId,
     priceChangeEventInfo.amm.provider,
     priceChangeEventInfo.amm.marginEngineAddress,
-    priceChangeEventInfo.eventBlockNumber,
+    priceChangeEventInfo.blockNumber,
   );
 
   console.log(`Update tick: Fetching liquidity index took ${Date.now().valueOf() - trackingTime} ms`);

@@ -24,7 +24,7 @@ export const insertNewSwapAndUpdateExistingPosition = async (
     eventInfo.chainId,
     amm.provider,
     amm.marginEngineAddress,
-    eventInfo.eventBlockNumber,
+    eventInfo.blockNumber,
   );
 
   const positionRow = generatePositionRow(
@@ -71,7 +71,6 @@ export const insertNewSwapAndUpdateExistingPosition = async (
           cashflowTimeFactor=${positionRow.cashflowTimeFactor},
           cashflowFreeTerm=${positionRow.cashflowFreeTerm},
           liquidity=${positionRow.liquidity},
-          tickPrevious=${positionRow.liquidity}
           WHERE chainId=${positionRow.chainId} AND 
                 vammAddress=\"${positionRow.vammAddress}\" AND 
                 ownerAddress=\"${positionRow.ownerAddress}\" AND 

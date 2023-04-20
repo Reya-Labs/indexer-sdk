@@ -1,27 +1,36 @@
-import { Redis } from 'ioredis';
-export const REDISHOST = process.env.REDISHOST || 'localhost';
-export const REDISPORT: number = Number(process.env.REDISPORT) || 6379;
+import { getRedisClient } from '../../global';
 
-export const getRedisClient = (): Redis => {
-  const redisClient = new Redis(REDISPORT, REDISHOST);
-  return redisClient;
-};
+export const getLatestProcessedBlock = async (processId: string): Promise<number> => {
+  const redisClient = getRedisClient();
+  const value = await redisClient.get(processId);
 
-export const getRedis = async (key: string, redisClient: Redis): Promise<number> => {
-  const value = await redisClient.get(key);
-  return Number(value || '0');
-};
-
-export const setRedis = async (
-  key: string,
-  value: number,
-  redisClient: Redis,
-): Promise<boolean> => {
-  try {
-    await redisClient.set(key, value);
-    return true;
-  } catch (error) {
-    // console.log(`Setting last processed block in redis cache has failed with error: ${(error as Error).message}.`);
-    return false;
+  if (value) {
+    return Number(value);
   }
-};
+
+  return 0;
+}
+
+export const setLatestProcessedBlock = async (processId: string, blockNumber: number): Promise<void> => {
+  const redisClient = getRedisClient();
+  await redisClient.set(processId, blockNumber);
+}
+
+export const getLatestProcessedTick = async (poolId: string): Promise<number> => {
+  const redisClient = getRedisClient();
+  const key = `${poolId}`;
+
+  const value = await redisClient.get(key);
+  if (value) {
+    return Number(value);
+  };
+
+  return 0;
+}
+
+export const setLatestProcessedTick = async (poolId: string, tick: number): Promise<void> => {
+  const redisClient = getRedisClient();
+  const key = `${poolId}`;
+
+  await redisClient.set(key, tick);
+}

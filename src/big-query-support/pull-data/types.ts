@@ -62,6 +62,5 @@ export type BigQueryPositionRow = {
   cashflowLiFactor: number;
   cashflowTimeFactor: number;
   cashflowFreeTerm: number;
-  tickPrevious: number;
   liquidity: number;
 };

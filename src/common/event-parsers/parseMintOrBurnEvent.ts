@@ -1,10 +1,9 @@
-import { getNotionalFromLiquidity } from '@voltz-protocol/v1-sdk';
+import { AMM,getNotionalFromLiquidity } from '@voltz-protocol/v1-sdk';
 import { BigNumber, ethers } from 'ethers';
 
-import { ExtendedEvent } from '../types';
 import { MintOrBurnEventInfo } from './types';
 
-export const parseMintOrBurnEvent = (event: ExtendedEvent): MintOrBurnEventInfo => {
+export const parseMintOrBurnEvent = (event: ethers.Event, amm: AMM, chainId: number, isMint: boolean): MintOrBurnEventInfo => {
   const eventId = `${event.blockHash}_${event.transactionHash}_${event.logIndex}`;
 
   const ownerAddress = event.args?.owner as string;
@@ -12,28 +11,28 @@ export const parseMintOrBurnEvent = (event: ExtendedEvent): MintOrBurnEventInfo 
   const tickUpper = event.args?.tickUpper as number;
   const amount = event.args?.amount as BigNumber;
 
-  const tokenDecimals = event.amm.underlyingToken.decimals;
+  const tokenDecimals = amm.underlyingToken.decimals;
   const notionalDelta = getNotionalFromLiquidity(amount, tickLower, tickUpper, tokenDecimals);
   const liquidityDelta = Number(ethers.utils.formatUnits(amount, tokenDecimals));
 
   return {
+    ...event,
     eventId: eventId.toLowerCase(),
-    type: event.type,
-    eventBlockNumber: event.blockNumber,
+    type: (isMint) ? 'mint' : 'burn',
 
-    chainId: event.chainId,
-    vammAddress: event.amm.id.toLowerCase(),
-    amm: event.amm,
+    chainId: chainId,
+    vammAddress: amm.id.toLowerCase(), 
+    amm,
 
-    rateOracle: event.amm.rateOracle.protocol,
-    underlyingToken: event.amm.underlyingToken.name,
-    marginEngineAddress: event.amm.marginEngineAddress,
+    rateOracle: amm.rateOracle.protocol, 
+    underlyingToken: amm.underlyingToken.name, 
+    marginEngineAddress: amm.marginEngineAddress, 
 
     ownerAddress: ownerAddress.toLowerCase(),
     tickLower,
     tickUpper,
 
-    notionalDelta: event.type === 'burn' ? -notionalDelta : notionalDelta,
-    liquidityDelta: event.type === 'burn' ? -liquidityDelta : liquidityDelta,
+    notionalDelta: (isMint ? 1: -1) * notionalDelta,
+    liquidityDelta: (isMint ? 1: -1) * liquidityDelta,
   };
 };

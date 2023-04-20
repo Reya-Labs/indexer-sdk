@@ -1,20 +1,14 @@
+import { BigQuery } from '@google-cloud/bigquery';
+
 import { POSITIONS_TABLE_ID } from '../../common/constants';
-import { getBigQuery } from '../../global';
 import { mapToBigQueryPositionRow } from './mappers';
 import { BigQueryPositionRow } from './types';
 
-export const pullExistingLpPositionRows = async (
-  vammAddress: string,
-  currentBlockNumber: number,
+export const pullAllPositions = async (
+  bigQuery: BigQuery,
 ): Promise<BigQueryPositionRow[]> => {
-  const bigQuery = getBigQuery();
-
   const sqlQuery = `
     SELECT * FROM \`${POSITIONS_TABLE_ID}\` 
-      WHERE 
-        notionalLiquidityProvided>0 AND 
-        positionInitializationBlockNumber<${currentBlockNumber} AND
-        vammAddress=\"${vammAddress}\"
   `;
 
   const options = {

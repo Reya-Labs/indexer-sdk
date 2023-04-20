@@ -1,13 +1,14 @@
-import { BigQuery, Table } from '@google-cloud/bigquery';
+import { Table } from '@google-cloud/bigquery';
 
 import { DATASET_ID } from '../../common/constants';
+import { getBigQuery } from '../../global';
 import { getTable } from './get-table';
 
 export const createMintsAndBurnsTable = async (
   tableName: string,
-  bigQuery: BigQuery,
 ): Promise<void> => {
-  const existingTable: Table | null = await getTable(tableName, bigQuery);
+  const bigQuery = getBigQuery();
+  const existingTable: Table | null = await getTable(tableName);
 
   if (existingTable) {
     console.log(`${tableName} already exists`);

@@ -5,45 +5,42 @@ import { calculatePassiveTokenDeltas } from '../../common/services/calculatePass
 type Args = {
   existingLpPositionRows: BigQueryPositionRow[];
   priceChangeEventInfo: VAMMPriceChangeEventInfo;
+  previousTick: number;
 };
 
 export const generatePassiveSwapEvents = ({
   existingLpPositionRows,
   priceChangeEventInfo,
+  previousTick,
 }: Args): {
   affectedLP: BigQueryPositionRow;
   passiveSwapEvent: SwapEventInfo;
 }[] => {
   const affectedLPs = existingLpPositionRows.map((affectedLP) => {
-    const { ownerAddress, tickLower, tickUpper, tickPrevious, liquidity } = affectedLP;
+    const { ownerAddress, tickLower, tickUpper, liquidity } = affectedLP;
     const currentTick = priceChangeEventInfo.tick;
 
     const { variableTokenDelta, fixedTokenDeltaUnbalanced } = calculatePassiveTokenDeltas(
       liquidity,
       tickLower,
       tickUpper,
-      tickPrevious,
+      previousTick,
       currentTick,
     );
 
-    // console.log(`Tick has moved from ${tickPrevious} to ${currentTick}...`);
-    // console.log(`generating ${variableTokenDelta} VT and ${fixedTokenDeltaUnbalanced} uFT`);
-    // console.log();
+    console.log(`Tick has moved from ${previousTick} to ${currentTick}...`);
+    console.log(`generating ${variableTokenDelta} VT and ${fixedTokenDeltaUnbalanced} uFT`);
+    console.log();
 
-    const passiveSwapEventId = `${priceChangeEventInfo.chainId}_${priceChangeEventInfo.vammAddress}_${ownerAddress}_${priceChangeEventInfo.eventBlockNumber}`;
+
+    // todo: enhance this ID -> not high pro as long as we do not add them to the table
+    const passiveSwapEventId = `id`;
 
     const passiveSwapEvent: SwapEventInfo = {
+      ...priceChangeEventInfo,
+  
       eventId: passiveSwapEventId.toLowerCase(),
       type: 'swap',
-      eventBlockNumber: priceChangeEventInfo.eventBlockNumber,
-
-      chainId: priceChangeEventInfo.chainId,
-      vammAddress: priceChangeEventInfo.vammAddress,
-      amm: priceChangeEventInfo.amm,
-
-      rateOracle: priceChangeEventInfo.rateOracle,
-      underlyingToken: priceChangeEventInfo.underlyingToken,
-      marginEngineAddress: priceChangeEventInfo.marginEngineAddress,
 
       ownerAddress,
       tickLower,
@@ -55,10 +52,7 @@ export const generatePassiveSwapEvents = ({
     };
 
     return {
-      affectedLP: {
-        ...affectedLP,
-        tickPrevious: currentTick,
-      },
+      affectedLP,
       passiveSwapEvent,
     };
   });
