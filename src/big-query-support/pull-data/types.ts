@@ -13,7 +13,7 @@ export type BigQuerySwapRow = {
   eventBlockNumber: number;
   eventTimestamp: number;
   rowLastUpdatedTimestamp: number;
-  
+
   rateOracle: string;
   underlyingToken: string;
   marginEngineAddress: string;

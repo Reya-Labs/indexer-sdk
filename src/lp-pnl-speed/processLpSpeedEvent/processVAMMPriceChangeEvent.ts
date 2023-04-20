@@ -1,6 +1,5 @@
 import { TrackedBigQueryPositionRow } from '../../big-query-support/pull-data/pullAllPositions';
 import { generatePositionRow } from '../../big-query-support/push-data/generatePositionRow';
-import { SECONDS_IN_YEAR } from '../../common/constants';
 import { SwapEventInfo, VAMMPriceChangeEventInfo } from '../../common/event-parsers/types';
 import { calculatePassiveTokenDeltas } from '../../common/services/calculatePassiveTokenDeltas';
 import { getLiquidityIndex } from '../../common/services/getLiquidityIndex';
@@ -82,15 +81,5 @@ export const processVAMMPriceChangeEvent = async (
       position,
       liquidityIndexAtRootEvent,
     );
-
-    {
-      const { cashflowLiFactor, cashflowTimeFactor, cashflowFreeTerm } =
-        currentPositions[i].position;
-      const uPnL =
-        liquidityIndexAtRootEvent * cashflowLiFactor +
-        (eventTimestamp * cashflowTimeFactor) / SECONDS_IN_YEAR +
-        cashflowFreeTerm;
-      console.log(`current uPnL of position ${i}: ${uPnL}`);
-    }
   }
 };

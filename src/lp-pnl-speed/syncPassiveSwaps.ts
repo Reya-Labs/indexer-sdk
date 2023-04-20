@@ -22,7 +22,7 @@ export const syncPassiveSwaps = async (chainIds: number[]): Promise<void> => {
   let promises: Promise<void>[] = [];
   for (const chainId of chainIds) {
     const amms = await getAmms(chainId);
-    const processId = `lp_speed_${chainId}`;
+    const processId = `lp_pnl_${chainId}`;
 
     if (amms.length === 0) {
       continue;

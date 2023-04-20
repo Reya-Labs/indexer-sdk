@@ -39,18 +39,6 @@ export const MINTS_BURNS_TABLE_ID = getTableID(MINTS_BURNS_TABLE_NAME);
 export const POSITIONS_TABLE_NAME = process.env.POSITIONS_TABLE_ID || '';
 export const POSITIONS_TABLE_ID = getTableID(POSITIONS_TABLE_NAME);
 
-// LP processing block windows
-export const LP_PROCESSING_WINDOW: { [chainId: number]: number } = {
-  1: 24 * 300,
-  42161: 340000,
-};
-
-// Cache set window in seconds
-export const CACHE_SET_WINDOW: { [chainId: number]: number } = {
-  1: 24 * 60,
-  42161: 68000,
-};
-
 export const REDISHOST = process.env.REDISHOST || 'localhost';
 export const REDISPORT: number = Number(process.env.REDISPORT) || 6379;
 

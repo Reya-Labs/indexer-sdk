@@ -4,19 +4,19 @@ import { getTimestampInSeconds } from '../../common/utils';
 
 export const processMintOrBurnEventLpSpeed = (
   currentPositions: TrackedBigQueryPositionRow[],
-  eventInfo: MintOrBurnEventInfo,
+  event: MintOrBurnEventInfo,
 ): void => {
   const currentTimestamp = getTimestampInSeconds();
 
-  console.log(`Operating on ${eventInfo.ownerAddress}`);
+  console.log(`Operating on ${event.ownerAddress}`);
 
   const existingPositionIndex = currentPositions.findIndex(({ position }) => {
     return (
-      position.chainId === eventInfo.chainId &&
-      position.vammAddress === eventInfo.vammAddress &&
-      position.ownerAddress === eventInfo.ownerAddress &&
-      position.tickLower === eventInfo.tickLower &&
-      position.tickUpper === eventInfo.tickUpper
+      position.chainId === event.chainId &&
+      position.vammAddress === event.vammAddress &&
+      position.ownerAddress === event.ownerAddress &&
+      position.tickLower === event.tickLower &&
+      position.tickUpper === event.tickUpper
     );
   });
 
@@ -24,49 +24,51 @@ export const processMintOrBurnEventLpSpeed = (
     // Position does not exist in the table, add new one
     currentPositions.push({
       position: {
-        marginEngineAddress: eventInfo.marginEngineAddress,
-        vammAddress: eventInfo.vammAddress,
-        ownerAddress: eventInfo.ownerAddress,
-        tickLower: eventInfo.tickLower,
-        tickUpper: eventInfo.tickUpper,
+        marginEngineAddress: event.marginEngineAddress,
+        vammAddress: event.vammAddress,
+        ownerAddress: event.ownerAddress,
+        tickLower: event.tickLower,
+        tickUpper: event.tickUpper,
         realizedPnLFromSwaps: 0,
         realizedPnLFromFeesPaid: 0,
         netNotionalLocked: 0,
         netFixedRateLocked: 0,
-        lastUpdatedBlockNumber: eventInfo.blockNumber,
-        notionalLiquidityProvided: eventInfo.notionalDelta,
+        lastUpdatedBlockNumber: event.blockNumber,
+        notionalLiquidityProvided: event.notionalDelta,
         realizedPnLFromFeesCollected: 0,
         netMarginDeposited: 0,
-        rateOracleIndex: eventInfo.amm.rateOracle.protocolId,
+        rateOracleIndex: event.amm.rateOracle.protocolId,
         rowLastUpdatedTimestamp: currentTimestamp,
         fixedTokenBalance: 0,
         variableTokenBalance: 0,
-        positionInitializationBlockNumber: eventInfo.blockNumber,
-        rateOracle: eventInfo.amm.rateOracle.protocol,
-        underlyingToken: eventInfo.amm.underlyingToken.name,
-        chainId: eventInfo.chainId,
+        positionInitializationBlockNumber: event.blockNumber,
+        rateOracle: event.amm.rateOracle.protocol,
+        underlyingToken: event.amm.underlyingToken.name,
+        chainId: event.chainId,
         cashflowLiFactor: 0,
         cashflowTimeFactor: 0,
         cashflowFreeTerm: 0,
-        liquidity: eventInfo.liquidityDelta,
+        liquidity: event.liquidityDelta,
       },
       added: true,
       modified: true,
     });
-  } else {
-    const notionalLiquidityProvided =
-      currentPositions[existingPositionIndex].position.notionalLiquidityProvided +
-      eventInfo.notionalDelta;
 
-    const liquidity =
-      currentPositions[existingPositionIndex].position.liquidity + eventInfo.liquidityDelta;
-
-    // Update the exisiting position
-    currentPositions[existingPositionIndex].modified = true;
-    currentPositions[existingPositionIndex].position.lastUpdatedBlockNumber = eventInfo.blockNumber;
-    currentPositions[existingPositionIndex].position.notionalLiquidityProvided =
-      notionalLiquidityProvided;
-    currentPositions[existingPositionIndex].position.rowLastUpdatedTimestamp = currentTimestamp;
-    currentPositions[existingPositionIndex].position.liquidity = liquidity;
+    return;
   }
+
+  const notionalLiquidityProvided =
+    currentPositions[existingPositionIndex].position.notionalLiquidityProvided +
+    event.notionalDelta;
+
+  const liquidity =
+    currentPositions[existingPositionIndex].position.liquidity + event.liquidityDelta;
+
+  // Update the exisiting position
+  currentPositions[existingPositionIndex].modified = true;
+  currentPositions[existingPositionIndex].position.lastUpdatedBlockNumber = event.blockNumber;
+  currentPositions[existingPositionIndex].position.notionalLiquidityProvided =
+    notionalLiquidityProvided;
+  currentPositions[existingPositionIndex].position.rowLastUpdatedTimestamp = currentTimestamp;
+  currentPositions[existingPositionIndex].position.liquidity = liquidity;
 };

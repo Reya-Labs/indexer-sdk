@@ -1,40 +1,59 @@
-import { pullExistingPositionRow } from '../../big-query-support/pull-data/pullExistingPositionRow';
-import { pullExistingSwapRow } from '../../big-query-support/pull-data/pullExistingSwapRow';
-import { insertNewSwapAndNewPosition } from '../../big-query-support/push-data/insertNewSwapAndNewPosition';
-import { insertNewSwapAndUpdateExistingPosition } from '../../big-query-support/push-data/insertNewSwapAndUpdateExistingPosition';
+import { TrackedBigQueryPositionRow } from '../../big-query-support/pull-data/pullAllPositions';
+import { generatePositionRow } from '../../big-query-support/push-data/generatePositionRow';
 import { SwapEventInfo } from '../../common/event-parsers/types';
+import { getLiquidityIndex } from '../../common/services/getLiquidityIndex';
 
-export const processSwapEvent = async (event: SwapEventInfo): Promise<void> => {
-  console.log('here?');
-  const swapRow = await pullExistingSwapRow(event.eventId);
-
-  console.log('here 2?');
-  if (swapRow) {
-    // console.log('Swap already processed. Skipped.');
-    return;
-  }
-
-  // check if a position already exists in the positions table
-  const existingPosition = await pullExistingPositionRow(
-    event.chainId,
-    event.vammAddress,
-    event.ownerAddress,
-    event.tickLower,
-    event.tickUpper,
-  );
-
+export const processSwapEvent = async (
+  currentPositions: TrackedBigQueryPositionRow[],
+  event: SwapEventInfo,
+): Promise<void> => {
   const eventTimestamp = (await event.amm.provider.getBlock(event.blockNumber)).timestamp;
 
-  if (existingPosition) {
-    // this position has already performed a swap
-    await insertNewSwapAndUpdateExistingPosition(
+  const liquidityIndexAtRootEvent = await getLiquidityIndex(
+    event.chainId,
+    event.amm.provider,
+    event.amm.marginEngineAddress,
+    event.blockNumber,
+  );
+
+  const existingPositionIndex = currentPositions.findIndex(({ position }) => {
+    return (
+      position.chainId === event.chainId &&
+      position.vammAddress === event.vammAddress &&
+      position.ownerAddress === event.ownerAddress &&
+      position.tickLower === event.tickLower &&
+      position.tickUpper === event.tickUpper
+    );
+  });
+
+  if (existingPositionIndex === -1) {
+    // Position does not exist in the table, add new one
+
+    const newPosition = generatePositionRow(
       event.amm,
       event,
       eventTimestamp,
-      existingPosition,
+      null,
+      liquidityIndexAtRootEvent,
     );
-  } else {
-    // this is the first swap of the position
-    await insertNewSwapAndNewPosition(event.amm, event, eventTimestamp);
+
+    currentPositions.push({
+      position: newPosition,
+      added: true,
+      modified: true,
+    });
+
+    return;
   }
+
+  const newPosition = generatePositionRow(
+    event.amm,
+    event,
+    eventTimestamp,
+    null,
+    liquidityIndexAtRootEvent,
+  );
+
+  currentPositions[existingPositionIndex].modified = true;
+  currentPositions[existingPositionIndex].position = newPosition;
 };
