@@ -1,17 +1,14 @@
-import { BigQuery } from '@google-cloud/bigquery';
-
 import { pullExistingPositionRow } from '../../big-query-support/pull-data/pullExistingPositionRow';
 import { pullExistingSwapRow } from '../../big-query-support/pull-data/pullExistingSwapRow';
 import { insertNewSwapAndNewPosition } from '../../big-query-support/push-data/insertNewSwapAndNewPosition';
 import { insertNewSwapAndUpdateExistingPosition } from '../../big-query-support/push-data/insertNewSwapAndUpdateExistingPosition';
-import { parseSwapEvent } from '../../common/event-parsers/parseSwapEvent';
-import { ExtendedEvent } from '../../common/types';
+import { SwapEventInfo } from '../../common/event-parsers/types';
 
-export const processSwapEvent = async (bigQuery: BigQuery, event: ExtendedEvent): Promise<void> => {
-  const eventInfo = parseSwapEvent(event);
+export const processSwapEvent = async (event: SwapEventInfo): Promise<void> => {
+  console.log('here?');
+  const swapRow = await pullExistingSwapRow(event.eventId);
 
-  const swapRow = await pullExistingSwapRow(bigQuery, eventInfo.eventId);
-
+  console.log('here 2?');
   if (swapRow) {
     // console.log('Swap already processed. Skipped.');
     return;
@@ -19,12 +16,11 @@ export const processSwapEvent = async (bigQuery: BigQuery, event: ExtendedEvent)
 
   // check if a position already exists in the positions table
   const existingPosition = await pullExistingPositionRow(
-    bigQuery,
-    eventInfo.chainId,
-    eventInfo.vammAddress,
-    eventInfo.ownerAddress,
-    eventInfo.tickLower,
-    eventInfo.tickUpper,
+    event.chainId,
+    event.vammAddress,
+    event.ownerAddress,
+    event.tickLower,
+    event.tickUpper,
   );
 
   const eventTimestamp = (await event.amm.provider.getBlock(event.blockNumber)).timestamp;
@@ -32,14 +28,13 @@ export const processSwapEvent = async (bigQuery: BigQuery, event: ExtendedEvent)
   if (existingPosition) {
     // this position has already performed a swap
     await insertNewSwapAndUpdateExistingPosition(
-      bigQuery,
       event.amm,
-      eventInfo,
+      event,
       eventTimestamp,
       existingPosition,
     );
   } else {
     // this is the first swap of the position
-    await insertNewSwapAndNewPosition(bigQuery, event.amm, eventInfo, eventTimestamp);
+    await insertNewSwapAndNewPosition(event.amm, event, eventTimestamp);
   }
 };

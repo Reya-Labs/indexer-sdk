@@ -56,13 +56,17 @@ export const mapToBigQuerySwapRow = (row: any): BigQuerySwapRow => ({
   ownerAddress: row.ownerAddress,
   tickLower: row.tickLower,
   tickUpper: row.tickUpper,
+
   variableTokenDelta: bqNumericToNumber(row.variableTokenDelta),
   fixedTokenDeltaUnbalanced: bqNumericToNumber(row.fixedTokenDeltaUnbalanced),
   feePaidToLps: bqNumericToNumber(row.feePaidToLps),
+
+  eventBlockNumber: row.eventBlockNumber,
   eventTimestamp: bqTimestampToUnixSeconds(row.eventTimestamp),
   rowLastUpdatedTimestamp: bqTimestampToUnixSeconds(row.rowLastUpdatedTimestamp),
+
   rateOracle: row.rateOracle,
   underlyingToken: row.underlyingToken,
   marginEngineAddress: row.marginEngineAddress,
-  chainId: bqNumericToNumber(row.chainId),
+  chainId: row.chainId,
 });

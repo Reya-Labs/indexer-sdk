@@ -76,7 +76,6 @@ app.get('/positions/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper', 
     const tickUpper = Number(req.params.tickUpper);
 
     const existingPosition = await pullExistingPositionRow(
-      bigQuery,
       chainId,
       vammAddress,
       ownerAddress,

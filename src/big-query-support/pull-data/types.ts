@@ -5,11 +5,15 @@ export type BigQuerySwapRow = {
   ownerAddress: string;
   tickLower: number;
   tickUpper: number;
+
   variableTokenDelta: number;
   fixedTokenDeltaUnbalanced: number;
   feePaidToLps: number;
+
+  eventBlockNumber: number;
   eventTimestamp: number;
   rowLastUpdatedTimestamp: number;
+  
   rateOracle: string;
   underlyingToken: string;
   marginEngineAddress: string;

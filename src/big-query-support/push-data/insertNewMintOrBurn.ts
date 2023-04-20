@@ -1,16 +1,15 @@
-import { BigQuery } from '@google-cloud/bigquery';
-
 import { MINTS_BURNS_TABLE_ID } from '../../common/constants';
 import { MintOrBurnEventInfo } from '../../common/event-parsers/types';
+import { getBigQuery } from '../../global';
 import { secondsToBqDate } from '../utils';
 import { generateMintOrBurnRow } from './generateMintOrBurnRow';
 
-export const insertNewMintOrBurn = async (
-  bigQuery: BigQuery,
-  eventInfo: MintOrBurnEventInfo,
-): Promise<void> => {
-  // console.log('Inserting a new mint or burn');
-  const mintOrBurnRow = generateMintOrBurnRow(eventInfo);
+export const insertNewMintOrBurn = async (event: MintOrBurnEventInfo): Promise<void> => {
+  const bigQuery = getBigQuery();
+
+  const eventTimestamp = (await event.amm.provider.getBlock(event.blockNumber)).timestamp;
+
+  const mintOrBurnRow = generateMintOrBurnRow(event, eventTimestamp);
 
   const rawMintOrBurnRow = `
     \"${mintOrBurnRow.eventId}\",
@@ -19,6 +18,7 @@ export const insertNewMintOrBurn = async (
     ${mintOrBurnRow.tickLower}, 
     ${mintOrBurnRow.tickUpper}, 
     ${mintOrBurnRow.notionalDelta}, 
+    ${mintOrBurnRow.eventBlockNumber}, 
     \'${secondsToBqDate(mintOrBurnRow.eventTimestamp)}\', 
     \'${secondsToBqDate(mintOrBurnRow.rowLastUpdatedTimestamp)}\',
     \'${mintOrBurnRow.rateOracle}\',
@@ -27,15 +27,7 @@ export const insertNewMintOrBurn = async (
     ${mintOrBurnRow.chainId}
   `;
 
-  // build and fire sql query
-  // todo: get rid of transaction in here
-  const sqlTransactionQuery = `
-    BEGIN 
-      BEGIN TRANSACTION;
-        INSERT INTO \`${MINTS_BURNS_TABLE_ID}\` VALUES (${rawMintOrBurnRow});   
-      COMMIT TRANSACTION;
-    END;
-  `;
+  const sqlTransactionQuery = `INSERT INTO \`${MINTS_BURNS_TABLE_ID}\` VALUES (${rawMintOrBurnRow});`;
 
   const options = {
     query: sqlTransactionQuery,
@@ -44,6 +36,4 @@ export const insertNewMintOrBurn = async (
   };
 
   await bigQuery.query(options);
-
-  // console.log(`Inserted new mint or burn with eventId: ${eventInfo.eventId}`);
 };

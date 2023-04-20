@@ -43,7 +43,7 @@ export const getPreviousEvents = async (
     const eventFilter = vammContract.filters.Swap();
     let events = await vammContract.queryFilter(eventFilter, fromBlock, toBlock);
 
-    events = events.filter((e) => isTestingAccount(e.args?.owner as string));
+    events = events.filter((e) => isTestingAccount(e.args?.recipient as string));
 
     const extendedEvents = events.map((event) => parseSwapEvent(event, amm, chainId));
 

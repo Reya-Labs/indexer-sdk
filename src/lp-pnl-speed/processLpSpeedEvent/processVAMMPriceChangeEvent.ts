@@ -88,7 +88,7 @@ export const processVAMMPriceChangeEvent = async (
         currentPositions[i].position;
       const uPnL =
         liquidityIndexAtRootEvent * cashflowLiFactor +
-        eventTimestamp * cashflowTimeFactor / SECONDS_IN_YEAR +
+        (eventTimestamp * cashflowTimeFactor) / SECONDS_IN_YEAR +
         cashflowFreeTerm;
       console.log(`current uPnL of position ${i}: ${uPnL}`);
     }

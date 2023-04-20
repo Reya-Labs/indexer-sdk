@@ -12,7 +12,7 @@ import {
 import { processMintOrBurnEventLpSpeed } from './processLpSpeedEvent/processMintOrBurnEventLpSpeed';
 import { processVAMMPriceChangeEvent } from './processLpSpeedEvent/processVAMMPriceChangeEvent';
 
-export const sync = async (chainIds: number[]): Promise<void> => {
+export const syncPassiveSwaps = async (chainIds: number[]): Promise<void> => {
   const lastProcessedTicks: { [poolId: string]: number } = {};
   const lastProcessedBlocks: { [processId: string]: number } = {};
 

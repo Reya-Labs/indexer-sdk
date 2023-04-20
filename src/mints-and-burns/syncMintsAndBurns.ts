@@ -1,17 +1,17 @@
 import { getPreviousEvents } from '../common/contract-services/getPreviousEvents';
-import { SwapEventInfo } from '../common/event-parsers/types';
+import { MintOrBurnEventInfo } from '../common/event-parsers/types';
 import { getAmms } from '../common/getAmms';
 import { getLatestProcessedBlock, setLatestProcessedBlock } from '../common/services/redisService';
-import { processSwapEvent } from './processSwapEvent/processSwapEvent';
+import { processMintOrBurnEvent } from './processMintAndBurnEvent/processMintOrBurnEvent';
 
-export const syncActiveSwaps = async (chainIds: number[]): Promise<void> => {
+export const syncMintsAndBurns = async (chainIds: number[]): Promise<void> => {
   const lastProcessedBlocks: { [processId: string]: number } = {};
 
   let promises: Promise<void>[] = [];
 
   for (const chainId of chainIds) {
     const amms = await getAmms(chainId);
-    const processId = `active_swaps_${chainId}`;
+    const processId = `mints_and_burns_${chainId}`;
 
     if (amms.length === 0) {
       return;
@@ -29,7 +29,7 @@ export const syncActiveSwaps = async (chainIds: number[]): Promise<void> => {
     const chainPromises = amms.map(async (amm) => {
       console.log(`Fetching events for AMM ${amm.id}`);
 
-      const events = await getPreviousEvents(amm, ['swap'], chainId, fromBlock, toBlock);
+      const events = await getPreviousEvents(amm, ['mint', 'burn'], chainId, fromBlock, toBlock);
 
       if (events.length === 0) {
         return;
@@ -41,7 +41,7 @@ export const syncActiveSwaps = async (chainIds: number[]): Promise<void> => {
 
         let trackingTime = Date.now().valueOf();
 
-        await processSwapEvent(event as SwapEventInfo);
+        await processMintOrBurnEvent(event as MintOrBurnEventInfo);
 
         console.log(`Event processing took ${Date.now().valueOf() - trackingTime} ms`);
         trackingTime = Date.now().valueOf();
