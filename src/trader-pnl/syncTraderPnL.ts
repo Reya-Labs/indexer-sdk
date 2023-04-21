@@ -55,12 +55,16 @@ export const syncTraderPnL = async (chainIds: number[]): Promise<void> => {
   });
 
   // Push update to BigQuery
-  console.log('[Trader PnL]: Writing to BigQuery...');
-  await updatePositions(currentPositions);
+  if (currentPositions.length > 0) {
+    console.log('[Trader PnL]: Writing to BigQuery...');
+    await updatePositions(currentPositions);
+  }
 
-  // Update Redis
-  console.log('[Trader PnL]: Caching to Redis...');
-  for (const [processId, lastProcessedBlock] of Object.entries(lastProcessedBlocks)) {
-    await setLatestProcessedBlock(processId, lastProcessedBlock);
+  if (Object.entries(lastProcessedBlocks).length > 0) {
+    // Update Redis
+    console.log('[Trader PnL]: Caching to Redis...');
+    for (const [processId, lastProcessedBlock] of Object.entries(lastProcessedBlocks)) {
+      await setLatestProcessedBlock(processId, lastProcessedBlock);
+    }
   }
 };

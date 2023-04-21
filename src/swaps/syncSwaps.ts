@@ -53,8 +53,10 @@ export const syncSwaps = async (chainIds: number[]): Promise<void> => {
 
   // Update Redis
 
-  console.log('[Swaps]: Caching to Redis...');
-  for (const [processId, lastProcessedBlock] of Object.entries(lastProcessedBlocks)) {
-    await setLatestProcessedBlock(processId, lastProcessedBlock);
+  if (Object.entries(lastProcessedBlocks).length > 0) {
+    console.log('[Swaps]: Caching to Redis...');
+    for (const [processId, lastProcessedBlock] of Object.entries(lastProcessedBlocks)) {
+      await setLatestProcessedBlock(processId, lastProcessedBlock);
+    }
   }
 };

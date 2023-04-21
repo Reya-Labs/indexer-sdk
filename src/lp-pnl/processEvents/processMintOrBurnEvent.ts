@@ -2,7 +2,7 @@ import { TrackedBigQueryPositionRow } from '../../big-query-support/pull-data/pu
 import { MintOrBurnEventInfo } from '../../common/event-parsers/types';
 import { getTimestampInSeconds } from '../../common/utils';
 
-export const processMintOrBurnEventLpSpeed = (
+export const processMintOrBurnEvent = (
   currentPositions: TrackedBigQueryPositionRow[],
   event: MintOrBurnEventInfo,
 ): void => {

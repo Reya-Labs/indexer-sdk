@@ -2,7 +2,7 @@ import { createMintsAndBurnsTable } from '../big-query-support/manage-tables/min
 import { MINTS_BURNS_TABLE_NAME } from '../common/constants';
 import { syncMintsAndBurns } from './syncMintsAndBurns';
 
-export const run = async (chainIds: number[]) => {
+export const runMintsAndBurns = async (chainIds: number[]) => {
   await createMintsAndBurnsTable(MINTS_BURNS_TABLE_NAME);
 
   while (true) {

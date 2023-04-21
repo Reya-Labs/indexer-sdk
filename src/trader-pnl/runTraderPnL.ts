@@ -2,7 +2,7 @@ import { createPositionsTable } from '../big-query-support/manage-tables/positio
 import { POSITIONS_TABLE_NAME } from '../common/constants';
 import { syncTraderPnL } from './syncTraderPnL';
 
-export const run = async (chainIds: number[]) => {
+export const runTraderPnL = async (chainIds: number[]) => {
   await createPositionsTable(POSITIONS_TABLE_NAME);
 
   while (true) {
