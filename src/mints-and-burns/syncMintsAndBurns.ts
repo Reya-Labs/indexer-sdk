@@ -54,7 +54,7 @@ export const syncMintsAndBurns = async (chainIds: number[]): Promise<void> => {
 
   // Update Redis
 
-  if (lastProcessedBlocks.length > 0) {
+  if (Object.entries(lastProcessedBlocks).length > 0) {
     console.log('[Mints and burns]: Caching to Redis...');
     for (const [processId, lastProcessedBlock] of Object.entries(lastProcessedBlocks)) {
       await setLatestProcessedBlock(processId, lastProcessedBlock);

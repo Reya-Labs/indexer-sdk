@@ -1,9 +1,10 @@
 import { Storage } from '@google-cloud/storage';
 
 import { PROJECT_ID } from './common/constants';
-import { run as runLpsSpeed } from './lp-pnl-speed/run';
-import { run as runMintsAndBurns } from './mints-and-burns/run';
-import { run as runTraders } from './trader-pnl/run';
+import { runLPPnL } from './lp-pnl/runLPPnL';
+import { runMintsAndBurns } from './mints-and-burns/runMintsAndBurns';
+import { runSwaps } from './swaps/runSwaps';
+import { runTraderPnL } from './trader-pnl/runTraderPnL';
 
 async function authenticateImplicitWithAdc() {
   const storage = new Storage({
@@ -21,9 +22,10 @@ const main = async () => {
 
   let promises: Promise<void>[] = [];
 
-  promises = promises.concat(runMintsAndBurns(chainIds));
-  // promises = promises.concat(runTraders(chainIds));
-  // promises = promises.concat(runLpsSpeed(chainIds));
+  // promises = promises.concat(runSwaps(chainIds));
+  // promises = promises.concat(runMintsAndBurns(chainIds));
+  // promises = promises.concat(runTraderPnL(chainIds));
+  promises = promises.concat(runLPPnL(chainIds));
 
   await Promise.allSettled(promises);
 };

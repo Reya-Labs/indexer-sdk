@@ -20,6 +20,7 @@ export const insertNewSwap = async (event: SwapEventInfo): Promise<void> => {
     ${swapRow.variableTokenDelta}, 
     ${swapRow.fixedTokenDeltaUnbalanced},
     ${swapRow.feePaidToLps}, 
+    ${swapRow.eventBlockNumber}, 
     \'${secondsToBqDate(swapRow.eventTimestamp)}\', 
     \'${secondsToBqDate(swapRow.rowLastUpdatedTimestamp)}\',
     \'${swapRow.rateOracle}\',

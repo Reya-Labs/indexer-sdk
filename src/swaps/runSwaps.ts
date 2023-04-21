@@ -2,7 +2,7 @@ import { createActiveSwapsTable } from '../big-query-support/manage-tables/activ
 import { ACTIVE_SWAPS_TABLE_NAME } from '../common/constants';
 import { syncSwaps } from './syncSwaps';
 
-export const run = async (chainIds: number[]) => {
+export const runSwaps = async (chainIds: number[]) => {
   await createActiveSwapsTable(ACTIVE_SWAPS_TABLE_NAME);
 
   while (true) {
@@ -10,9 +10,7 @@ export const run = async (chainIds: number[]) => {
       await syncSwaps(chainIds);
     } catch (error) {
       console.log(
-        `[Active swaps]: Loop has failed with message: ${
-          (error as Error).message
-        }.  It will retry...`,
+        `[Swaps]: Loop has failed with message: ${(error as Error).message}.  It will retry...`,
       );
     }
   }

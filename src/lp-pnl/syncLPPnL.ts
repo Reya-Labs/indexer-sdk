@@ -9,8 +9,8 @@ import {
   setLatestProcessedBlock,
   setLatestProcessedTick,
 } from '../common/services/redisService';
-import { processMintOrBurnEventLpSpeed } from './processLpSpeedEvent/processMintOrBurnEventLpSpeed';
-import { processVAMMPriceChangeEvent } from './processLpSpeedEvent/processVAMMPriceChangeEvent';
+import { processMintOrBurnEvent } from './processEvents/processMintOrBurnEvent';
+import { processVAMMPriceChangeEvent } from './processEvents/processVAMMPriceChangeEvent';
 
 export const syncLPPnL = async (chainIds: number[]): Promise<void> => {
   const lastProcessedTicks: { [poolId: string]: number } = {};
@@ -60,7 +60,7 @@ export const syncLPPnL = async (chainIds: number[]): Promise<void> => {
         switch (event.type) {
           case 'mint':
           case 'burn': {
-            processMintOrBurnEventLpSpeed(currentPositions, event as MintOrBurnEventInfo);
+            processMintOrBurnEvent(currentPositions, event as MintOrBurnEventInfo);
             break;
           }
           case 'price_change': {
@@ -95,18 +95,22 @@ export const syncLPPnL = async (chainIds: number[]): Promise<void> => {
   });
 
   // Push update to BigQuery
-  console.log('[LP PnL]: Writing to BigQuery...');
-  await updatePositions(currentPositions);
+  if (currentPositions.length > 0) {
+    console.log('[LP PnL]: Writing to BigQuery...');
+    await updatePositions(currentPositions);
+  }
 
   // Update Redis
 
-  console.log('[LP PnL]: Caching to Redis...');
-  for (const [processId, lastProcessedBlock] of Object.entries(lastProcessedBlocks)) {
-    await setLatestProcessedBlock(processId, lastProcessedBlock);
-  }
+  if (Object.entries(lastProcessedBlocks).length > 0) {
+    console.log('[LP PnL]: Caching to Redis...');
+    for (const [processId, lastProcessedBlock] of Object.entries(lastProcessedBlocks)) {
+      await setLatestProcessedBlock(processId, lastProcessedBlock);
+    }
 
-  for (const [poolId, tick] of Object.entries(lastProcessedTicks)) {
-    await setLatestProcessedTick(poolId, tick);
+    for (const [poolId, tick] of Object.entries(lastProcessedTicks)) {
+      await setLatestProcessedTick(poolId, tick);
+    }
   }
 };
 
