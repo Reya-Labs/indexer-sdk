@@ -9,8 +9,6 @@
     "doc": "docs"
   },
   "scripts": {
-    "start": "npx ts-node src/index.ts",
-    "start:api": "npx ts-node src/api/index.ts",
     "prebuild": "yarn code-quality:check && rm -rf dist",
     "build": "rollup -c --bundleConfigAsCjs",
     "ts:check": "yarn ts:check-types && yarn ts:circular-check",
