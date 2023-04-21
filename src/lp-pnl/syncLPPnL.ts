@@ -96,8 +96,7 @@ export const syncLPPnL = async (chainIds: number[]): Promise<void> => {
 
   // Push update to BigQuery
   if (currentPositions.length > 0) {
-    console.log('[LP PnL]: Writing to BigQuery...');
-    await updatePositions(currentPositions);
+    await updatePositions('[LP PnL]', currentPositions);
   }
 
   // Update Redis

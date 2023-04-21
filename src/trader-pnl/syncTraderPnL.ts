@@ -56,8 +56,7 @@ export const syncTraderPnL = async (chainIds: number[]): Promise<void> => {
 
   // Push update to BigQuery
   if (currentPositions.length > 0) {
-    console.log('[Trader PnL]: Writing to BigQuery...');
-    await updatePositions(currentPositions);
+    await updatePositions('[Trader PnL]', currentPositions);
   }
 
   if (Object.entries(lastProcessedBlocks).length > 0) {

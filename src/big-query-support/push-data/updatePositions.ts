@@ -3,8 +3,11 @@ import { getBigQuery } from '../../global';
 import { TrackedBigQueryPositionRow } from '../pull-data/pullAllPositions';
 import { secondsToBqDate } from '../utils';
 
-export const updatePositions = async (positions: TrackedBigQueryPositionRow[]): Promise<void> => {
+const CHARACTER_LIMIT = 1_000_000;
+
+export const updatePositions = async (processName: string, positions: TrackedBigQueryPositionRow[]): Promise<void> => {
   const bigQuery = getBigQuery();
+
   const updates = positions.map(({ position, added, modified }) => {
     if (added) {
       const rawPositionRow = `
@@ -65,18 +68,32 @@ export const updatePositions = async (positions: TrackedBigQueryPositionRow[]): 
     }
 
     return ``;
-  });
-  if (updates.every((u) => u.length === 0)) {
+  }).filter(u => u.length > 0);
+
+  if (updates.length === 0) {
     return;
   }
 
-  const query = updates.join(`\n`);
+  const queries: string[] = [];
 
-  const options = {
-    query,
-    timeoutMs: 100000,
-    useLegacySql: false,
-  };
+  updates.forEach((u) => {
+    if (queries.length === 0 || queries[queries.length - 1].length + u.length > CHARACTER_LIMIT) {
+      queries.push(u);
+    }
+    else {
+      queries[queries.length - 1] = queries[queries.length - 1].concat(u);
+    }
+  });
 
-  await bigQuery.query(options);
+  console.log(`${processName}: Sending ${queries.length} updates to BigQuery...`);
+
+  for (const query of queries) {
+    const options = {
+      query,
+      timeoutMs: 100000,
+      useLegacySql: false,
+    };
+
+    await bigQuery.query(options);
+  }
 };
