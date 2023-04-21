@@ -31,10 +31,10 @@ export const getRedisClient = (): Redis => {
 
 export const chainIds = [1, 42161];
 
-export const authenticateImplicitWithAdc = async() => {
+export const authenticateImplicitWithAdc = async () => {
   const storage = new Storage({
     projectId: PROJECT_ID,
   });
 
   await storage.getBuckets();
-}
+};

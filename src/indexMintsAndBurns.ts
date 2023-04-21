@@ -12,7 +12,9 @@ export const main = async () => {
       await syncMintsAndBurns(chainIds);
     } catch (error) {
       console.log(
-        `[Mints and burns]: Loop has failed with message: ${(error as Error).message}.  It will retry...`,
+        `[Mints and burns]: Loop has failed with message: ${
+          (error as Error).message
+        }.  It will retry...`,
       );
     }
   }

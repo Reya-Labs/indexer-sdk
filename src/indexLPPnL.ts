@@ -1,4 +1,3 @@
-
 import { createPositionsTable } from './big-query-support/manage-tables/positions-table';
 import { POSITIONS_TABLE_NAME } from './common/constants';
 import { authenticateImplicitWithAdc, chainIds } from './global';
