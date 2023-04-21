@@ -4,6 +4,7 @@ import { ethers } from 'ethers';
 
 import { generateMarginEngineContract } from '../contract-services/generateMarginEngineContract';
 import { generateRateOracleContract } from '../contract-services/generateRateOracleContract';
+import { exponentialBackoff } from '../retry';
 
 const getAaveLendingLiquidityIndex = async (
   provider: ethers.providers.Provider,
@@ -31,6 +32,8 @@ const getAaveLendingLiquidityIndex = async (
 
   const liquidityIndex = Number(ethers.utils.formatUnits(liquidityIndexRay, 27));
 
+  console.log(`Liquidity index of Aave Rate Oracle is ${liquidityIndex}`);
+
   return liquidityIndex;
 };
 
@@ -56,7 +59,7 @@ const getCompoundLendingLiquidityIndex = async (
   return liquidityIndex;
 };
 
-export const getLiquidityIndex = async (
+const getLiquidityIndexOneTime = async (
   chainId: number,
   provider: ethers.providers.Provider,
   marginEngineAddress: string,
@@ -97,6 +100,19 @@ export const getLiquidityIndex = async (
   })) as ethers.BigNumber;
 
   const liquidityIndex = Number(ethers.utils.formatUnits(liquidityIndexRay, 27));
+
+  return liquidityIndex;
+};
+
+export const getLiquidityIndex = async (
+  chainId: number,
+  provider: ethers.providers.Provider,
+  marginEngineAddress: string,
+  blockTag?: number,
+): Promise<number> => {
+  const liquidityIndex = await exponentialBackoff(() =>
+    getLiquidityIndexOneTime(chainId, provider, marginEngineAddress, blockTag),
+  );
 
   return liquidityIndex;
 };
