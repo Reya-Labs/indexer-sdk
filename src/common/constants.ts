@@ -48,7 +48,7 @@ export const ALCHEMY_API_KEY = process.env.ALCHEMY_KEY || '';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const isTestingAccount = (address: string): boolean => {
   return true;
-  
+
   // const testingAccounts = [
   //   '0xb527e950fc7c4f581160768f48b3bfa66a7de1f0',
   //   '0xF8F6B70a36f4398f0853a311dC6699Aba8333Cc1',
