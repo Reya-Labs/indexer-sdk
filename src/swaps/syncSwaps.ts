@@ -26,9 +26,9 @@ export const syncSwaps = async (chainIds: number[]): Promise<void> => {
 
     lastProcessedBlocks[processId] = toBlock;
 
-    const chainPromises = amms.map(async (amm) => {
-      console.log(`Fetching events for AMM ${amm.id}`);
+    console.log(`[Active swaps, ${chainId}]: Processing between blocks ${fromBlock}-${toBlock}...`);
 
+    const chainPromises = amms.map(async (amm) => {
       const events = await getPreviousEvents(amm, ['swap'], chainId, fromBlock, toBlock);
 
       if (events.length === 0) {
@@ -37,16 +37,7 @@ export const syncSwaps = async (chainIds: number[]): Promise<void> => {
 
       for (let i = 0; i < events.length; i++) {
         const event = events[i];
-        console.log(`Processing event: ${event.type} (${i + 1}/${events.length})`);
-
-        let trackingTime = Date.now().valueOf();
-
         await processSwapEvent(event as SwapEventInfo);
-
-        console.log(`Event processing took ${Date.now().valueOf() - trackingTime} ms`);
-        trackingTime = Date.now().valueOf();
-
-        console.log();
       }
     });
 
@@ -62,7 +53,7 @@ export const syncSwaps = async (chainIds: number[]): Promise<void> => {
 
   // Update Redis
 
-  console.log(`Writing to Redis...`);
+  console.log('[Active swaps]: Caching to Redis...');
   for (const [processId, lastProcessedBlock] of Object.entries(lastProcessedBlocks)) {
     await setLatestProcessedBlock(processId, lastProcessedBlock);
   }

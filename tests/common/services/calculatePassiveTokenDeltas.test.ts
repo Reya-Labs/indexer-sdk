@@ -68,9 +68,6 @@ describe('get locked in profit', () => {
         ...input,
       );
 
-      console.log('variableTokenDelta:', variableTokenDelta);
-      console.log('fixedTokenDeltaUnbalanced:', fixedTokenDeltaUnbalanced);
-
       expect(variableTokenDelta).toBeCloseTo(expectedOutput[0]);
       expect(fixedTokenDeltaUnbalanced).toBeCloseTo(expectedOutput[1]);
     });
