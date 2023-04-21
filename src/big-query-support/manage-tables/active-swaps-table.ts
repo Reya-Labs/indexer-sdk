@@ -24,19 +24,19 @@ export const createActiveSwapsTable = async (tableName: string): Promise<void> =
 
     {
       name: 'variableTokenDelta',
-      type: 'NUMERIC',
+      type: 'BIGNUMERIC',
       mode: 'REQUIRED',
       precision: '18',
-      scale: '9',
+      scale: '18',
     },
     {
       name: 'fixedTokenDeltaUnbalanced',
-      type: 'NUMERIC',
+      type: 'BIGNUMERIC',
       mode: 'REQUIRED',
       precision: '18',
-      scale: '9',
+      scale: '18',
     },
-    { name: 'feePaidToLps', type: 'NUMERIC', mode: 'REQUIRED', precision: '18', scale: '9' },
+    { name: 'feePaidToLps', type: 'BIGNUMERIC', mode: 'REQUIRED', precision: '18', scale: '18' },
 
     { name: 'eventBlockNumber', type: 'INTEGER', mode: 'REQUIRED' },
     { name: 'eventTimestamp', type: 'TIMESTAMP', mode: 'REQUIRED' },

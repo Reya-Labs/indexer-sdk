@@ -23,10 +23,10 @@ export const createMintsAndBurnsTable = async (tableName: string): Promise<void>
 
     {
       name: 'notionalDelta',
-      type: 'NUMERIC',
+      type: 'BIGNUMERIC',
       mode: 'REQUIRED',
       precision: '18',
-      scale: '9',
+      scale: '18',
     },
 
     { name: 'eventBlockNumber', type: 'INTEGER', mode: 'REQUIRED' },
