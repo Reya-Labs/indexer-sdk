@@ -22,9 +22,9 @@ const main = async () => {
 
   let promises: Promise<void>[] = [];
 
-  // promises = promises.concat(runSwaps(chainIds));
-  // promises = promises.concat(runMintsAndBurns(chainIds));
-  // promises = promises.concat(runTraderPnL(chainIds));
+  promises = promises.concat(runSwaps(chainIds));
+  promises = promises.concat(runMintsAndBurns(chainIds));
+  promises = promises.concat(runTraderPnL(chainIds));
   promises = promises.concat(runLPPnL(chainIds));
 
   await Promise.allSettled(promises);
