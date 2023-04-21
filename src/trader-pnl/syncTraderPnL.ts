@@ -6,7 +6,7 @@ import { getAmms } from '../common/getAmms';
 import { getLatestProcessedBlock, setLatestProcessedBlock } from '../common/services/redisService';
 import { processSwapEvent } from './processSwapEvent/processSwapEvent';
 
-export const syncActiveSwaps = async (chainIds: number[]): Promise<void> => {
+export const syncTraderPnL = async (chainIds: number[]): Promise<void> => {
   const lastProcessedBlocks: { [processId: string]: number } = {};
 
   const currentPositions = await pullAllPositions();
@@ -17,7 +17,7 @@ export const syncActiveSwaps = async (chainIds: number[]): Promise<void> => {
     const processId = `trader_pnl_${chainId}`;
 
     if (amms.length === 0) {
-      return;
+      continue;
     }
 
     const fromBlock = (await getLatestProcessedBlock(processId)) + 1;
@@ -28,6 +28,8 @@ export const syncActiveSwaps = async (chainIds: number[]): Promise<void> => {
     }
 
     lastProcessedBlocks[processId] = toBlock;
+
+    console.log(`[Trader PnL, ${chainId}]: Processing between blocks ${fromBlock}-${toBlock}...`);
 
     const chainPromises = amms.map(async (amm) => {
       const events = await getPreviousEvents(amm, ['swap'], chainId, fromBlock, toBlock);
@@ -53,11 +55,11 @@ export const syncActiveSwaps = async (chainIds: number[]): Promise<void> => {
   });
 
   // Push update to BigQuery
-  console.log('[Active swaps]: Writing to BigQuery...');
+  console.log('[Trader PnL]: Writing to BigQuery...');
   await updatePositions(currentPositions);
 
   // Update Redis
-  console.log('[Active swaps]: Caching to Redis...');
+  console.log('[Trader PnL]: Caching to Redis...');
   for (const [processId, lastProcessedBlock] of Object.entries(lastProcessedBlocks)) {
     await setLatestProcessedBlock(processId, lastProcessedBlock);
   }

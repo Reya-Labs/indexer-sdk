@@ -7,14 +7,14 @@ import { processMintOrBurnEvent } from './processMintAndBurnEvent/processMintOrB
 export const syncMintsAndBurns = async (chainIds: number[]): Promise<void> => {
   const lastProcessedBlocks: { [processId: string]: number } = {};
 
-  let promises: Promise<void>[] = [];
+  const promises: Promise<void>[] = [];
 
   for (const chainId of chainIds) {
     const amms = await getAmms(chainId);
     const processId = `mints_and_burns_${chainId}`;
 
     if (amms.length === 0) {
-      return;
+      continue;
     }
 
     const fromBlock = (await getLatestProcessedBlock(processId)) + 1;
@@ -39,14 +39,12 @@ export const syncMintsAndBurns = async (chainIds: number[]): Promise<void> => {
 
       for (let i = 0; i < events.length; i++) {
         const event = events[i];
-
         await processMintOrBurnEvent(event as MintOrBurnEventInfo);
       }
     });
 
-    promises = promises.concat(...chainPromises);
+    promises.push(...chainPromises);
   }
-
   const output = await Promise.allSettled(promises);
   output.forEach((v) => {
     if (v.status === 'rejected') {
@@ -56,8 +54,10 @@ export const syncMintsAndBurns = async (chainIds: number[]): Promise<void> => {
 
   // Update Redis
 
-  console.log('[Mints and burns]: Caching to Redis...');
-  for (const [processId, lastProcessedBlock] of Object.entries(lastProcessedBlocks)) {
-    await setLatestProcessedBlock(processId, lastProcessedBlock);
+  if (lastProcessedBlocks.length > 0) {
+    console.log('[Mints and burns]: Caching to Redis...');
+    for (const [processId, lastProcessedBlock] of Object.entries(lastProcessedBlocks)) {
+      await setLatestProcessedBlock(processId, lastProcessedBlock);
+    }
   }
 };

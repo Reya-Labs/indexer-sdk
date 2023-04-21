@@ -12,7 +12,7 @@ import {
 import { processMintOrBurnEventLpSpeed } from './processLpSpeedEvent/processMintOrBurnEventLpSpeed';
 import { processVAMMPriceChangeEvent } from './processLpSpeedEvent/processVAMMPriceChangeEvent';
 
-export const syncPassiveSwaps = async (chainIds: number[]): Promise<void> => {
+export const syncLPPnL = async (chainIds: number[]): Promise<void> => {
   const lastProcessedTicks: { [poolId: string]: number } = {};
   const lastProcessedBlocks: { [processId: string]: number } = {};
 
@@ -36,9 +36,7 @@ export const syncPassiveSwaps = async (chainIds: number[]): Promise<void> => {
 
     lastProcessedBlocks[processId] = toBlock;
 
-    console.log(
-      `[Passive swaps, ${chainId}]: Processing between blocks ${fromBlock}-${toBlock}...`,
-    );
+    console.log(`[LP PnL, ${chainId}]: Processing between blocks ${fromBlock}-${toBlock}...`);
 
     const chainPromises = amms.map(async (amm) => {
       const events = await getPreviousEvents(
@@ -97,12 +95,12 @@ export const syncPassiveSwaps = async (chainIds: number[]): Promise<void> => {
   });
 
   // Push update to BigQuery
-  console.log('[Passive swaps]: Writing to BigQuery...');
+  console.log('[LP PnL]: Writing to BigQuery...');
   await updatePositions(currentPositions);
 
   // Update Redis
 
-  console.log('[Passive swaps]: Caching to Redis...');
+  console.log('[LP PnL]: Caching to Redis...');
   for (const [processId, lastProcessedBlock] of Object.entries(lastProcessedBlocks)) {
     await setLatestProcessedBlock(processId, lastProcessedBlock);
   }
