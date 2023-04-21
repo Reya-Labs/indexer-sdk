@@ -85,7 +85,7 @@ export const updatePositions = async (processName: string, positions: TrackedBig
     }
   });
 
-  console.log(`${processName}: Sending ${queries.length} updates to BigQuery...`);
+  console.log(`${processName}: Sending ${queries.length} queries to BigQuery (updating ${updates.length} positions)...`);
 
   for (const query of queries) {
     const options = {
