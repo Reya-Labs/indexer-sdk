@@ -6,7 +6,6 @@ export const processSwapEvent = async (event: SwapEventInfo): Promise<void> => {
   const swapRow = await pullExistingSwapRow(event.eventId);
 
   if (swapRow) {
-    // console.log('Swap already processed. Skipped.');
     return;
   }
 

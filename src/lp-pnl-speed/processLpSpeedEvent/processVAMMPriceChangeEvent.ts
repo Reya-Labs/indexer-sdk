@@ -49,10 +49,6 @@ export const processVAMMPriceChangeEvent = async (
       currentTick,
     );
 
-    console.log(`Tick has moved from ${previousTick} to ${currentTick}...`);
-    console.log(`generating ${variableTokenDelta} VT and ${fixedTokenDeltaUnbalanced} uFT`);
-    console.log();
-
     // todo: enhance this ID -> not high pro as long as we do not add them to the table
     const passiveSwapEventId = `id`;
 

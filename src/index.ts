@@ -25,8 +25,6 @@ const main = async () => {
   promises = promises.concat(runTraders(chainIds));
   promises = promises.concat(runLpsSpeed(chainIds));
 
-  console.log(`Number of parallel calls ${promises.length}`);
-
   await Promise.allSettled(promises);
 };
 

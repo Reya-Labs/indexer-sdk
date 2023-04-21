@@ -67,7 +67,6 @@ export const updatePositions = async (positions: TrackedBigQueryPositionRow[]): 
     return ``;
   });
   if (updates.every((u) => u.length === 0)) {
-    console.log(`No position to update.`);
     return;
   }
 

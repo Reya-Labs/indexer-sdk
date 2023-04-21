@@ -9,7 +9,11 @@ export const run = async (chainIds: number[]) => {
     try {
       await syncMintsAndBurns(chainIds);
     } catch (error) {
-      console.log(`Loop has failed with message: ${(error as Error).message}.  It will retry...`);
+      console.log(
+        `[Mints and burns]: Loop has failed with message: ${
+          (error as Error).message
+        }.  It will retry...`,
+      );
     }
   }
 };

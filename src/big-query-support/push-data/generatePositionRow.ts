@@ -47,15 +47,14 @@ export const generatePositionRow = (
   const netFixedRateLocked =
     netNotionalLocked === 0 ? 0 : Math.abs(cashflowTimeFactor / netNotionalLocked);
 
-  // todo: remove this, debugging purposes
-  {
-    const uPnL =
-      liquidityIndexAtRootEvent * cashflowLiFactor +
-      (eventTimestamp * cashflowTimeFactor) / SECONDS_IN_YEAR +
-      cashflowFreeTerm;
+  // {
+  //   const uPnL =
+  //     liquidityIndexAtRootEvent * cashflowLiFactor +
+  //     (eventTimestamp * cashflowTimeFactor) / SECONDS_IN_YEAR +
+  //     cashflowFreeTerm;
 
-    console.log(`current uPnL of position: ${uPnL}`);
-  }
+  //   console.log(`current uPnL of position: ${uPnL}`);
+  // }
 
   // todo: add empty entries
   return {

@@ -1,6 +1,6 @@
 import { AMM, getAMMs } from '@voltz-protocol/v1-sdk';
 
-import { ALCHEMY_API_KEY , APR_2023_TIMESTAMP } from './constants';
+import { ALCHEMY_API_KEY, APR_2023_TIMESTAMP } from './constants';
 
 export const getAmms = async (chainId: number): Promise<AMM[]> => {
   // Get AMMs

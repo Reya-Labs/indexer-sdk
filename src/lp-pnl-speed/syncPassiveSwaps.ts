@@ -17,7 +17,6 @@ export const syncPassiveSwaps = async (chainIds: number[]): Promise<void> => {
   const lastProcessedBlocks: { [processId: string]: number } = {};
 
   const currentPositions = await pullAllPositions();
-  console.log(`Number of current positions:`, currentPositions.length);
 
   let promises: Promise<void>[] = [];
   for (const chainId of chainIds) {
@@ -37,11 +36,11 @@ export const syncPassiveSwaps = async (chainIds: number[]): Promise<void> => {
 
     lastProcessedBlocks[processId] = toBlock;
 
-    console.log(`Processing between blocks ${fromBlock}-${toBlock} for ${chainId}`);
+    console.log(
+      `[Passive swaps, ${chainId}]: Processing between blocks ${fromBlock}-${toBlock}...`,
+    );
 
     const chainPromises = amms.map(async (amm) => {
-      console.log(`Fetching events for AMM ${amm.id}`);
-
       const events = await getPreviousEvents(
         amm,
         ['mint', 'burn', 'price_change'],
@@ -57,13 +56,8 @@ export const syncPassiveSwaps = async (chainIds: number[]): Promise<void> => {
       const poolId = `${chainId}_${amm.id.toLowerCase()}`;
       lastProcessedTicks[poolId] = await getLatestProcessedTick(poolId);
 
-      console.log(`Processing ${events.length} events from block ${fromBlock}...`);
-
       for (let i = 0; i < events.length; i++) {
         const event = events[i];
-        console.log(`Processing event: ${event.type} (${i + 1}/${events.length})`);
-
-        let trackingTime = Date.now().valueOf();
 
         switch (event.type) {
           case 'mint':
@@ -89,11 +83,6 @@ export const syncPassiveSwaps = async (chainIds: number[]): Promise<void> => {
             throw new Error(`Unrecognized event type: ${event.type}`);
           }
         }
-
-        console.log(`Event processing took ${Date.now().valueOf() - trackingTime} ms`);
-        trackingTime = Date.now().valueOf();
-
-        console.log();
       }
     });
 
@@ -108,11 +97,12 @@ export const syncPassiveSwaps = async (chainIds: number[]): Promise<void> => {
   });
 
   // Push update to BigQuery
+  console.log('[Passive swaps]: Writing to BigQuery...');
   await updatePositions(currentPositions);
 
   // Update Redis
 
-  console.log(`Writing to Redis...`);
+  console.log('[Passive swaps]: Caching to Redis...');
   for (const [processId, lastProcessedBlock] of Object.entries(lastProcessedBlocks)) {
     await setLatestProcessedBlock(processId, lastProcessedBlock);
   }

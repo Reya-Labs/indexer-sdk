@@ -8,8 +8,6 @@ export const processMintOrBurnEventLpSpeed = (
 ): void => {
   const currentTimestamp = getTimestampInSeconds();
 
-  console.log(`Operating on ${event.ownerAddress}`);
-
   const existingPositionIndex = currentPositions.findIndex(({ position }) => {
     return (
       position.chainId === event.chainId &&
