@@ -32,8 +32,6 @@ const getAaveLendingLiquidityIndex = async (
 
   const liquidityIndex = Number(ethers.utils.formatUnits(liquidityIndexRay, 27));
 
-  console.log(`Liquidity index of Aave Rate Oracle is ${liquidityIndex}`);
-
   return liquidityIndex;
 };
 
