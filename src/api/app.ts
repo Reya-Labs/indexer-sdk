@@ -124,7 +124,8 @@ app.get('/positions/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper', 
       existingPosition.cashflowFreeTerm;
 
     // unrealized PnL
-    const currentFixedRate = await amm.getFixedApr();
+    // note: scaling by 100 since the raw output fixedApr is in percentage point terms
+    const currentFixedRate = (await amm.getFixedApr())/100;
 
     const timeInYears = getTimeInYearsBetweenTimestamps(currentTimestamp, maturityTimestamp);
 
