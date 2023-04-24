@@ -15,34 +15,18 @@ export const getAmms = async (chainId: number): Promise<AMM[]> => {
   }
 
   // Filter out the inactive pools
-  // const activeAmms = amms.filter((item) => {
-  //   return item.termEndTimestampInMS / 1000 > APR_2023_TIMESTAMP;
-  // });
-
-  // todo: remove this, debugging purposes only
   const activeAmms = amms.filter((item) => {
-  //   if (item.id.toLowerCase() === '0x7DF7Aa512F1EB4dd5C1b69486f45FE895ba41ECe'.toLowerCase()) {
-  //     return true;
-  //   }
-
-  //   if (item.id.toLowerCase() === '0x47C46765d633B6BC03d31cC224585c6856beeCB2'.toLowerCase()) {
-  //     return true;
-  //   }
-
-  //   if (item.id.toLowerCase() === '0xE07324a394aCFfF8fE24A09C3F2e2bD62e929eFb'.toLowerCase()) {
-  //     return true;
-  //   }
-
-  //   if (item.id.toLowerCase() === '0x05cae5FE1FaAb605F795b018bE6bA979C2c89cdB'.toLowerCase()) {
-  //     return true;
-  //   }
-
-    if (item.id.toLowerCase() === '0xacf59c72660d1e6629a721fd958f7a8c64379835'.toLowerCase()) {
-      return true;
-    }
-
-    return false;
+    return item.termEndTimestampInMS / 1000 > APR_2023_TIMESTAMP;
   });
+
+  // // todo: remove this, debugging purposes only
+  // const activeAmms = amms.filter((item) => {
+  //   if (item.id.toLowerCase() === '0xacf59c72660d1e6629a721fd958f7a8c64379835'.toLowerCase()) {
+  //     return true;
+  //   }
+
+  //   return false;
+  // });
 
   return activeAmms;
 };
