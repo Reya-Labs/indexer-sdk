@@ -125,7 +125,7 @@ app.get('/positions/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper', 
 
     // unrealized PnL
     // note: scaling by 100 since the raw output fixedApr is in percentage point terms
-    const currentFixedRate = (await amm.getFixedApr())/100;
+    const currentFixedRate = (await amm.getFixedApr()) / 100;
 
     const timeInYears = getTimeInYearsBetweenTimestamps(currentTimestamp, maturityTimestamp);
 

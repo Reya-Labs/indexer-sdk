@@ -1,8 +1,11 @@
 import { getRedisClient } from '../../global';
+import { getRedisID } from '../constants';
 
 export const getLatestProcessedBlock = async (processId: string): Promise<number> => {
   const redisClient = getRedisClient();
-  const value = await redisClient.get(processId);
+
+  const key = `${getRedisID()}_${processId}`;
+  const value = await redisClient.get(key);
 
   if (value) {
     return Number(value);
@@ -16,13 +19,16 @@ export const setLatestProcessedBlock = async (
   blockNumber: number,
 ): Promise<void> => {
   const redisClient = getRedisClient();
-  await redisClient.set(processId, blockNumber);
+  const key = `${getRedisID()}_${processId}`;
+
+  await redisClient.set(key, blockNumber);
 };
 
 export const getLatestProcessedTick = async (poolId: string): Promise<number> => {
   const redisClient = getRedisClient();
+  const key = `${getRedisID()}_${poolId}`;
 
-  const value = await redisClient.get(poolId);
+  const value = await redisClient.get(key);
   if (value) {
     return Number(value);
   }
@@ -32,6 +38,7 @@ export const getLatestProcessedTick = async (poolId: string): Promise<number> =>
 
 export const setLatestProcessedTick = async (poolId: string, tick: number): Promise<void> => {
   const redisClient = getRedisClient();
+  const key = `${getRedisID()}_${poolId}`;
 
-  await redisClient.set(poolId, tick);
+  await redisClient.set(key, tick);
 };

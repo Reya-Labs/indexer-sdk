@@ -48,12 +48,12 @@ export const generatePositionRow = (
     netNotionalLocked === 0 ? 0 : Math.abs(cashflowTimeFactor / netNotionalLocked);
 
   // {
-  //   const uPnL =
+  //   const rPnL =
   //     liquidityIndexAtRootEvent * cashflowLiFactor +
   //     (eventTimestamp * cashflowTimeFactor) / SECONDS_IN_YEAR +
   //     cashflowFreeTerm;
 
-  //   console.log(`current uPnL of position: ${uPnL}`);
+  //   console.log(`current rPnL of position: ${rPnL}`);
   // }
 
   // todo: add empty entries

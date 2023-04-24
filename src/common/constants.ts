@@ -8,8 +8,8 @@ export const SECONDS_IN_YEAR = 31_536_000;
 export const APR_2023_TIMESTAMP = 1680337863;
 
 // scale and precision of number in Big Query
-export const PRECISION = 18;
-export const SCALE = 9;
+export const PRECISION = 36;
+export const SCALE = 18;
 
 // CoinGecko API key
 export const GECKO_KEY = process.env.COINGECKO_API_KEY || '';
@@ -27,16 +27,30 @@ const getTableID = (tableName: string) => {
   return `${PROJECT_ID}.${DATASET_ID}.${tableName}`;
 };
 
+export const getRedisID = () => {
+  if (!process.env.ENV) {
+    throw new Error('ENV environment variable is not specified');
+  }
+
+  return process.env.ENV;
+};
+
 // Active Swaps Table Name and ID
-export const ACTIVE_SWAPS_TABLE_NAME = process.env.ACTIVE_SWAPS_TABLE_ID || '';
+export const ACTIVE_SWAPS_TABLE_NAME = (process.env.ACTIVE_SWAPS_TABLE_ID || '')
+  .concat(' ')
+  .concat(process.env.ENV || '');
 export const ACTIVE_SWAPS_TABLE_ID = getTableID(ACTIVE_SWAPS_TABLE_NAME);
 
 // Mints and Burns Table Name and ID
-export const MINTS_BURNS_TABLE_NAME = process.env.MINTS_BURNS_TABLE_ID || '';
+export const MINTS_BURNS_TABLE_NAME = (process.env.MINTS_BURNS_TABLE_ID || '')
+  .concat(' ')
+  .concat(process.env.ENV || '');
 export const MINTS_BURNS_TABLE_ID = getTableID(MINTS_BURNS_TABLE_NAME);
 
 // Positions Table Name and ID
-export const POSITIONS_TABLE_NAME = process.env.POSITIONS_TABLE_ID || '';
+export const POSITIONS_TABLE_NAME = (process.env.POSITIONS_TABLE_ID || '')
+  .concat(' ')
+  .concat(process.env.ENV || '');
 export const POSITIONS_TABLE_ID = getTableID(POSITIONS_TABLE_NAME);
 
 export const REDISHOST = process.env.REDISHOST || 'localhost';

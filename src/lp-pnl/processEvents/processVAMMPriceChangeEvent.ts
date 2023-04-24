@@ -49,6 +49,8 @@ export const processVAMMPriceChangeEvent = async (
       currentTick,
     );
 
+    console.log(`Passive swap with VT ${variableTokenDelta} and uFT ${fixedTokenDeltaUnbalanced}`);
+
     // todo: enhance this ID -> not high pro as long as we do not add them to the table
     const passiveSwapEventId = `id`;
 
@@ -78,4 +80,5 @@ export const processVAMMPriceChangeEvent = async (
       liquidityIndexAtRootEvent,
     );
   }
+  console.log();
 };

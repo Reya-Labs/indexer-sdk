@@ -5,12 +5,16 @@ import { secondsToBqDate } from '../utils';
 
 const CHARACTER_LIMIT = 1_000_000;
 
-export const updatePositions = async (processName: string, positions: TrackedBigQueryPositionRow[]): Promise<void> => {
+export const updatePositions = async (
+  processName: string,
+  positions: TrackedBigQueryPositionRow[],
+): Promise<void> => {
   const bigQuery = getBigQuery();
 
-  const updates = positions.map(({ position, added, modified }) => {
-    if (added) {
-      const rawPositionRow = `
+  const updates = positions
+    .map(({ position, added, modified }) => {
+      if (added) {
+        const rawPositionRow = `
             \"${position.marginEngineAddress}\",
             \"${position.vammAddress}\",
             \"${position.ownerAddress}\",
@@ -38,11 +42,11 @@ export const updatePositions = async (processName: string, positions: TrackedBig
             ${position.liquidity}
         `;
 
-      return `INSERT INTO \`${POSITIONS_TABLE_ID}\` VALUES(${rawPositionRow});`;
-    }
+        return `INSERT INTO \`${POSITIONS_TABLE_ID}\` VALUES(${rawPositionRow});`;
+      }
 
-    if (modified) {
-      return `
+      if (modified) {
+        return `
             UPDATE \`${POSITIONS_TABLE_ID}\`
             SET realizedPnLFromSwaps=${position.realizedPnLFromSwaps},
                 realizedPnLFromFeesPaid=${position.realizedPnLFromFeesPaid},
@@ -65,10 +69,11 @@ export const updatePositions = async (processName: string, positions: TrackedBig
                     tickLower=${position.tickLower} AND 
                     tickUpper=${position.tickUpper};
         `;
-    }
+      }
 
-    return ``;
-  }).filter(u => u.length > 0);
+      return ``;
+    })
+    .filter((u) => u.length > 0);
 
   if (updates.length === 0) {
     return;
@@ -79,13 +84,14 @@ export const updatePositions = async (processName: string, positions: TrackedBig
   updates.forEach((u) => {
     if (queries.length === 0 || queries[queries.length - 1].length + u.length > CHARACTER_LIMIT) {
       queries.push(u);
-    }
-    else {
+    } else {
       queries[queries.length - 1] = queries[queries.length - 1].concat(u);
     }
   });
 
-  console.log(`${processName}: Sending ${queries.length} queries to BigQuery (updating ${updates.length} positions)...`);
+  console.log(
+    `${processName}: Sending ${queries.length} queries to BigQuery (updating ${updates.length} positions)...`,
+  );
 
   for (const query of queries) {
     const options = {

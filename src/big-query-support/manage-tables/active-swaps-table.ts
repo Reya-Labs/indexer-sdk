@@ -1,6 +1,6 @@
 import { Table } from '@google-cloud/bigquery';
 
-import { DATASET_ID } from '../../common/constants';
+import { DATASET_ID, PRECISION, SCALE } from '../../common/constants';
 import { getBigQuery } from '../../global';
 import { getTable } from './get-table';
 
@@ -26,17 +26,23 @@ export const createActiveSwapsTable = async (tableName: string): Promise<void> =
       name: 'variableTokenDelta',
       type: 'BIGNUMERIC',
       mode: 'REQUIRED',
-      precision: '18',
-      scale: '18',
+      precision: PRECISION.toString(),
+      scale: SCALE.toString(),
     },
     {
       name: 'fixedTokenDeltaUnbalanced',
       type: 'BIGNUMERIC',
       mode: 'REQUIRED',
-      precision: '18',
-      scale: '18',
+      precision: PRECISION.toString(),
+      scale: SCALE.toString(),
     },
-    { name: 'feePaidToLps', type: 'BIGNUMERIC', mode: 'REQUIRED', precision: '18', scale: '18' },
+    {
+      name: 'feePaidToLps',
+      type: 'BIGNUMERIC',
+      mode: 'REQUIRED',
+      precision: PRECISION.toString(),
+      scale: SCALE.toString(),
+    },
 
     { name: 'eventBlockNumber', type: 'INTEGER', mode: 'REQUIRED' },
     { name: 'eventTimestamp', type: 'TIMESTAMP', mode: 'REQUIRED' },

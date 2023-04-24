@@ -15,13 +15,12 @@ export const getAmms = async (chainId: number): Promise<AMM[]> => {
   }
 
   // Filter out the inactive pools
-  const activeAmms = amms.filter((item) => {
-    return item.termEndTimestampInMS / 1000 > APR_2023_TIMESTAMP;
-  });
-
-  // // todo: remove this, debugging purposes only
-  // // Filter out non-matured pools
   // const activeAmms = amms.filter((item) => {
+  //   return item.termEndTimestampInMS / 1000 > APR_2023_TIMESTAMP;
+  // });
+
+  // todo: remove this, debugging purposes only
+  const activeAmms = amms.filter((item) => {
   //   if (item.id.toLowerCase() === '0x7DF7Aa512F1EB4dd5C1b69486f45FE895ba41ECe'.toLowerCase()) {
   //     return true;
   //   }
@@ -38,12 +37,12 @@ export const getAmms = async (chainId: number): Promise<AMM[]> => {
   //     return true;
   //   }
 
-  //   if (item.id.toLowerCase() === '0xEF05Af8b766B33e8c0FE768278deE326946a4858'.toLowerCase()) {
-  //     return true;
-  //   }
+    if (item.id.toLowerCase() === '0xacf59c72660d1e6629a721fd958f7a8c64379835'.toLowerCase()) {
+      return true;
+    }
 
-  //   return false;
-  // });
+    return false;
+  });
 
   return activeAmms;
 };
