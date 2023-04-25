@@ -1,6 +1,6 @@
 import { pullAllPositions } from '../big-query-support/positions-table/pull-data/pullAllPositions';
 import { updatePositions } from '../big-query-support/positions-table/push-data/updatePositions';
-import { getPreviousEvents } from '../common/contract-services/getPreviousEvents';
+import { getVammEvents } from '../common/contract-services/getVammEvents';
 import { MintOrBurnEventInfo, VAMMPriceChangeEventInfo } from '../common/event-parsers/types';
 import { getAmms } from '../common/getAmms';
 import {
@@ -39,7 +39,7 @@ export const syncLPPnL = async (chainIds: number[]): Promise<void> => {
     console.log(`[LP PnL, ${chainId}]: Processing between blocks ${fromBlock}-${toBlock}...`);
 
     const chainPromises = amms.map(async (amm) => {
-      const events = await getPreviousEvents(
+      const events = await getVammEvents(
         amm,
         ['mint', 'burn', 'price_change'],
         chainId,

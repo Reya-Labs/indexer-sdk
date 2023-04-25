@@ -3,7 +3,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
-import { BigQueryMintOrBurnRow, BigQueryPositionRow, BigQuerySwapRow } from './types';
+import {
+  BigQueryMintOrBurnRow,
+  BigQueryPoolRow,
+  BigQueryPositionRow,
+  BigQuerySwapRow,
+} from './types';
 import { bqNumericToNumber, bqTimestampToUnixSeconds } from './utils';
 
 export const mapToBigQueryPositionRow = (row: any): BigQueryPositionRow => ({
@@ -69,4 +74,21 @@ export const mapToBigQuerySwapRow = (row: any): BigQuerySwapRow => ({
   underlyingToken: row.underlyingToken,
   marginEngineAddress: row.marginEngineAddress,
   chainId: row.chainId,
+});
+
+export const mapToBigQueryPoolRow = (row: any): BigQueryPoolRow => ({
+  eventId: row.eventId,
+  chainId: bqNumericToNumber(row.chainId),
+  factory: row.factory,
+  vamm: row.vamm,
+  marginEngine: row.marginEngine,
+  eventBlockNumber: bqNumericToNumber(row.eventBlockNumber),
+  eventTimestamp: bqTimestampToUnixSeconds(row.eventTimestamp),
+  rowLastUpdatedTimestamp: bqTimestampToUnixSeconds(row.rowLastUpdatedTimestamp),
+  termStartTimestamp: bqTimestampToUnixSeconds(row.termStartTimestamp),
+  termEndTimestamp: bqTimestampToUnixSeconds(row.termEndTimestamp),
+  rateOracleId: row.rateOracleId,
+  rateOracleIndex: bqNumericToNumber(row.rateOracleIndex),
+  underlyingToken: bqNumericToNumber(row.underlyingToken),
+  tokenDecimals: bqNumericToNumber(row.tokenDecimals),
 });

@@ -6,28 +6,26 @@ import { getLiquidityIndex } from '../../common/services/getLiquidityIndex';
 
 export const processVAMMPriceChangeEvent = async (
   currentPositions: TrackedBigQueryPositionRow[],
-  priceChangeEventInfo: VAMMPriceChangeEventInfo,
+  priceChangeVammEventInfo: VAMMPriceChangeEventInfo,
   previousTick: number,
 ): Promise<void> => {
-  const currentTick = priceChangeEventInfo.tick;
+  const currentTick = priceChangeVammEventInfo.tick;
 
   // Retrieve event timestamp
-  const eventTimestamp = (
-    await priceChangeEventInfo.amm.provider.getBlock(priceChangeEventInfo.blockNumber)
-  ).timestamp;
+  const eventTimestamp = (await priceChangeVammEventInfo.getBlock()).timestamp;
 
   // Retrieve liquidity index at the event block
   const liquidityIndexAtRootEvent = await getLiquidityIndex(
-    priceChangeEventInfo.chainId,
-    priceChangeEventInfo.amm.provider,
-    priceChangeEventInfo.amm.marginEngineAddress,
-    priceChangeEventInfo.blockNumber,
+    priceChangeVammEventInfo.chainId,
+    priceChangeVammEventInfo.amm.provider,
+    priceChangeVammEventInfo.amm.marginEngineAddress,
+    priceChangeVammEventInfo.blockNumber,
   );
 
   for (let i = 0; i < currentPositions.length; i++) {
     const { position } = currentPositions[i];
 
-    if (!(position.vammAddress === priceChangeEventInfo.amm.id)) {
+    if (!(position.vammAddress === priceChangeVammEventInfo.amm.id)) {
       continue;
     }
 
@@ -35,7 +33,7 @@ export const processVAMMPriceChangeEvent = async (
       continue;
     }
 
-    if (position.positionInitializationBlockNumber >= priceChangeEventInfo.blockNumber) {
+    if (position.positionInitializationBlockNumber >= priceChangeVammEventInfo.blockNumber) {
       continue;
     }
 
@@ -53,7 +51,7 @@ export const processVAMMPriceChangeEvent = async (
     const passiveSwapEventId = `id`;
 
     const passiveSwapEvent: SwapEventInfo = {
-      ...priceChangeEventInfo,
+      ...priceChangeVammEventInfo,
 
       eventId: passiveSwapEventId.toLowerCase(),
       type: 'swap',
@@ -71,7 +69,7 @@ export const processVAMMPriceChangeEvent = async (
 
     currentPositions[i].modified = true;
     currentPositions[i].position = generatePositionRow(
-      priceChangeEventInfo.amm,
+      priceChangeVammEventInfo.amm,
       passiveSwapEvent,
       eventTimestamp,
       position,

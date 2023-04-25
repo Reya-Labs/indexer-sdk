@@ -1,13 +1,12 @@
 import { AMM, getAMMs } from '@voltz-protocol/v1-sdk';
-import * as dotenv from 'dotenv';
 
-dotenv.config();
+import { ALCHEMY_API_KEY } from '../../common/constants';
 
 export const getAmm = async (chainId: number, vammAddress: string): Promise<AMM> => {
   // Get AMMs
   const { amms, error } = await getAMMs({
     chainId: chainId,
-    alchemyApiKey: process.env.ALCHEMY_KEY || '',
+    alchemyApiKey: ALCHEMY_API_KEY,
   });
 
   if (error) {

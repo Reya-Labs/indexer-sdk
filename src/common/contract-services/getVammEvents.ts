@@ -4,17 +4,17 @@ import { isTestingAccount } from '../constants';
 import { parseMintOrBurnEvent } from '../event-parsers/parseMintOrBurnEvent';
 import { parseSwapEvent } from '../event-parsers/parseSwapEvent';
 import { parseVAMMPriceChangeEvent } from '../event-parsers/parseVAMMPriceChangeEvent';
-import { EventInfo, EventType } from '../types';
+import { VammEventInfo, VammEventType } from '../types';
 import { generateVAMMContract } from './generateVAMMContract';
 
-export const getPreviousEvents = async (
+export const getVammEvents = async (
   amm: AMM,
-  eventTypes: EventType[],
+  eventTypes: VammEventType[],
   chainId: number,
   fromBlock: number,
   toBlock: number,
-): Promise<EventInfo[]> => {
-  const allEvents: EventInfo[] = [];
+): Promise<VammEventInfo[]> => {
+  const allEvents: VammEventInfo[] = [];
   const vammContract = generateVAMMContract(amm.id, amm.provider);
 
   if (eventTypes.includes('mint')) {

@@ -1,8 +1,8 @@
-import { getPreviousEvents } from '../common/contract-services/getPreviousEvents';
+import { getVammEvents } from '../common/contract-services/getVammEvents';
 import { SwapEventInfo } from '../common/event-parsers/types';
 import { getAmms } from '../common/getAmms';
 import { getLatestProcessedBlock, setLatestProcessedBlock } from '../common/services/redisService';
-import { processSwapEvent } from './processSwapEvent/processSwapEvent';
+import { processSwapEvent } from './processSwapEvent';
 
 export const syncSwaps = async (chainIds: number[]): Promise<void> => {
   const lastProcessedBlocks: { [processId: string]: number } = {};
@@ -29,7 +29,7 @@ export const syncSwaps = async (chainIds: number[]): Promise<void> => {
     console.log(`[Swaps, ${chainId}]: Processing between blocks ${fromBlock}-${toBlock}...`);
 
     const chainPromises = amms.map(async (amm) => {
-      const events = await getPreviousEvents(amm, ['swap'], chainId, fromBlock, toBlock);
+      const events = await getVammEvents(amm, ['swap'], chainId, fromBlock, toBlock);
 
       if (events.length === 0) {
         return;

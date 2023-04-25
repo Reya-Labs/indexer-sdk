@@ -39,3 +39,16 @@ export const isTestingAccount = (address: string): boolean => {
 
   // return testingAccounts.map((item) => item.toLowerCase()).includes(address.toLowerCase());
 };
+
+const factories: { [chainId: string]: string } = {
+  1: '0x6a7a5c3824508d03f0d2d24e0482bea39e08ccaf',
+  42161: '0xda66a7584da7210fd26726efb12585734f7688c1',
+};
+
+export const getFactory = (chainId: string): string => {
+  if (Object.keys(factories).includes(chainId)) {
+    throw new Error(`Factory is not specified for ${chainId}.`);
+  }
+
+  return factories[chainId];
+};

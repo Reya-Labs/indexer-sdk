@@ -3,7 +3,7 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-type Table = 'active_swaps' | 'mints_and_burns' | 'positions';
+type Table = 'active_swaps' | 'mints_and_burns' | 'positions' | 'pools';
 
 // BigQuery project and dataset IDs
 export const PROJECT_ID = 'risk-monitoring-361911';
@@ -42,6 +42,14 @@ export const getTableName = (table: Table): string => {
       }
 
       return `${process.env.POSITIONS_TABLE_ID} ${process.env.ENV}`;
+    }
+
+    case 'pools': {
+      if (!process.env.POOLS_TABLE_ID) {
+        throw new Error('Pools table has not specified in environment variables');
+      }
+
+      return `${process.env.POOLS_TABLE_ID} ${process.env.ENV}`;
     }
   }
 };

@@ -1,29 +1,28 @@
 import { MintOrBurnEventInfo } from '../../../common/event-parsers/types';
+import { getTimestampInSeconds } from '../../../common/utils';
 import { getBigQuery } from '../../../global';
 import { getTableFullID, secondsToBqDate } from '../../utils';
-import { generateMintOrBurnRow } from './generateMintOrBurnRow';
 
 export const insertNewMintOrBurn = async (event: MintOrBurnEventInfo): Promise<void> => {
   const bigQuery = getBigQuery();
 
   const eventTimestamp = (await event.amm.provider.getBlock(event.blockNumber)).timestamp;
-
-  const mintOrBurnRow = generateMintOrBurnRow(event, eventTimestamp);
+  const currentTimestamp = getTimestampInSeconds();
 
   const rawMintOrBurnRow = `
-    \"${mintOrBurnRow.eventId}\",
-    \"${mintOrBurnRow.vammAddress}\",
-    \"${mintOrBurnRow.ownerAddress}\",
-    ${mintOrBurnRow.tickLower}, 
-    ${mintOrBurnRow.tickUpper}, 
-    ${mintOrBurnRow.notionalDelta}, 
-    ${mintOrBurnRow.eventBlockNumber}, 
-    \'${secondsToBqDate(mintOrBurnRow.eventTimestamp)}\', 
-    \'${secondsToBqDate(mintOrBurnRow.rowLastUpdatedTimestamp)}\',
-    \'${mintOrBurnRow.rateOracle}\',
-    \'${mintOrBurnRow.underlyingToken}\',
-    \'${mintOrBurnRow.marginEngineAddress}\',
-    ${mintOrBurnRow.chainId}
+    \"${event.eventId}\",
+    \"${event.vammAddress}\",
+    \"${event.ownerAddress}\",
+    ${event.tickLower}, 
+    ${event.tickUpper}, 
+    ${event.notionalDelta}, 
+    ${event.blockNumber}, 
+    \'${secondsToBqDate(eventTimestamp)}\', 
+    \'${secondsToBqDate(currentTimestamp)}\',
+    \'${event.rateOracle}\',
+    \'${event.underlyingToken}\',
+    \'${event.marginEngineAddress}\',
+    ${event.chainId}
   `;
 
   const sqlTransactionQuery = `INSERT INTO \`${getTableFullID(

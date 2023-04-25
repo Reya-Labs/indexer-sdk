@@ -1,8 +1,8 @@
-import { getPreviousEvents } from '../common/contract-services/getPreviousEvents';
+import { getVammEvents } from '../common/contract-services/getVammEvents';
 import { MintOrBurnEventInfo } from '../common/event-parsers/types';
 import { getAmms } from '../common/getAmms';
 import { getLatestProcessedBlock, setLatestProcessedBlock } from '../common/services/redisService';
-import { processMintOrBurnEvent } from './processMintAndBurnEvent/processMintOrBurnEvent';
+import { processMintOrBurnEvent } from './processMintOrBurnEvent';
 
 export const syncMintsAndBurns = async (chainIds: number[]): Promise<void> => {
   const lastProcessedBlocks: { [processId: string]: number } = {};
@@ -31,7 +31,7 @@ export const syncMintsAndBurns = async (chainIds: number[]): Promise<void> => {
     );
 
     const chainPromises = amms.map(async (amm) => {
-      const events = await getPreviousEvents(amm, ['mint', 'burn'], chainId, fromBlock, toBlock);
+      const events = await getVammEvents(amm, ['mint', 'burn'], chainId, fromBlock, toBlock);
 
       if (events.length === 0) {
         return;
