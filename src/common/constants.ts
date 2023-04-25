@@ -46,7 +46,7 @@ const factories: { [chainId: string]: string } = {
 };
 
 export const getFactory = (chainId: string): string => {
-  if (Object.keys(factories).includes(chainId)) {
+  if (!Object.keys(factories).includes(chainId)) {
     throw new Error(`Factory is not specified for ${chainId}.`);
   }
 

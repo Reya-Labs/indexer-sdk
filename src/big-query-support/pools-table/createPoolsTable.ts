@@ -34,7 +34,7 @@ export const createPoolsTable = async (): Promise<void> => {
     { name: 'rateOracleId', type: 'STRING', mode: 'REQUIRED' },
     { name: 'rateOracleIndex', type: 'INTEGER', mode: 'REQUIRED' },
 
-    { name: 'underlyingToken', type: 'INTEGER', mode: 'REQUIRED' },
+    { name: 'underlyingToken', type: 'STRING', mode: 'REQUIRED' },
     { name: 'tokenDecimals', type: 'INTEGER', mode: 'REQUIRED' },
   ];
 

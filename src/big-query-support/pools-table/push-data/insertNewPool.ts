@@ -26,7 +26,7 @@ export const insertNewPool = async (event: IrsInstanceEventInfo): Promise<void> 
     \"${event.rateOracleID}\",
     ${event.rateOracleIndex},
 
-    ${event.underlyingToken},
+    \"${event.underlyingToken}\",
     ${event.tokenDecimals}
   `;
 

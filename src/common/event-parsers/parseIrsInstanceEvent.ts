@@ -17,8 +17,10 @@ export const parseIrsInstanceEvent = (
   const rateOracleIndex = event.args?.yieldBearingProtocolID as number;
   const tokenDecimals = event.args?.underlyingTokenDecimals as number;
 
-  const termStartTimestamp = Number(ethers.utils.formatUnits(termStartTimestampWad, tokenDecimals));
-  const termEndTimestamp = Number(ethers.utils.formatUnits(termEndTimestampWad, tokenDecimals));
+  const termStartTimestamp = Math.floor(
+    Number(ethers.utils.formatUnits(termStartTimestampWad, 18)),
+  );
+  const termEndTimestamp = Math.floor(Number(ethers.utils.formatUnits(termEndTimestampWad, 18)));
 
   return {
     ...event,
