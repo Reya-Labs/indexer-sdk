@@ -1,5 +1,5 @@
-import { pullAllPositions } from '../big-query-support/pull-data/pullAllPositions';
-import { updatePositions } from '../big-query-support/push-data/updatePositions';
+import { pullAllPositions } from '../big-query-support/positions-table/pull-data/pullAllPositions';
+import { updatePositions } from '../big-query-support/positions-table/push-data/updatePositions';
 import { getPreviousEvents } from '../common/contract-services/getPreviousEvents';
 import { MintOrBurnEventInfo, VAMMPriceChangeEventInfo } from '../common/event-parsers/types';
 import { getAmms } from '../common/getAmms';
@@ -112,8 +112,3 @@ export const syncLPPnL = async (chainIds: number[]): Promise<void> => {
     }
   }
 };
-
-// todo: what if fromBlock is > vamm initialization, needs to be handled in the get previous events function
-// todo: double check the fact that events are properly ordered sicne last time
-// checked and the initialization of the vammm didn't come up first
-// note this must be the initialization tick

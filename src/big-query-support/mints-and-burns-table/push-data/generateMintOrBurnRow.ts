@@ -1,6 +1,6 @@
-import { MintOrBurnEventInfo } from '../../common/event-parsers/types';
-import { getTimestampInSeconds } from '../../common/utils';
-import { BigQueryMintOrBurnRow } from '../pull-data/types';
+import { MintOrBurnEventInfo } from '../../../common/event-parsers/types';
+import { getTimestampInSeconds } from '../../../common/utils';
+import { BigQueryMintOrBurnRow } from '../../types';
 
 export const generateMintOrBurnRow = (
   event: MintOrBurnEventInfo,

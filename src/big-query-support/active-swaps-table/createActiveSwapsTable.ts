@@ -1,11 +1,12 @@
 import { Table } from '@google-cloud/bigquery';
 
-import { DATASET_ID, PRECISION, SCALE } from '../../common/constants';
 import { getBigQuery } from '../../global';
-import { getTable } from './get-table';
+import { getTable } from '../get-table';
+import { DATASET_ID, getTableName, PRECISION, SCALE } from '../utils';
 
-export const createActiveSwapsTable = async (tableName: string): Promise<void> => {
+export const createActiveSwapsTable = async (): Promise<void> => {
   const bigQuery = getBigQuery();
+  const tableName = getTableName('active_swaps');
 
   const existingTable: Table | null = await getTable(tableName);
 

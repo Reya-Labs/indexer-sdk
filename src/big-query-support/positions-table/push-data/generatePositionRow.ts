@@ -1,10 +1,10 @@
 import { AMM } from '@voltz-protocol/v1-sdk';
 
-import { SECONDS_IN_YEAR } from '../../common/constants';
-import { SwapEventInfo } from '../../common/event-parsers/types';
-import { getCashflowInfo } from '../../common/services/getCashflowInfo';
-import { getTimestampInSeconds } from '../../common/utils';
-import { BigQueryPositionRow } from '../pull-data/types';
+import { SECONDS_IN_YEAR } from '../../../common/constants';
+import { SwapEventInfo } from '../../../common/event-parsers/types';
+import { getCashflowInfo } from '../../../common/services/getCashflowInfo';
+import { getTimestampInSeconds } from '../../../common/utils';
+import { BigQueryPositionRow } from '../../types';
 
 export const generatePositionRow = (
   amm: AMM,

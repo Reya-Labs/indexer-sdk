@@ -1,7 +1,7 @@
-import { POSITIONS_TABLE_ID } from '../../common/constants';
-import { getBigQuery } from '../../global';
-import { mapToBigQueryPositionRow } from './mappers';
-import { BigQueryPositionRow } from './types';
+import { getBigQuery } from '../../../global';
+import { mapToBigQueryPositionRow } from '../../mappers';
+import { BigQueryPositionRow } from '../../types';
+import { getTableFullID } from '../../utils';
 
 export type TrackedBigQueryPositionRow = {
   position: BigQueryPositionRow;
@@ -13,7 +13,7 @@ export const pullAllPositions = async (): Promise<TrackedBigQueryPositionRow[]> 
   const bigQuery = getBigQuery();
 
   const sqlQuery = `
-    SELECT * FROM \`${POSITIONS_TABLE_ID}\` 
+    SELECT * FROM \`${getTableFullID('positions')}\` 
   `;
 
   const options = {

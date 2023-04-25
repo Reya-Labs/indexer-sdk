@@ -1,11 +1,11 @@
-import { createActiveSwapsTable } from './big-query-support/manage-tables/active-swaps-table';
-import { ACTIVE_SWAPS_TABLE_NAME } from './common/constants';
-import { authenticateImplicitWithAdc, chainIds } from './global';
+import { createActiveSwapsTable } from './big-query-support/active-swaps-table/createActiveSwapsTable';
+import { sleep } from './common/utils';
+import { authenticateImplicitWithAdc, chainIds, indexInactiveTimeInMS } from './global';
 import { syncSwaps } from './swaps/syncSwaps';
 
 export const main = async () => {
   await authenticateImplicitWithAdc();
-  await createActiveSwapsTable(ACTIVE_SWAPS_TABLE_NAME);
+  await createActiveSwapsTable();
 
   while (true) {
     try {
@@ -15,6 +15,8 @@ export const main = async () => {
         `[Swaps]: Loop has failed with message: ${(error as Error).message}.  It will retry...`,
       );
     }
+
+    await sleep(indexInactiveTimeInMS);
   }
 };
 

@@ -2,18 +2,8 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-import { Storage } from '@google-cloud/storage';
-
-import { PROJECT_ID } from '../common/constants';
+import { authenticateImplicitWithAdc } from '../global';
 import { app } from './app';
-
-async function authenticateImplicitWithAdc() {
-  const storage = new Storage({
-    projectId: PROJECT_ID,
-  });
-
-  await storage.getBuckets();
-}
 
 const main = async () => {
   await authenticateImplicitWithAdc();

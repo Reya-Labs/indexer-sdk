@@ -1,7 +1,6 @@
-import { ACTIVE_SWAPS_TABLE_ID } from '../../common/constants';
-import { SwapEventInfo } from '../../common/event-parsers/types';
-import { getBigQuery } from '../../global';
-import { secondsToBqDate } from '../utils';
+import { SwapEventInfo } from '../../../common/event-parsers/types';
+import { getBigQuery } from '../../../global';
+import { getTableFullID, secondsToBqDate } from '../../utils';
 import { generateSwapRow } from './generateSwapRow';
 
 export const insertNewSwap = async (event: SwapEventInfo): Promise<void> => {
@@ -31,7 +30,7 @@ export const insertNewSwap = async (event: SwapEventInfo): Promise<void> => {
 
   // build and fire sql query
   const sqlTransactionQuery = `
-    INSERT INTO \`${ACTIVE_SWAPS_TABLE_ID}\` VALUES (${rawSwapRow});
+    INSERT INTO \`${getTableFullID('active_swaps')}\` VALUES (${rawSwapRow});
   `;
 
   const options = {

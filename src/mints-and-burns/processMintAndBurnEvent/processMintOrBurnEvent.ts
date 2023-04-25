@@ -1,5 +1,5 @@
-import { pullExistingMintOrBurnRow } from '../../big-query-support/pull-data/pullExistingMintOrBurnRow';
-import { insertNewMintOrBurn } from '../../big-query-support/push-data/insertNewMintOrBurn';
+import { pullExistingMintOrBurnRow } from '../../big-query-support/mints-and-burns-table/pull-data/pullExistingMintOrBurnRow';
+import { insertNewMintOrBurn } from '../../big-query-support/mints-and-burns-table/push-data/insertNewMintOrBurn';
 import { MintOrBurnEventInfo } from '../../common/event-parsers/types';
 
 export const processMintOrBurnEvent = async (event: MintOrBurnEventInfo): Promise<void> => {

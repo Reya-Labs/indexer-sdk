@@ -1,27 +1,19 @@
-import { BigQuery, BigQueryInt } from '@google-cloud/bigquery';
+import { BigQueryInt } from '@google-cloud/bigquery';
 
-import { dollarAggregate } from '../../api/common/dollarAggregate';
-import { bqNumericToNumber } from '../utils';
-
-type Args = {
-  chainId: number;
-  activeSwapsTableId: string;
-  bigQuery: BigQuery;
-  geckoKey: string;
-};
+import { dollarAggregate } from '../../../api/common/dollarAggregate';
+import { GECKO_KEY } from '../../../common/constants';
+import { getBigQuery } from '../../../global';
+import { bqNumericToNumber, getTableFullID } from '../../utils';
 
 /**
  Get trading volume over last 30 days on given chain
  */
-export const getChainTradingVolume = async ({
-  chainId,
-  activeSwapsTableId,
-  bigQuery,
-  geckoKey,
-}: Args): Promise<number> => {
+export const getChainTradingVolume = async (chainId: number): Promise<number> => {
+  const bigQuery = getBigQuery();
+
   const volumeQuery = `
     SELECT underlyingToken, sum(abs(variableTokenDelta)) as amount
-      FROM \`${activeSwapsTableId}\`
+      FROM \`${getTableFullID('active_swaps')}\`
           
       WHERE (eventTimestamp > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 30 DAY)) AND 
             (chainId=${chainId})
@@ -44,7 +36,7 @@ export const getChainTradingVolume = async ({
     amount: bqNumericToNumber(row.amount),
   }));
 
-  const volume30DayInDollars = await dollarAggregate(parsedRows, geckoKey);
+  const volume30DayInDollars = await dollarAggregate(parsedRows, GECKO_KEY);
 
   return volume30DayInDollars;
 };

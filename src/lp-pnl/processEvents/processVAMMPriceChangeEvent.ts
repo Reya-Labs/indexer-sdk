@@ -1,5 +1,5 @@
-import { TrackedBigQueryPositionRow } from '../../big-query-support/pull-data/pullAllPositions';
-import { generatePositionRow } from '../../big-query-support/push-data/generatePositionRow';
+import { TrackedBigQueryPositionRow } from '../../big-query-support/positions-table/pull-data/pullAllPositions';
+import { generatePositionRow } from '../../big-query-support/positions-table/push-data/generatePositionRow';
 import { SwapEventInfo, VAMMPriceChangeEventInfo } from '../../common/event-parsers/types';
 import { calculatePassiveTokenDeltas } from '../../common/services/calculatePassiveTokenDeltas';
 import { getLiquidityIndex } from '../../common/services/getLiquidityIndex';

@@ -1,7 +1,6 @@
-import { MINTS_BURNS_TABLE_ID } from '../../common/constants';
-import { MintOrBurnEventInfo } from '../../common/event-parsers/types';
-import { getBigQuery } from '../../global';
-import { secondsToBqDate } from '../utils';
+import { MintOrBurnEventInfo } from '../../../common/event-parsers/types';
+import { getBigQuery } from '../../../global';
+import { getTableFullID, secondsToBqDate } from '../../utils';
 import { generateMintOrBurnRow } from './generateMintOrBurnRow';
 
 export const insertNewMintOrBurn = async (event: MintOrBurnEventInfo): Promise<void> => {
@@ -27,7 +26,9 @@ export const insertNewMintOrBurn = async (event: MintOrBurnEventInfo): Promise<v
     ${mintOrBurnRow.chainId}
   `;
 
-  const sqlTransactionQuery = `INSERT INTO \`${MINTS_BURNS_TABLE_ID}\` VALUES (${rawMintOrBurnRow});`;
+  const sqlTransactionQuery = `INSERT INTO \`${getTableFullID(
+    'mints_and_burns',
+  )}\` VALUES (${rawMintOrBurnRow});`;
 
   const options = {
     query: sqlTransactionQuery,

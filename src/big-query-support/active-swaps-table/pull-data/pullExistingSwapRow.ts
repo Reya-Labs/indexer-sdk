@@ -1,12 +1,14 @@
-import { ACTIVE_SWAPS_TABLE_ID } from '../../common/constants';
-import { getBigQuery } from '../../global';
-import { mapToBigQuerySwapRow } from './mappers';
-import { BigQuerySwapRow } from './types';
+import { getBigQuery } from '../../../global';
+import { mapToBigQuerySwapRow } from '../../mappers';
+import { BigQuerySwapRow } from '../../types';
+import { getTableFullID } from '../../utils';
 
 export const pullExistingSwapRow = async (eventId: string): Promise<BigQuerySwapRow | null> => {
   const bigQuery = getBigQuery();
 
-  const sqlQuery = `SELECT * FROM \`${ACTIVE_SWAPS_TABLE_ID}\` WHERE eventId=\"${eventId}\"`;
+  const sqlQuery = `SELECT * FROM \`${getTableFullID(
+    'active_swaps',
+  )}\` WHERE eventId=\"${eventId}\"`;
 
   const options = {
     query: sqlQuery,

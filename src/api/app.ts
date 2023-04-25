@@ -1,27 +1,13 @@
-import { BigQuery } from '@google-cloud/bigquery';
 import cors from 'cors';
-import * as dotenv from 'dotenv';
 import express from 'express';
 
-import { getChainTotalLiquidity } from '../big-query-support/pull-data/getTotalLiquidity';
-import { getChainTradingVolume } from '../big-query-support/pull-data/getTradingVolume';
-import { pullExistingPositionRow } from '../big-query-support/pull-data/pullExistingPositionRow';
-import {
-  ACTIVE_SWAPS_TABLE_ID,
-  GECKO_KEY,
-  MINTS_BURNS_TABLE_ID,
-  PROJECT_ID,
-  SECONDS_IN_YEAR,
-} from '../common/constants';
+import { getChainTradingVolume } from '../big-query-support/active-swaps-table/pull-data/getTradingVolume';
+import { getChainTotalLiquidity } from '../big-query-support/mints-and-burns-table/pull-data/getTotalLiquidity';
+import { pullExistingPositionRow } from '../big-query-support/positions-table/pull-data/pullExistingPositionRow';
+import { SECONDS_IN_YEAR } from '../common/constants';
 import { getLiquidityIndex } from '../common/services/getLiquidityIndex';
 import { getBlockAtTimestamp, getTimeInYearsBetweenTimestamps } from '../common/utils';
 import { getAmm } from './common/getAMM';
-
-dotenv.config();
-
-const bigQuery = new BigQuery({
-  projectId: PROJECT_ID,
-});
 
 export const app = express();
 
@@ -35,19 +21,9 @@ app.get('/chains/:chainId', (req, res) => {
   const process = async () => {
     const chainId = Number(req.params.chainId);
 
-    const tradingVolume = await getChainTradingVolume({
-      chainId: chainId,
-      activeSwapsTableId: ACTIVE_SWAPS_TABLE_ID,
-      bigQuery: bigQuery,
-      geckoKey: GECKO_KEY,
-    });
+    const tradingVolume = await getChainTradingVolume(chainId);
 
-    const totalLiquidity = await getChainTotalLiquidity({
-      chainId: chainId,
-      mintsAndBurnsTableId: MINTS_BURNS_TABLE_ID,
-      bigQuery: bigQuery,
-      geckoKey: GECKO_KEY,
-    });
+    const totalLiquidity = await getChainTotalLiquidity(chainId);
 
     return {
       volume30Day: tradingVolume,

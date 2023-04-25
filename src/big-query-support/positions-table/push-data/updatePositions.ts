@@ -1,7 +1,6 @@
-import { POSITIONS_TABLE_ID } from '../../common/constants';
-import { getBigQuery } from '../../global';
+import { getBigQuery } from '../../../global';
+import { getTableFullID, secondsToBqDate } from '../../utils';
 import { TrackedBigQueryPositionRow } from '../pull-data/pullAllPositions';
-import { secondsToBqDate } from '../utils';
 
 const CHARACTER_LIMIT = 1_000_000;
 
@@ -10,6 +9,7 @@ export const updatePositions = async (
   positions: TrackedBigQueryPositionRow[],
 ): Promise<void> => {
   const bigQuery = getBigQuery();
+  const tableId = getTableFullID('positions');
 
   const updates = positions
     .map(({ position, added, modified }) => {
@@ -42,12 +42,12 @@ export const updatePositions = async (
             ${position.liquidity}
         `;
 
-        return `INSERT INTO \`${POSITIONS_TABLE_ID}\` VALUES(${rawPositionRow});`;
+        return `INSERT INTO \`${tableId}\` VALUES(${rawPositionRow});`;
       }
 
       if (modified) {
         return `
-            UPDATE \`${POSITIONS_TABLE_ID}\`
+            UPDATE \`${tableId}\`
             SET realizedPnLFromSwaps=${position.realizedPnLFromSwaps},
                 realizedPnLFromFeesPaid=${position.realizedPnLFromFeesPaid},
                 netNotionalLocked=${position.netNotionalLocked},

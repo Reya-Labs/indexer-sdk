@@ -3,8 +3,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
-import { bqNumericToNumber, bqTimestampToUnixSeconds } from '../utils';
 import { BigQueryMintOrBurnRow, BigQueryPositionRow, BigQuerySwapRow } from './types';
+import { bqNumericToNumber, bqTimestampToUnixSeconds } from './utils';
 
 export const mapToBigQueryPositionRow = (row: any): BigQueryPositionRow => ({
   marginEngineAddress: row.marginEngineAddress,

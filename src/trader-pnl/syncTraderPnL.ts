@@ -1,5 +1,5 @@
-import { pullAllPositions } from '../big-query-support/pull-data/pullAllPositions';
-import { updatePositions } from '../big-query-support/push-data/updatePositions';
+import { pullAllPositions } from '../big-query-support/positions-table/pull-data/pullAllPositions';
+import { updatePositions } from '../big-query-support/positions-table/push-data/updatePositions';
 import { getPreviousEvents } from '../common/contract-services/getPreviousEvents';
 import { SwapEventInfo } from '../common/event-parsers/types';
 import { getAmms } from '../common/getAmms';

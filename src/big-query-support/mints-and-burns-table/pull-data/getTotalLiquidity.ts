@@ -1,27 +1,19 @@
-import { BigQuery, BigQueryInt } from '@google-cloud/bigquery';
+import { BigQueryInt } from '@google-cloud/bigquery';
 
-import { dollarAggregate } from '../../api/common/dollarAggregate';
-import { bqNumericToNumber } from '../utils';
-
-type Args = {
-  chainId: number;
-  mintsAndBurnsTableId: string;
-  bigQuery: BigQuery;
-  geckoKey: string;
-};
+import { dollarAggregate } from '../../../api/common/dollarAggregate';
+import { GECKO_KEY } from '../../../common/constants';
+import { getBigQuery } from '../../../global';
+import { bqNumericToNumber, getTableFullID } from '../../utils';
 
 /**
  Get chain total liquidity
  */
-export const getChainTotalLiquidity = async ({
-  chainId,
-  mintsAndBurnsTableId,
-  bigQuery,
-  geckoKey,
-}: Args): Promise<number> => {
+export const getChainTotalLiquidity = async (chainId: number): Promise<number> => {
+  const bigQuery = getBigQuery();
+
   const liquidityQuery = `
     SELECT underlyingToken, sum(notionalDelta) as amount
-      FROM \`${mintsAndBurnsTableId}\`
+      FROM \`${getTableFullID('mints_and_burns')}\`
       WHERE chainId=${chainId}
       GROUP BY underlyingToken
   `;
@@ -41,7 +33,7 @@ export const getChainTotalLiquidity = async ({
     amount: bqNumericToNumber(row.amount),
   }));
 
-  const totalLiquidityInDollars = await dollarAggregate(parsedRows, geckoKey);
+  const totalLiquidityInDollars = await dollarAggregate(parsedRows, GECKO_KEY);
 
   return totalLiquidityInDollars;
 };

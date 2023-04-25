@@ -1,7 +1,7 @@
 import { Table } from '@google-cloud/bigquery';
 
-import { DATASET_ID } from '../../common/constants';
-import { getBigQuery } from '../../global';
+import { getBigQuery } from '../global';
+import { DATASET_ID } from './utils';
 
 export const getTable = async (tableName: string): Promise<Table | null> => {
   const bigQuery = getBigQuery();

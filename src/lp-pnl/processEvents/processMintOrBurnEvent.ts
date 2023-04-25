@@ -1,4 +1,4 @@
-import { TrackedBigQueryPositionRow } from '../../big-query-support/pull-data/pullAllPositions';
+import { TrackedBigQueryPositionRow } from '../../big-query-support/positions-table/pull-data/pullAllPositions';
 import { MintOrBurnEventInfo } from '../../common/event-parsers/types';
 import { getTimestampInSeconds } from '../../common/utils';
 
@@ -20,7 +20,8 @@ export const processMintOrBurnEvent = (
 
   if (existingPositionIndex === -1) {
     // Position does not exist in the table, add new one
-    currentPositions.push({
+
+    const newPosition: TrackedBigQueryPositionRow = {
       position: {
         marginEngineAddress: event.marginEngineAddress,
         vammAddress: event.vammAddress,
@@ -50,11 +51,14 @@ export const processMintOrBurnEvent = (
       },
       added: true,
       modified: true,
-    });
+    };
+
+    currentPositions.push(newPosition);
 
     return;
   }
 
+  // Update the exisiting position
   const notionalLiquidityProvided =
     currentPositions[existingPositionIndex].position.notionalLiquidityProvided +
     event.notionalDelta;
@@ -62,7 +66,6 @@ export const processMintOrBurnEvent = (
   const liquidity =
     currentPositions[existingPositionIndex].position.liquidity + event.liquidityDelta;
 
-  // Update the exisiting position
   currentPositions[existingPositionIndex].modified = true;
   currentPositions[existingPositionIndex].position.lastUpdatedBlockNumber = event.blockNumber;
   currentPositions[existingPositionIndex].position.notionalLiquidityProvided =

@@ -1,7 +1,7 @@
-import { POSITIONS_TABLE_ID } from '../../common/constants';
-import { getBigQuery } from '../../global';
-import { mapToBigQueryPositionRow } from './mappers';
-import { BigQueryPositionRow } from './types';
+import { getBigQuery } from '../../../global';
+import { mapToBigQueryPositionRow } from '../../mappers';
+import { BigQueryPositionRow } from '../../types';
+import { getTableFullID } from '../../utils';
 
 export const pullExistingPositionRow = async (
   chainId: number,
@@ -13,7 +13,7 @@ export const pullExistingPositionRow = async (
   const bigQuery = getBigQuery();
 
   const sqlQuery = `
-    SELECT * FROM \`${POSITIONS_TABLE_ID}\` 
+    SELECT * FROM \`${getTableFullID('positions')}\` 
       WHERE chainId=${chainId} AND
             vammAddress=\"${vammAddress}\" AND 
             ownerAddress=\"${recipient}\" AND 

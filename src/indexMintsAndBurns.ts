@@ -1,11 +1,11 @@
-import { createMintsAndBurnsTable } from './big-query-support/manage-tables/mints-and-burns-table';
-import { MINTS_BURNS_TABLE_NAME } from './common/constants';
-import { authenticateImplicitWithAdc, chainIds } from './global';
+import { createMintsAndBurnsTable } from './big-query-support/mints-and-burns-table/createMintsAndBurnsTable';
+import { sleep } from './common/utils';
+import { authenticateImplicitWithAdc, chainIds, indexInactiveTimeInMS } from './global';
 import { syncMintsAndBurns } from './mints-and-burns/syncMintsAndBurns';
 
 export const main = async () => {
   await authenticateImplicitWithAdc();
-  await createMintsAndBurnsTable(MINTS_BURNS_TABLE_NAME);
+  await createMintsAndBurnsTable();
 
   while (true) {
     try {
@@ -17,6 +17,8 @@ export const main = async () => {
         }.  It will retry...`,
       );
     }
+
+    await sleep(indexInactiveTimeInMS);
   }
 };
 

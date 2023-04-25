@@ -1,11 +1,11 @@
-import { createPositionsTable } from './big-query-support/manage-tables/positions-table';
-import { POSITIONS_TABLE_NAME } from './common/constants';
-import { authenticateImplicitWithAdc, chainIds } from './global';
+import { createPositionsTable } from './big-query-support/positions-table/createPositionsTable';
+import { sleep } from './common/utils';
+import { authenticateImplicitWithAdc, chainIds, indexInactiveTimeInMS } from './global';
 import { syncLPPnL } from './lp-pnl/syncLPPnL';
 
 export const main = async () => {
   await authenticateImplicitWithAdc();
-  await createPositionsTable(POSITIONS_TABLE_NAME);
+  await createPositionsTable();
 
   while (true) {
     try {
@@ -15,6 +15,8 @@ export const main = async () => {
         `[LP PnL]: Loop has failed with message: ${(error as Error).message}.  It will retry...`,
       );
     }
+
+    await sleep(indexInactiveTimeInMS);
   }
 };
 
