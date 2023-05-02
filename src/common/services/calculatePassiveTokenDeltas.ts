@@ -1,3 +1,5 @@
+import { getTokensFromLiquidity } from './getTokensFromLiquidity';
+
 export const calculatePassiveTokenDeltas = (
   liquidity: number,
   tickLower: number,
@@ -31,12 +33,11 @@ export const calculatePassiveTokenDeltas = (
   tradedLower = Math.max(tradedLower, tickLower);
   tradedUpper = Math.min(tradedUpper, tickUpper);
 
-  const sqrtPriceLower = Math.pow(1.0001, tradedLower / 2);
-  const sqrtPriceUpper = Math.pow(1.0001, tradedUpper / 2);
-
-  const absVariableTokenDelta = liquidity * (sqrtPriceUpper - sqrtPriceLower);
-  const absUnbalancedFixedTokenDelta =
-    (liquidity * (sqrtPriceUpper - sqrtPriceLower)) / sqrtPriceUpper / sqrtPriceLower;
+  const { absVariableTokenDelta, absUnbalancedFixedTokenDelta } = getTokensFromLiquidity(
+    liquidity,
+    tradedLower,
+    tradedUpper,
+  );
 
   return {
     variableTokenDelta: isVT ? absVariableTokenDelta : -absVariableTokenDelta,

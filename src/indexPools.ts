@@ -1,7 +1,9 @@
 import { createPoolsTable } from './big-query-support/pools-table/createPoolsTable';
 import { sleep } from './common/utils';
-import { authenticateImplicitWithAdc, chainIds, indexInactiveTimeInMS } from './global';
+import { authenticateImplicitWithAdc, indexInactiveTimeInMS } from './global';
 import { syncPools } from './pools/syncPools';
+
+const chainIds = [1, 5, 42161, 421613];
 
 export const main = async () => {
   await authenticateImplicitWithAdc();

@@ -16,6 +16,7 @@ export const parseIrsInstanceEvent = (
   const vamm = event.args?.vamm as string;
   const rateOracleIndex = event.args?.yieldBearingProtocolID as number;
   const tokenDecimals = event.args?.underlyingTokenDecimals as number;
+  const tickSpacing = event.args?.tickSpacing as number;
 
   const termStartTimestamp = Math.floor(
     Number(ethers.utils.formatUnits(termStartTimestampWad, 18)),
@@ -28,18 +29,20 @@ export const parseIrsInstanceEvent = (
     type: 'irs_pool_deployment',
 
     chainId,
-    factory: event.address,
+    factory: event.address.toLowerCase(),
 
-    vamm,
-    marginEngine,
+    vamm: vamm.toLowerCase(),
+    marginEngine: marginEngine.toLowerCase(),
 
     termStartTimestamp,
     termEndTimestamp,
 
-    rateOracleID,
+    rateOracleID: rateOracleID.toLowerCase(),
     rateOracleIndex,
 
-    underlyingToken,
+    underlyingToken: underlyingToken.toLowerCase(),
     tokenDecimals,
+
+    tickSpacing,
   };
 };

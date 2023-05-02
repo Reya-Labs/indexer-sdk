@@ -1,13 +1,11 @@
-import { AMM } from '@voltz-protocol/v1-sdk';
-
 import { SECONDS_IN_YEAR } from '../../../common/constants';
 import { SwapEventInfo } from '../../../common/event-parsers/types';
 import { getCashflowInfo } from '../../../common/services/getCashflowInfo';
 import { getTimestampInSeconds } from '../../../common/utils';
-import { BigQueryPositionRow } from '../../types';
+import { BigQueryPoolRow, BigQueryPositionRow } from '../../types';
 
 export const generatePositionRow = (
-  amm: AMM,
+  amm: BigQueryPoolRow,
   eventInfo: SwapEventInfo,
   eventTimestamp: number,
   existingPosition: BigQueryPositionRow | null,
@@ -59,8 +57,7 @@ export const generatePositionRow = (
   // todo: add empty entries
   return {
     chainId: eventInfo.chainId,
-    marginEngineAddress:
-      existingPosition?.marginEngineAddress || amm.marginEngineAddress.toLowerCase(),
+    marginEngineAddress: existingPosition?.marginEngineAddress || amm.marginEngine.toLowerCase(),
     vammAddress: existingPosition?.vammAddress || eventInfo.vammAddress,
     ownerAddress: existingPosition?.ownerAddress || eventInfo.ownerAddress,
     tickLower: existingPosition?.tickLower || eventInfo.tickLower,
@@ -74,14 +71,14 @@ export const generatePositionRow = (
     notionalLiquidityProvided: existingPosition?.notionalLiquidityProvided || 0, // todo: track
     realizedPnLFromFeesCollected: existingPosition?.realizedPnLFromFeesCollected || 0, // todo: track
     netMarginDeposited: existingPosition?.netMarginDeposited || 0, // todo: track
-    rateOracleIndex: existingPosition?.rateOracleIndex || amm.rateOracle.protocolId,
+    rateOracleIndex: existingPosition?.rateOracleIndex || amm.protocolId,
     rowLastUpdatedTimestamp: rowLastUpdatedTimestamp,
     fixedTokenBalance: existingPosition?.fixedTokenBalance || 0, // todo: track
     variableTokenBalance: existingPosition?.variableTokenBalance || 0, // todo: track
     positionInitializationBlockNumber:
       existingPosition?.positionInitializationBlockNumber || eventInfo.blockNumber,
-    rateOracle: existingPosition?.rateOracle || amm.rateOracle.protocol,
-    underlyingToken: existingPosition?.underlyingToken || amm.underlyingToken.name,
+    rateOracle: existingPosition?.rateOracle || amm.rateOracle,
+    underlyingToken: existingPosition?.underlyingToken || amm.tokenName,
     cashflowLiFactor,
     cashflowTimeFactor,
     cashflowFreeTerm,

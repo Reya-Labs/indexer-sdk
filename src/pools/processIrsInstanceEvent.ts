@@ -3,7 +3,7 @@ import { insertNewPool } from '../big-query-support/pools-table/push-data/insert
 import { IrsInstanceEventInfo } from '../common/event-parsers/types';
 
 export const processIrsInstanceEvent = async (event: IrsInstanceEventInfo): Promise<void> => {
-  const poolRow = await pullExistingPoolRow(event.eventId);
+  const poolRow = await pullExistingPoolRow(event.vamm, event.chainId);
 
   if (poolRow) {
     return;

@@ -3,6 +3,7 @@ import { updatePositions } from '../big-query-support/positions-table/push-data/
 import { getVammEvents } from '../common/contract-services/getVammEvents';
 import { SwapEventInfo } from '../common/event-parsers/types';
 import { getAmms } from '../common/getAmms';
+import { getProvider } from '../common/provider/getProvider';
 import { getLatestProcessedBlock, setLatestProcessedBlock } from '../common/services/redisService';
 import { processSwapEvent } from './processSwapEvent';
 
@@ -20,8 +21,10 @@ export const syncTraderPnL = async (chainIds: number[]): Promise<void> => {
       continue;
     }
 
+    const provider = getProvider(chainId);
+
     const fromBlock = (await getLatestProcessedBlock(processId)) + 1;
-    const toBlock = await amms[0].provider.getBlockNumber();
+    const toBlock = await provider.getBlockNumber();
 
     if (fromBlock >= toBlock) {
       continue;

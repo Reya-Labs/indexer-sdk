@@ -77,18 +77,32 @@ export const mapToBigQuerySwapRow = (row: any): BigQuerySwapRow => ({
 });
 
 export const mapToBigQueryPoolRow = (row: any): BigQueryPoolRow => ({
-  eventId: row.eventId,
   chainId: bqNumericToNumber(row.chainId),
   factory: row.factory,
+
+  deploymentBlockNumber: bqNumericToNumber(row.deploymentBlockNumber),
+  deploymentTimestampInMS: bqNumericToNumber(row.deploymentTimestampInMS),
+  rowLastUpdatedTimestampInMS: bqNumericToNumber(row.rowLastUpdatedTimestampInMS),
+
   vamm: row.vamm,
   marginEngine: row.marginEngine,
-  eventBlockNumber: bqNumericToNumber(row.eventBlockNumber),
-  eventTimestamp: bqTimestampToUnixSeconds(row.eventTimestamp),
-  rowLastUpdatedTimestamp: bqTimestampToUnixSeconds(row.rowLastUpdatedTimestamp),
-  termStartTimestamp: bqTimestampToUnixSeconds(row.termStartTimestamp),
-  termEndTimestamp: bqTimestampToUnixSeconds(row.termEndTimestamp),
-  rateOracleId: row.rateOracleId,
-  rateOracleIndex: bqNumericToNumber(row.rateOracleIndex),
-  underlyingToken: bqNumericToNumber(row.underlyingToken),
+  rateOracle: row.rateOracle,
+  protocolId: bqNumericToNumber(row.protocolId),
+
+  tickSpacing: bqNumericToNumber(row.tickSpacing),
+
+  termStartTimestampInMS: bqNumericToNumber(row.termStartTimestampInMS),
+  termEndTimestampInMS: bqNumericToNumber(row.termEndTimestampInMS),
+
+  tokenId: row.tokenId,
+  tokenName: row.tokenName,
   tokenDecimals: bqNumericToNumber(row.tokenDecimals),
+
+  hidden: row.hidden,
+  traderHidden: row.traderHidden,
+  traderWithdrawable: row.traderWithdrawable,
+
+  minLeverageAllowed: bqNumericToNumber(row.minLeverageAllowed),
+
+  rollover: row.rollover,
 });

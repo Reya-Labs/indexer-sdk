@@ -1,7 +1,8 @@
 import { IrsInstanceEventInfo } from '../../../common/event-parsers/types';
+import { getTokenName } from '../../../common/getTokenName';
 import { getTimestampInSeconds } from '../../../common/utils';
 import { getBigQuery } from '../../../global';
-import { getTableFullID, secondsToBqDate } from '../../utils';
+import { getTableFullID } from '../../utils';
 
 export const insertNewPool = async (event: IrsInstanceEventInfo): Promise<void> => {
   const bigQuery = getBigQuery();
@@ -10,24 +11,33 @@ export const insertNewPool = async (event: IrsInstanceEventInfo): Promise<void> 
   const currentTimestamp = getTimestampInSeconds();
 
   const rawPoolRow = `
-    \"${event.eventId}\",
     ${event.chainId},
     \"${event.factory}\",
-    \"${event.vamm}\",
-    \"${event.marginEngine}\",
 
     ${event.blockNumber}, 
-    \'${secondsToBqDate(eventTimestamp)}\',
-    \'${secondsToBqDate(currentTimestamp)}\',
+    ${eventTimestamp * 1000},
+    ${currentTimestamp * 1000},
 
-    \'${secondsToBqDate(event.termStartTimestamp)}\',
-    \'${secondsToBqDate(event.termEndTimestamp)}\',
-
+    \"${event.vamm}\",
+    \"${event.marginEngine}\",
     \"${event.rateOracleID}\",
     ${event.rateOracleIndex},
 
+    ${event.tickSpacing},
+
+    ${event.termStartTimestamp * 1000}, 
+    ${event.termEndTimestamp * 1000}, 
+
     \"${event.underlyingToken}\",
-    ${event.tokenDecimals}
+    \"${getTokenName(event.underlyingToken)}\",
+    ${event.tokenDecimals},
+
+    false,
+    false,
+    false,
+
+    0,
+    \"\"
   `;
 
   const sqlTransactionQuery = `INSERT INTO \`${getTableFullID('pools')}\` VALUES (${rawPoolRow});`;

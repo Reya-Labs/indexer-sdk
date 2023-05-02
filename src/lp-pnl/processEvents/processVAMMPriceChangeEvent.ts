@@ -17,15 +17,14 @@ export const processVAMMPriceChangeEvent = async (
   // Retrieve liquidity index at the event block
   const liquidityIndexAtRootEvent = await getLiquidityIndex(
     priceChangeVammEventInfo.chainId,
-    priceChangeVammEventInfo.amm.provider,
-    priceChangeVammEventInfo.amm.marginEngineAddress,
+    priceChangeVammEventInfo.amm.marginEngine,
     priceChangeVammEventInfo.blockNumber,
   );
 
   for (let i = 0; i < currentPositions.length; i++) {
     const { position } = currentPositions[i];
 
-    if (!(position.vammAddress === priceChangeVammEventInfo.amm.id)) {
+    if (!(position.vammAddress === priceChangeVammEventInfo.amm.vamm)) {
       continue;
     }
 

@@ -3,6 +3,7 @@ import { updatePositions } from '../big-query-support/positions-table/push-data/
 import { getVammEvents } from '../common/contract-services/getVammEvents';
 import { MintOrBurnEventInfo, VAMMPriceChangeEventInfo } from '../common/event-parsers/types';
 import { getAmms } from '../common/getAmms';
+import { getProvider } from '../common/provider/getProvider';
 import {
   getLatestProcessedBlock,
   getLatestProcessedTick,
@@ -27,8 +28,10 @@ export const syncLPPnL = async (chainIds: number[]): Promise<void> => {
       continue;
     }
 
+    const provider = getProvider(chainId);
+
     const fromBlock = (await getLatestProcessedBlock(processId)) + 1;
-    const toBlock = await amms[0].provider.getBlockNumber();
+    const toBlock = await provider.getBlockNumber();
 
     if (fromBlock >= toBlock) {
       continue;
@@ -51,7 +54,7 @@ export const syncLPPnL = async (chainIds: number[]): Promise<void> => {
         return;
       }
 
-      const poolId = `${chainId}_${amm.id.toLowerCase()}`;
+      const poolId = `${chainId}_${amm.vamm.toLowerCase()}`;
       lastProcessedTicks[poolId] = await getLatestProcessedTick(poolId);
 
       for (let i = 0; i < events.length; i++) {

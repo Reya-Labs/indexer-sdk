@@ -1,7 +1,6 @@
-import { getProvider } from '@voltz-protocol/v1-sdk';
-
-import { ALCHEMY_API_KEY, getFactory } from '../common/constants';
+import { getFactory } from '../common/constants';
 import { getFactoryEvents } from '../common/contract-services/getFactoryEvents';
+import { getProvider } from '../common/provider/getProvider';
 import { getLatestProcessedBlock, setLatestProcessedBlock } from '../common/services/redisService';
 import { processIrsInstanceEvent } from './processIrsInstanceEvent';
 
@@ -11,7 +10,7 @@ export const syncPools = async (chainIds: number[]): Promise<void> => {
   for (const chainId of chainIds) {
     const processId = `pools_${chainId}`;
     const factory = getFactory(chainId.toString());
-    const provider = getProvider(chainId, ALCHEMY_API_KEY);
+    const provider = getProvider(chainId);
 
     const fromBlock = (await getLatestProcessedBlock(processId)) + 1;
     const toBlock = await provider.getBlockNumber();
@@ -34,7 +33,7 @@ export const syncPools = async (chainIds: number[]): Promise<void> => {
     );
 
     if (events.length === 0) {
-      return;
+      continue;
     }
 
     for (const event of events) {

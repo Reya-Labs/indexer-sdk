@@ -1,21 +1,22 @@
-import { AMM } from '@voltz-protocol/v1-sdk';
-
+import { BigQueryPoolRow } from '../../big-query-support/types';
 import { isTestingAccount } from '../constants';
 import { parseMintOrBurnEvent } from '../event-parsers/parseMintOrBurnEvent';
 import { parseSwapEvent } from '../event-parsers/parseSwapEvent';
 import { parseVAMMPriceChangeEvent } from '../event-parsers/parseVAMMPriceChangeEvent';
+import { getProvider } from '../provider/getProvider';
 import { VammEventInfo, VammEventType } from '../types';
 import { generateVAMMContract } from './generateVAMMContract';
 
 export const getVammEvents = async (
-  amm: AMM,
+  amm: BigQueryPoolRow,
   eventTypes: VammEventType[],
   chainId: number,
   fromBlock: number,
   toBlock: number,
 ): Promise<VammEventInfo[]> => {
   const allEvents: VammEventInfo[] = [];
-  const vammContract = generateVAMMContract(amm.id, amm.provider);
+  const provider = getProvider(chainId);
+  const vammContract = generateVAMMContract(amm.vamm, provider);
 
   if (eventTypes.includes('mint')) {
     const eventFilter = vammContract.filters.Mint();

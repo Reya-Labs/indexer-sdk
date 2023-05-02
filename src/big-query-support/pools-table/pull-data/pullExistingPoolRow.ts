@@ -3,10 +3,15 @@ import { mapToBigQueryPoolRow } from '../../mappers';
 import { BigQueryPoolRow } from '../../types';
 import { getTableFullID } from '../../utils';
 
-export const pullExistingPoolRow = async (eventId: string): Promise<BigQueryPoolRow | null> => {
+export const pullExistingPoolRow = async (
+  vammAddress: string,
+  chainId: number,
+): Promise<BigQueryPoolRow | null> => {
   const bigQuery = getBigQuery();
 
-  const sqlQuery = `SELECT * FROM \`${getTableFullID('pools')}\` WHERE eventId=\"${eventId}\"`;
+  const sqlQuery = `SELECT * FROM \`${getTableFullID(
+    'pools',
+  )}\` WHERE vamm=\"${vammAddress}\" AND chainId=${chainId}`;
 
   const options = {
     query: sqlQuery,

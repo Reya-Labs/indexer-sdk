@@ -1,18 +1,19 @@
 import { TrackedBigQueryPositionRow } from '../big-query-support/positions-table/pull-data/pullAllPositions';
 import { generatePositionRow } from '../big-query-support/positions-table/push-data/generatePositionRow';
 import { SwapEventInfo } from '../common/event-parsers/types';
+import { getProvider } from '../common/provider/getProvider';
 import { getLiquidityIndex } from '../common/services/getLiquidityIndex';
 
 export const processSwapEvent = async (
   currentPositions: TrackedBigQueryPositionRow[],
   event: SwapEventInfo,
 ): Promise<void> => {
-  const eventTimestamp = (await event.amm.provider.getBlock(event.blockNumber)).timestamp;
+  const provider = getProvider(event.chainId);
+  const eventTimestamp = (await provider.getBlock(event.blockNumber)).timestamp;
 
   const liquidityIndexAtRootEvent = await getLiquidityIndex(
     event.chainId,
-    event.amm.provider,
-    event.amm.marginEngineAddress,
+    event.amm.marginEngine,
     event.blockNumber,
   );
 

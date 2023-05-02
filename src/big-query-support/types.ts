@@ -71,23 +71,32 @@ export type BigQueryPositionRow = {
 
 // Pool rows do NOT change in time
 export type BigQueryPoolRow = {
-  eventId: string; // immutable
   chainId: number; // immutable
   factory: string; // immutable
 
+  deploymentBlockNumber: number; // immutable
+  deploymentTimestampInMS: number; // immutable
+  rowLastUpdatedTimestampInMS: number;
+
   vamm: string; // immutable
   marginEngine: string; // immutable
+  rateOracle: string; // immutable
+  protocolId: number; // immutable
 
-  eventBlockNumber: number; // immutable
-  eventTimestamp: number; // immutable
-  rowLastUpdatedTimestamp: number; // immutable
+  tickSpacing: number; // immutable
 
-  termStartTimestamp: number; // immutable
-  termEndTimestamp: number; // immutable
+  termStartTimestampInMS: number; // immutable
+  termEndTimestampInMS: number; // immutable
 
-  rateOracleId: string; // immutable
-  rateOracleIndex: number; // immutable
-
-  underlyingToken: number; // immutable
+  tokenId: string; // immutable
+  tokenName: string; // immutable
   tokenDecimals: number; // immutable
+
+  hidden: boolean;
+  traderHidden: boolean;
+  traderWithdrawable: boolean;
+
+  minLeverageAllowed: number;
+
+  rollover: string;
 };

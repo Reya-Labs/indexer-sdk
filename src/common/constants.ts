@@ -42,7 +42,9 @@ export const isTestingAccount = (address: string): boolean => {
 
 const factories: { [chainId: string]: string } = {
   1: '0x6a7a5c3824508d03f0d2d24e0482bea39e08ccaf',
+  5: '0x9f30Ec6903F1728ca250f48f664e48c3f15038eD',
   42161: '0xda66a7584da7210fd26726efb12585734f7688c1',
+  421613: '0xCC39fF9f5413DA2dFB8475a88E3E6C8B190CeAe6',
 };
 
 export const getFactory = (chainId: string): string => {

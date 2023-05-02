@@ -1,12 +1,14 @@
 import { MintOrBurnEventInfo } from '../../../common/event-parsers/types';
+import { getProvider } from '../../../common/provider/getProvider';
 import { getTimestampInSeconds } from '../../../common/utils';
 import { getBigQuery } from '../../../global';
 import { getTableFullID, secondsToBqDate } from '../../utils';
 
 export const insertNewMintOrBurn = async (event: MintOrBurnEventInfo): Promise<void> => {
   const bigQuery = getBigQuery();
+  const provider = getProvider(event.chainId);
 
-  const eventTimestamp = (await event.amm.provider.getBlock(event.blockNumber)).timestamp;
+  const eventTimestamp = (await provider.getBlock(event.blockNumber)).timestamp;
   const currentTimestamp = getTimestampInSeconds();
 
   const rawMintOrBurnRow = `

@@ -1,6 +1,6 @@
-import { AMM } from '@voltz-protocol/v1-sdk';
 import { Event } from 'ethers';
 
+import { BigQueryPoolRow } from '../../big-query-support/types';
 import { FactoryEventType, VammEventType } from '../types';
 
 interface BaseVammEventInfo extends Event {
@@ -9,7 +9,7 @@ interface BaseVammEventInfo extends Event {
 
   chainId: number;
   vammAddress: string; // todo: deprecate because we have amm
-  amm: AMM;
+  amm: BigQueryPoolRow;
 
   rateOracle: string; // todo: deprecate because we have amm
   underlyingToken: string; // todo: deprecate because we have amm
@@ -60,4 +60,6 @@ export interface IrsInstanceEventInfo extends BaseFactoryEventInfo {
 
   underlyingToken: string;
   tokenDecimals: number;
+
+  tickSpacing: number;
 }

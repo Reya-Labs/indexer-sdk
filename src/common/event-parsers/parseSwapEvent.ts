@@ -1,16 +1,20 @@
-import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
 
+import { BigQueryPoolRow } from '../../big-query-support/types';
 import { SwapEventInfo } from './types';
 
-export const parseSwapEvent = (event: ethers.Event, amm: AMM, chainId: number): SwapEventInfo => {
+export const parseSwapEvent = (
+  event: ethers.Event,
+  amm: BigQueryPoolRow,
+  chainId: number,
+): SwapEventInfo => {
   const eventId = `${event.blockHash}_${event.transactionHash}_${event.logIndex}`;
 
   const ownerAddress = event.args?.recipient as string;
   const tickLower = event.args?.tickLower as number;
   const tickUpper = event.args?.tickUpper as number;
 
-  const tokenDecimals = amm.underlyingToken.decimals;
+  const tokenDecimals = amm.tokenDecimals;
 
   const variableTokenDelta = Number(
     ethers.utils.formatUnits(event.args?.variableTokenDelta as ethers.BigNumber, tokenDecimals),
@@ -31,12 +35,12 @@ export const parseSwapEvent = (event: ethers.Event, amm: AMM, chainId: number): 
     type: 'swap',
 
     chainId: chainId,
-    vammAddress: amm.id.toLowerCase(),
+    vammAddress: amm.vamm.toLowerCase(),
     amm,
 
-    rateOracle: amm.rateOracle.protocol,
-    underlyingToken: amm.underlyingToken.name,
-    marginEngineAddress: amm.marginEngineAddress,
+    rateOracle: amm.rateOracle,
+    underlyingToken: amm.tokenName,
+    marginEngineAddress: amm.marginEngine,
 
     ownerAddress: ownerAddress.toLowerCase(),
     tickLower,
