@@ -1,7 +1,7 @@
 import { createPositionsTable } from './big-query-support/positions-table/createPositionsTable';
 import { sleep } from './common/utils';
 import { authenticateImplicitWithAdc, chainIds, indexInactiveTimeInMS } from './global';
-import { syncLPPnL } from './lp-pnl/syncLPPnL';
+import { syncPnL } from './pnl/syncPnL';
 
 export const main = async () => {
   await authenticateImplicitWithAdc();
@@ -9,10 +9,10 @@ export const main = async () => {
 
   while (true) {
     try {
-      await syncLPPnL(chainIds);
+      await syncPnL(chainIds);
     } catch (error) {
       console.log(
-        `[LP PnL]: Loop has failed with message: ${(error as Error).message}.  It will retry...`,
+        `[PnL]: Loop has failed with message: ${(error as Error).message}.  It will retry...`,
       );
     }
 
@@ -22,8 +22,8 @@ export const main = async () => {
 
 main()
   .then(() => {
-    console.log('[LP PnL]: Execution completed.');
+    console.log('[PnL]: Execution completed.');
   })
   .catch((error) => {
-    console.log(`[LP PnL]: Error encountered. ${(error as unknown as Error).message}`);
+    console.log(`[PnL]: Error encountered. ${(error as unknown as Error).message}`);
   });

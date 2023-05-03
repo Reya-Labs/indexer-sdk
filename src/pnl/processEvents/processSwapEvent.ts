@@ -1,8 +1,8 @@
-import { TrackedBigQueryPositionRow } from '../big-query-support/positions-table/pull-data/pullAllPositions';
-import { generatePositionRow } from '../big-query-support/positions-table/push-data/generatePositionRow';
-import { SwapEventInfo } from '../common/event-parsers/types';
-import { getProvider } from '../common/provider/getProvider';
-import { getLiquidityIndex } from '../common/services/getLiquidityIndex';
+import { TrackedBigQueryPositionRow } from '../../big-query-support/positions-table/pull-data/pullAllPositions';
+import { generatePositionRow } from '../../big-query-support/positions-table/push-data/generatePositionRow';
+import { SwapEventInfo } from '../../common/event-parsers/types';
+import { getProvider } from '../../common/provider/getProvider';
+import { getLiquidityIndex } from '../../common/services/getLiquidityIndex';
 
 export const processSwapEvent = async (
   currentPositions: TrackedBigQueryPositionRow[],

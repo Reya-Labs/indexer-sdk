@@ -7,11 +7,12 @@ import { pullAllChainPools } from '../big-query-support/pools-table/pull-data/pu
 import { pullExistingPoolRow } from '../big-query-support/pools-table/pull-data/pullExistingPoolRow';
 import { pullExistingPositionRow } from '../big-query-support/positions-table/pull-data/pullExistingPositionRow';
 import { SECONDS_IN_YEAR } from '../common/constants';
+import { getCurrentTick } from '../common/contract-services/getCurrentTick';
 import { getProvider } from '../common/provider/getProvider';
 import { getLiquidityIndex } from '../common/services/getLiquidityIndex';
+import { tickToFixedRate } from '../common/services/tickConversions';
 import { getBlockAtTimestamp, getTimeInYearsBetweenTimestamps } from '../common/utils';
 import { getAmm } from './common/getAMM';
-import { getFixedApr } from './common/getFixedAPR';
 
 export const app = express();
 
@@ -97,8 +98,8 @@ app.get('/positions/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper', 
       existingPosition.cashflowFreeTerm;
 
     // unrealized PnL
-    // note: scaling by 100 since the raw output fixedApr is in percentage point terms
-    const currentFixedRate = await getFixedApr(chainId, vammAddress);
+    const currentTick = await getCurrentTick(chainId, vammAddress);
+    const currentFixedRate = tickToFixedRate(currentTick);
 
     const timeInYears = getTimeInYearsBetweenTimestamps(currentTimestamp, maturityTimestamp);
 

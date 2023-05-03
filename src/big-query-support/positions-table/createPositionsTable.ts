@@ -15,7 +15,6 @@ export const createPositionsTable = async (): Promise<void> => {
     return;
   }
 
-  // todo: replace precision and scale in here with the constants PRECISION & SCALE
   const schema = [
     { name: 'marginEngineAddress', type: 'STRING', mode: 'REQUIRED' },
     { name: 'vammAddress', type: 'STRING', mode: 'REQUIRED' },
@@ -126,6 +125,7 @@ export const createPositionsTable = async (): Promise<void> => {
       precision: PRECISION.toString(),
       scale: SCALE.toString(),
     },
+    { name: 'previousTick', type: 'INTEGER', mode: 'REQUIRED' },
   ];
 
   // For all options, see https://cloud.google.com/bigquery/docs/reference/v2/tables#resource

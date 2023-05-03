@@ -1,7 +1,7 @@
-import { getNotionalFromLiquidity } from '@voltz-protocol/v1-sdk';
 import { BigNumber, ethers } from 'ethers';
 
 import { BigQueryPoolRow } from '../../big-query-support/types';
+import { getTokensFromLiquidity } from '../services/getTokensFromLiquidity';
 import { MintOrBurnEventInfo } from './types';
 
 export const parseMintOrBurnEvent = (
@@ -18,8 +18,12 @@ export const parseMintOrBurnEvent = (
   const amount = event.args?.amount as BigNumber;
 
   const tokenDecimals = amm.tokenDecimals;
-  const notionalDelta = getNotionalFromLiquidity(amount, tickLower, tickUpper, tokenDecimals);
   const liquidityDelta = Number(ethers.utils.formatUnits(amount, tokenDecimals));
+  const { absVariableTokenDelta: notionalDelta } = getTokensFromLiquidity(
+    liquidityDelta,
+    tickLower,
+    tickUpper,
+  );
 
   return {
     ...event,
