@@ -6,19 +6,19 @@ export const getAmms = async (chainId: number): Promise<BigQueryPoolRow[]> => {
   // Get AMMs
   const amms = await pullAllChainPools(chainId);
 
-  // Filter out the inactive pools
-  const activeAmms = amms.filter((item) => {
-    return item.termEndTimestampInMS / 1000 > APR_2023_TIMESTAMP;
-  });
-
-  // // todo: remove this, debugging purposes only
+  // // Filter out the inactive pools
   // const activeAmms = amms.filter((item) => {
-  //   if (item.id.toLowerCase() === '0xacf59c72660d1e6629a721fd958f7a8c64379835'.toLowerCase()) {
-  //     return true;
-  //   }
-
-  //   return false;
+  //   return item.termEndTimestampInMS / 1000 > APR_2023_TIMESTAMP;
   // });
+
+  // todo: remove this, debugging purposes only
+  const activeAmms = amms.filter((item) => {
+    if (item.vamm.toLowerCase() === '0xacf59c72660d1e6629a721fd958f7a8c64379835'.toLowerCase()) {
+      return true;
+    }
+
+    return false;
+  });
 
   return activeAmms;
 };

@@ -10,7 +10,7 @@ export const getPoolsMaxEventBlock = async (chainId: number): Promise<number | n
   const bigQuery = getBigQuery();
 
   const volumeQuery = `
-    SELECT MAX(eventBlockNumber) as amount
+    SELECT MAX(deploymentBlockNumber) as amount
       FROM \`${getTableFullID('pools')}\`
       WHERE chainId=${chainId};
   `;

@@ -15,7 +15,7 @@ export const getMintsAndBurnsMaxEventBlock = async (
   const volumeQuery = `
     SELECT MAX(eventBlockNumber) as amount
       FROM \`${getTableFullID('mints_and_burns')}\`
-      WHERE (vammAddress=${vammAddress}) AND (chainId=${chainId});
+      WHERE (vammAddress=\"${vammAddress}\") AND (chainId=${chainId});
   `;
 
   const options = {

@@ -18,7 +18,5 @@ export const pullAllChainPools = async (chainId: number): Promise<BigQueryPoolRo
     return [];
   }
 
-  console.log('pools:', rows);
-
   return rows.map(mapToBigQueryPoolRow);
 };

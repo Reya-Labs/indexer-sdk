@@ -13,9 +13,9 @@ export const getPositionsMaxEventBlock = async (
   const bigQuery = getBigQuery();
 
   const volumeQuery = `
-    SELECT MAX(eventBlockNumber) as amount
+    SELECT MAX(lastUpdatedBlockNumber) as amount
       FROM \`${getTableFullID('positions')}\`
-      WHERE (vammAddress=${vammAddress}) AND (chainId=${chainId});
+      WHERE (vammAddress=\"${vammAddress}\") AND (chainId=${chainId});
   `;
 
   const options = {

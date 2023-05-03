@@ -15,7 +15,7 @@ export const getActiveSwapsMaxEventBlock = async (
   const volumeQuery = `
     SELECT MAX(eventBlockNumber) as amount
       FROM \`${getTableFullID('active_swaps')}\`
-      WHERE (vammAddress=${vammAddress}) AND (chainId=${chainId});
+      WHERE (vammAddress=\"${vammAddress}\") AND (chainId=${chainId});
   `;
 
   const options = {

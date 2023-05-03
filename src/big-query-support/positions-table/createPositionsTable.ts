@@ -125,7 +125,6 @@ export const createPositionsTable = async (): Promise<void> => {
       precision: PRECISION.toString(),
       scale: SCALE.toString(),
     },
-    { name: 'previousTick', type: 'INTEGER', mode: 'REQUIRED' },
   ];
 
   // For all options, see https://cloud.google.com/bigquery/docs/reference/v2/tables#resource
