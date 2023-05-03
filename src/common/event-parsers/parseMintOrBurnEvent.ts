@@ -1,11 +1,12 @@
-import { AMM, getNotionalFromLiquidity } from '@voltz-protocol/v1-sdk';
 import { BigNumber, ethers } from 'ethers';
 
+import { BigQueryPoolRow } from '../../big-query-support/types';
+import { getTokensFromLiquidity } from '../services/getTokensFromLiquidity';
 import { MintOrBurnEventInfo } from './types';
 
 export const parseMintOrBurnEvent = (
   event: ethers.Event,
-  amm: AMM,
+  amm: BigQueryPoolRow,
   chainId: number,
   isMint: boolean,
 ): MintOrBurnEventInfo => {
@@ -16,9 +17,13 @@ export const parseMintOrBurnEvent = (
   const tickUpper = event.args?.tickUpper as number;
   const amount = event.args?.amount as BigNumber;
 
-  const tokenDecimals = amm.underlyingToken.decimals;
-  const notionalDelta = getNotionalFromLiquidity(amount, tickLower, tickUpper, tokenDecimals);
+  const tokenDecimals = amm.tokenDecimals;
   const liquidityDelta = Number(ethers.utils.formatUnits(amount, tokenDecimals));
+  const { absVariableTokenDelta: notionalDelta } = getTokensFromLiquidity(
+    liquidityDelta,
+    tickLower,
+    tickUpper,
+  );
 
   return {
     ...event,
@@ -26,12 +31,12 @@ export const parseMintOrBurnEvent = (
     type: isMint ? 'mint' : 'burn',
 
     chainId: chainId,
-    vammAddress: amm.id.toLowerCase(),
+    vammAddress: amm.vamm.toLowerCase(),
     amm,
 
-    rateOracle: amm.rateOracle.protocol,
-    underlyingToken: amm.underlyingToken.name,
-    marginEngineAddress: amm.marginEngineAddress,
+    rateOracle: amm.rateOracle,
+    underlyingToken: amm.tokenName,
+    marginEngineAddress: amm.marginEngine,
 
     ownerAddress: ownerAddress.toLowerCase(),
     tickLower,

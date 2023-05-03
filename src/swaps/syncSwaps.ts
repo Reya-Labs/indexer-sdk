@@ -1,8 +1,9 @@
-import { getPreviousEvents } from '../common/contract-services/getPreviousEvents';
+import { getVammEvents } from '../common/contract-services/getVammEvents';
 import { SwapEventInfo } from '../common/event-parsers/types';
 import { getAmms } from '../common/getAmms';
-import { getLatestProcessedBlock, setLatestProcessedBlock } from '../common/services/redisService';
-import { processSwapEvent } from './processSwapEvent/processSwapEvent';
+import { getProvider } from '../common/provider/getProvider';
+import { getInformationPerVAMM, setRedis } from '../common/services/redisService';
+import { processSwapEvent } from './processSwapEvent';
 
 export const syncSwaps = async (chainIds: number[]): Promise<void> => {
   const lastProcessedBlocks: { [processId: string]: number } = {};
@@ -11,25 +12,33 @@ export const syncSwaps = async (chainIds: number[]): Promise<void> => {
 
   for (const chainId of chainIds) {
     const amms = await getAmms(chainId);
-    const processId = `swaps_${chainId}`;
 
     if (amms.length === 0) {
       continue;
     }
 
-    const fromBlock = (await getLatestProcessedBlock(processId)) + 1;
-    const toBlock = await amms[0].provider.getBlockNumber();
+    const provider = getProvider(chainId);
+    const currentBlock = await provider.getBlockNumber();
 
-    if (fromBlock >= toBlock) {
-      continue;
-    }
-
-    lastProcessedBlocks[processId] = toBlock;
-
-    console.log(`[Swaps, ${chainId}]: Processing between blocks ${fromBlock}-${toBlock}...`);
+    console.log(`[Swaps, ${chainId}]: Processing up to block ${currentBlock}...`);
 
     const chainPromises = amms.map(async (amm) => {
-      const events = await getPreviousEvents(amm, ['swap'], chainId, fromBlock, toBlock);
+      const { value: latestBlock, id: processId } = await getInformationPerVAMM(
+        'last_block_active_swaps',
+        chainId,
+        amm.vamm,
+      );
+
+      const fromBlock = latestBlock + 1;
+      const toBlock = currentBlock;
+
+      if (fromBlock >= toBlock) {
+        return;
+      }
+
+      lastProcessedBlocks[processId] = toBlock;
+
+      const events = await getVammEvents(amm, ['swap'], chainId, fromBlock, toBlock);
 
       if (events.length === 0) {
         return;
@@ -56,7 +65,7 @@ export const syncSwaps = async (chainIds: number[]): Promise<void> => {
   if (Object.entries(lastProcessedBlocks).length > 0) {
     console.log('[Swaps]: Caching to Redis...');
     for (const [processId, lastProcessedBlock] of Object.entries(lastProcessedBlocks)) {
-      await setLatestProcessedBlock(processId, lastProcessedBlock);
+      await setRedis(processId, lastProcessedBlock);
     }
   }
 };

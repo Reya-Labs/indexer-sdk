@@ -1,11 +1,11 @@
-import { AMM } from '@voltz-protocol/v1-sdk';
 import { ethers } from 'ethers';
 
+import { BigQueryPoolRow } from '../../big-query-support/types';
 import { VAMMPriceChangeEventInfo } from './types';
 
 export const parseVAMMPriceChangeEvent = (
   event: ethers.Event,
-  amm: AMM,
+  amm: BigQueryPoolRow,
   chainId: number,
   isInitial: boolean,
 ): VAMMPriceChangeEventInfo => {
@@ -18,12 +18,12 @@ export const parseVAMMPriceChangeEvent = (
     type: 'price_change',
 
     chainId: chainId,
-    vammAddress: amm.id.toLowerCase(),
+    vammAddress: amm.vamm.toLowerCase(),
     amm,
 
-    rateOracle: amm.rateOracle.protocol,
-    underlyingToken: amm.underlyingToken.name,
-    marginEngineAddress: amm.marginEngineAddress,
+    rateOracle: amm.rateOracle,
+    underlyingToken: amm.tokenName,
+    marginEngineAddress: amm.marginEngine,
 
     isInitial,
     tick,

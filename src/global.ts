@@ -2,9 +2,13 @@ import { BigQuery } from '@google-cloud/bigquery';
 import { Storage } from '@google-cloud/storage';
 import { Redis } from 'ioredis';
 
-import { PROJECT_ID, REDISHOST, REDISPORT } from './common/constants';
+import { PROJECT_ID } from './big-query-support/utils';
+import { REDISHOST, REDISPORT } from './common/constants';
 
 let bigQuery: BigQuery | null = null;
+let redisClient: Redis | null = null;
+export const chainIds = [1, 42161];
+export const indexInactiveTimeInMS = 300_000; // 5 min
 
 export const getBigQuery = (): BigQuery => {
   if (bigQuery) {
@@ -18,8 +22,6 @@ export const getBigQuery = (): BigQuery => {
   return bigQuery;
 };
 
-let redisClient: Redis | null = null;
-
 export const getRedisClient = (): Redis => {
   if (redisClient) {
     return redisClient;
@@ -28,8 +30,6 @@ export const getRedisClient = (): Redis => {
   redisClient = new Redis(REDISPORT, REDISHOST);
   return redisClient;
 };
-
-export const chainIds = [1, 42161];
 
 export const authenticateImplicitWithAdc = async () => {
   const storage = new Storage({

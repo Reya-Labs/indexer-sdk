@@ -1,22 +1,22 @@
-import { AMM } from '@voltz-protocol/v1-sdk';
 import { Event } from 'ethers';
 
-import { EventType } from '../types';
+import { BigQueryPoolRow } from '../../big-query-support/types';
+import { FactoryEventType, VammEventType } from '../types';
 
-interface BaseEventInfo extends Event {
+interface BaseVammEventInfo extends Event {
   eventId: string;
-  type: EventType;
+  type: VammEventType;
 
   chainId: number;
   vammAddress: string; // todo: deprecate because we have amm
-  amm: AMM;
+  amm: BigQueryPoolRow;
 
   rateOracle: string; // todo: deprecate because we have amm
   underlyingToken: string; // todo: deprecate because we have amm
   marginEngineAddress: string; // todo: deprecate because we have amm
 }
 
-export interface MintOrBurnEventInfo extends BaseEventInfo {
+export interface MintOrBurnEventInfo extends BaseVammEventInfo {
   ownerAddress: string;
   tickLower: number;
   tickUpper: number;
@@ -25,7 +25,7 @@ export interface MintOrBurnEventInfo extends BaseEventInfo {
   liquidityDelta: number;
 }
 
-export interface SwapEventInfo extends BaseEventInfo {
+export interface SwapEventInfo extends BaseVammEventInfo {
   ownerAddress: string;
   tickLower: number;
   tickUpper: number;
@@ -35,7 +35,31 @@ export interface SwapEventInfo extends BaseEventInfo {
   feePaidToLps: number;
 }
 
-export interface VAMMPriceChangeEventInfo extends BaseEventInfo {
+export interface VAMMPriceChangeEventInfo extends BaseVammEventInfo {
   isInitial: boolean;
   tick: number;
+}
+
+interface BaseFactoryEventInfo extends Event {
+  eventId: string;
+  type: FactoryEventType;
+
+  chainId: number;
+  factory: string;
+}
+
+export interface IrsInstanceEventInfo extends BaseFactoryEventInfo {
+  vamm: string;
+  marginEngine: string;
+
+  termStartTimestamp: number;
+  termEndTimestamp: number;
+
+  rateOracleID: string;
+  rateOracleIndex: number;
+
+  underlyingToken: string;
+  tokenDecimals: number;
+
+  tickSpacing: number;
 }

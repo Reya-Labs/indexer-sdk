@@ -23,6 +23,8 @@ jobs:
       - name: Prettier check, Eslint check, Typescript check
         run: make code-quality-check
       - name: Run tests
+        env:
+          ALCHEMY_KEY: ${{ secrets.ALCHEMY_KEY }}
         run: make test-coverage
       - name: Generate coverage badges
         run: make generate-coverage-badges
