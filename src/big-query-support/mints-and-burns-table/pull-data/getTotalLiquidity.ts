@@ -12,10 +12,11 @@ export const getChainTotalLiquidity = async (chainId: number): Promise<number> =
   const bigQuery = getBigQuery();
 
   const liquidityQuery = `
-    SELECT underlyingToken, sum(notionalDelta) as amount
-      FROM \`${getTableFullID('mints_and_burns')}\`
-      WHERE chainId=${chainId}
-      GROUP BY underlyingToken
+    SELECT A.underlyingToken, sum(A.notionalDelta) AS amount
+    FROM \`${getTableFullID('mints_and_burns')}\` as A
+    JOIN \`${getTableFullID('pools')}\` as B ON A.vammAddress = B.vamm
+    WHERE B.termEndTimestampInMS > ${Date.now().valueOf()} AND B.chainId = ${chainId}
+    GROUP BY underlyingToken;
   `;
 
   const options = {
