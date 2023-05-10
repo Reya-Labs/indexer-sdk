@@ -8,7 +8,7 @@ export const getAmms = async (chainId: number): Promise<BigQueryPoolRow[]> => {
 
   // Filter out the inactive pools
   const activeAmms = amms.filter((item) => {
-    return item.termEndTimestampInMS / 1000 > APR_2023_TIMESTAMP;
+    return item.chainId === chainId && item.termEndTimestampInMS / 1000 > APR_2023_TIMESTAMP;
   });
 
   // todo: comment this, debugging purposes only
