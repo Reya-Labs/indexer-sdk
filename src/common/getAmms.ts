@@ -4,7 +4,7 @@ import { APR_2023_TIMESTAMP } from './constants';
 
 export const getAmms = async (chainId: number): Promise<BigQueryPoolRow[]> => {
   // Get AMMs
-  const amms = await pullAllChainPools(chainId);
+  const amms = await pullAllChainPools([chainId]);
 
   // Filter out the inactive pools
   const activeAmms = amms.filter((item) => {

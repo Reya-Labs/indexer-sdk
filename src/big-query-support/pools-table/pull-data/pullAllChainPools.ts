@@ -3,10 +3,12 @@ import { mapToBigQueryPoolRow } from '../../mappers';
 import { BigQueryPoolRow } from '../../types';
 import { getTableFullID } from '../../utils';
 
-export const pullAllChainPools = async (chainId: number): Promise<BigQueryPoolRow[]> => {
+export const pullAllChainPools = async (chainIds: number[]): Promise<BigQueryPoolRow[]> => {
   const bigQuery = getBigQuery();
 
-  const sqlQuery = `SELECT * FROM \`${getTableFullID('pools')}\` WHERE chainId=${chainId}`;
+  const sqlQuery = `SELECT * FROM \`${getTableFullID('pools')}\` WHERE (chainId IN (${chainIds.join(
+    ',',
+  )}))`;
 
   const options = {
     query: sqlQuery,

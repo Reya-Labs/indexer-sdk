@@ -8,7 +8,7 @@ import { bqNumericToNumber, getTableFullID } from '../../utils';
 /**
  Get trading volume over last 30 days on given chain
  */
-export const getChainTradingVolume = async (chainId: number): Promise<number> => {
+export const getChainTradingVolume = async (chainIds: number[]): Promise<number> => {
   const bigQuery = getBigQuery();
 
   const volumeQuery = `
@@ -16,7 +16,7 @@ export const getChainTradingVolume = async (chainId: number): Promise<number> =>
       FROM \`${getTableFullID('active_swaps')}\`
           
       WHERE (eventTimestamp > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 30 DAY)) AND 
-            (chainId=${chainId})
+            (chainId IN (${chainIds.join(',')}))
           
       GROUP BY underlyingToken
   `;

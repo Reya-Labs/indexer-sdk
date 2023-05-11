@@ -8,14 +8,16 @@ import { bqNumericToNumber, getTableFullID } from '../../utils';
 /**
  Get chain total liquidity
  */
-export const getChainTotalLiquidity = async (chainId: number): Promise<number> => {
+export const getChainTotalLiquidity = async (chainIds: number[]): Promise<number> => {
   const bigQuery = getBigQuery();
 
   const liquidityQuery = `
     SELECT A.underlyingToken, sum(A.notionalDelta) AS amount
     FROM \`${getTableFullID('mints_and_burns')}\` as A
     JOIN \`${getTableFullID('pools')}\` as B ON A.vammAddress = B.vamm
-    WHERE B.termEndTimestampInMS > ${Date.now().valueOf()} AND B.chainId = ${chainId}
+    WHERE B.termEndTimestampInMS > ${Date.now().valueOf()} AND (B.chainId IN (${chainIds.join(
+    ',',
+  )}))
     GROUP BY underlyingToken;
   `;
 
