@@ -175,7 +175,7 @@ app.get('/pool/:chainId/:vammAddress', (req, res) => {
 app.get('/chain-information/:chainIds', (req, res) => {
   const process = async () => {
     console.log('chainIds', req.params.chainIds);
-    const chainIds = req.params.chainIds.split('&').map((s) => Number(s));
+    const chainIds = req.params.chainIds.split('#').map((s) => Number(s));
 
     const response = await Promise.allSettled([
       getChainTradingVolume(chainIds),
@@ -204,7 +204,7 @@ app.get('/chain-information/:chainIds', (req, res) => {
 
 app.get('/all-pools/:chainIds', (req, res) => {
   const process = async () => {
-    const chainIds = req.params.chainIds.split('&').map((s) => Number(s));
+    const chainIds = req.params.chainIds.split('#').map((s) => Number(s));
 
     const pools = await pullAllChainPools(chainIds);
 
