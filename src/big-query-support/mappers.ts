@@ -4,6 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 import {
+  BigQueryHistoricalRateRow,
   BigQueryMintOrBurnRow,
   BigQueryPoolRow,
   BigQueryPositionRow,
@@ -105,4 +106,9 @@ export const mapToBigQueryPoolRow = (row: any): BigQueryPoolRow => ({
   minLeverageAllowed: bqNumericToNumber(row.minLeverageAllowed),
 
   rollover: row.rollover,
+});
+
+export const mapToBigQueryHistoricalRateRow = (row: any): BigQueryHistoricalRateRow => ({
+  rate: bqNumericToNumber(row.rate),
+  timestamp: bqNumericToNumber(row.timestamp),
 });

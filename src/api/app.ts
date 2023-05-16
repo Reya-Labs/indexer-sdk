@@ -2,6 +2,8 @@ import cors from 'cors';
 import express from 'express';
 
 import { getChainTradingVolume } from '../big-query-support/active-swaps-table/pull-data/getTradingVolume';
+import { getFixedRates } from '../big-query-support/historical-rates/pull-data/getFixedRates';
+import { getVariableRates } from '../big-query-support/historical-rates/pull-data/getVariableRates';
 import { getChainTotalLiquidity } from '../big-query-support/mints-and-burns-table/pull-data/getTotalLiquidity';
 import { pullAllChainPools } from '../big-query-support/pools-table/pull-data/pullAllChainPools';
 import { pullExistingPoolRow } from '../big-query-support/pools-table/pull-data/pullExistingPoolRow';
@@ -289,6 +291,59 @@ app.get('/position-pnl/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper
       realizedPnLFromFeesCollected: existingPosition.realizedPnLFromFeesCollected,
       unrealizedPnLFromSwaps: uPnL,
     };
+  };
+
+  process().then(
+    (output) => {
+      res.json(output);
+    },
+    (error) => {
+      console.log(`API query failed with message ${(error as Error).message}`);
+    },
+  );
+});
+
+app.get('/fixed-rates/:chainId/:vammAddress/:startTimestamp/:endTimestamp', (req, res) => {
+  console.log(`Requesting information about historical fixed rates`);
+
+  const process = async () => {
+    const chainId = Number(req.params.chainId);
+    const vammAddress = req.params.vammAddress;
+    const startTimestamp = Number(req.params.startTimestamp);
+    const endTimestamp = Number(req.params.endTimestamp);
+
+    const historicalRates = await getFixedRates(chainId, vammAddress, startTimestamp, endTimestamp);
+
+    return historicalRates;
+  };
+
+  process().then(
+    (output) => {
+      res.json(output);
+    },
+    (error) => {
+      console.log(`API query failed with message ${(error as Error).message}`);
+    },
+  );
+});
+
+app.get('/variable-rates/:chainId/:vammAddress/:startTimestamp/:endTimestamp', (req, res) => {
+  console.log(`Requesting information about historical variable rates`);
+
+  const process = async () => {
+    const chainId = Number(req.params.chainId);
+    const vammAddress = req.params.vammAddress;
+    const startTimestamp = Number(req.params.startTimestamp);
+    const endTimestamp = Number(req.params.endTimestamp);
+
+    const historicalRates = await getVariableRates(
+      chainId,
+      vammAddress,
+      startTimestamp,
+      endTimestamp,
+    );
+
+    return historicalRates;
   };
 
   process().then(
