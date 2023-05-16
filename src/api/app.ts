@@ -327,18 +327,18 @@ app.get('/fixed-rates/:chainId/:vammAddress/:startTimestamp/:endTimestamp', (req
   );
 });
 
-app.get('/variable-rates/:chainId/:vammAddress/:startTimestamp/:endTimestamp', (req, res) => {
+app.get('/variable-rates/:chainId/:rateOracleAddress/:startTimestamp/:endTimestamp', (req, res) => {
   console.log(`Requesting information about historical variable rates`);
 
   const process = async () => {
     const chainId = Number(req.params.chainId);
-    const vammAddress = req.params.vammAddress;
+    const rateOracleAddress = req.params.rateOracleAddress;
     const startTimestamp = Number(req.params.startTimestamp);
     const endTimestamp = Number(req.params.endTimestamp);
 
     const historicalRates = await getVariableRates(
       chainId,
-      vammAddress,
+      rateOracleAddress,
       startTimestamp,
       endTimestamp,
     );
