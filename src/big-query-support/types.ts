@@ -100,3 +100,8 @@ export type BigQueryPoolRow = {
 
   rollover: string;
 };
+
+export type BigQueryHistoricalRateRow = {
+  rate: number;
+  timestamp: number;
+};
