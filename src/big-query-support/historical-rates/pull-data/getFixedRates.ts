@@ -16,7 +16,7 @@ export const getFixedRates = async (
   const bigQuery = getBigQuery();
 
   const fixedRatesQuery = `
-    SELECT fixed_rate as rate, timestamp FROM "risk-monitoring-361911.historical_rates.fixed_rates"
+    SELECT fixed_rate as rate, timestamp FROM \`risk-monitoring-361911.historical_rates.fixed_rates\`
       WHERE vamm_address = "${vammAddress}"
       AND timestamp >= ${startTimestamp} AND timestamp <= ${endTimestamp}
       AND chain_id = ${chainId}
