@@ -16,7 +16,7 @@ export const getVariableRates = async (
   const bigQuery = getBigQuery();
 
   const variableRatesQuery = `
-    SELECT variable_rate as rate, timestamp FROM "risk-monitoring-361911.historical_rates.variable_rates"
+    SELECT variable_rate as rate, timestamp FROM \`risk-monitoring-361911.historical_rates.variable_rates\`
       WHERE vamm_address = "${vammAddress}"
       AND timestamp >= ${startTimestamp} AND timestamp <= ${endTimestamp}
       AND chain_id = ${chainId}
