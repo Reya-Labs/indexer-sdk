@@ -1,6 +1,6 @@
 import cors from 'cors';
 import express from 'express';
-import fetch from 'node-fetch';
+import * as requestIp from 'request-ip';
 
 import { getChainTradingVolume } from '../big-query-support/active-swaps-table/pull-data/getTradingVolume';
 import { getFixedRates } from '../big-query-support/historical-rates/pull-data/getFixedRates';
@@ -20,48 +20,16 @@ import { getAmm } from './common/getAMM';
 export const app = express();
 
 app.use(cors());
+app.use(requestIp.mw());
 
-app.set('trust proxy', true);
-
-const METADATA_NETWORK_INTERFACE_URL =
-  'http://metadata/computeMetadata/v1/' +
-  '/instance/network-interfaces/0/access-configs/0/external-ip';
-
-const getExternalIp = async (): Promise<string> => {
-  const options = {
-    headers: {
-      'Metadata-Flavor': 'Google',
-    },
-    json: true,
-  };
-
-  try {
-    const response = await fetch(METADATA_NETWORK_INTERFACE_URL, options);
-    const ip = (await response.json()) as string;
-    return ip;
-  } catch (err) {
-    console.log('Error while talking to metadata server, assuming localhost');
-    return 'localhost';
-  }
-};
+// app.set('trust proxy', true);
 
 app.get('/', (_, res) => {
   res.send('Welcome to Voltz API');
 });
 
 app.get('/ip', (req, res) => {
-  const process = async () => {
-    return await getExternalIp();
-  }
-
-  process().then(
-    (output) => {
-      res.send(`${req.ip}, ${output}`);
-    },
-    (error) => {
-      console.log(`API query failed with message ${(error as Error).message}`);
-    },
-  );
+  res.send(`${req.ip}, ${req.clientIp || ''}`);
 });
 
 // todo: to be deprecated when SDK stops consuming it
