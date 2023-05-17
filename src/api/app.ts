@@ -15,7 +15,6 @@ import { getLiquidityIndex } from '../common/services/getLiquidityIndex';
 import { tickToFixedRate } from '../common/services/tickConversions';
 import { getBlockAtTimestamp, getTimeInYearsBetweenTimestamps } from '../common/utils';
 import { getAmm } from './common/getAMM';
-import axios from 'axios';
 
 export const app = express();
 
