@@ -24,6 +24,10 @@ app.get('/', (_, res) => {
   res.send('Welcome to Voltz API');
 });
 
+app.get('/ip', (req, res) => {
+  res.send(req.ip);
+});
+
 // todo: to be deprecated when SDK stops consuming it
 app.get('/chains/:chainId', (req, res) => {
   const process = async () => {
