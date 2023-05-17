@@ -1,5 +1,7 @@
 import cors from 'cors';
 import express from 'express';
+import rateLimit from 'express-rate-limit';
+import RedisStore from 'rate-limit-redis';
 
 import { getChainTradingVolume } from '../big-query-support/active-swaps-table/pull-data/getTradingVolume';
 import { getFixedRates } from '../big-query-support/historical-rates/pull-data/getFixedRates';
@@ -14,14 +16,37 @@ import { getProvider } from '../common/provider/getProvider';
 import { getLiquidityIndex } from '../common/services/getLiquidityIndex';
 import { tickToFixedRate } from '../common/services/tickConversions';
 import { getBlockAtTimestamp, getTimeInYearsBetweenTimestamps } from '../common/utils';
+import { getRedisClient, getTrustedProxies } from '../global';
 import { getAmm } from './common/getAMM';
 
 export const app = express();
 
 app.use(cors());
 
+app.set('trust proxy', getTrustedProxies());
+
+// Create and use the rate limiter
+const limiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 1000, // Limit each IP to 1000 requests per `window` (here, per 5 minutes)
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+
+  // Redis store configuration
+  store: new RedisStore({
+    // @ts-expect-error - Known issue: the `call` function is not present in @types/ioredis
+    sendCommand: (...args: string[]) => getRedisClient().call(...args),
+  }),
+});
+
+app.use(limiter);
+
 app.get('/', (_, res) => {
   res.send('Welcome to Voltz API');
+});
+
+app.get('/ip', (req, res) => {
+  res.send(req.ip);
 });
 
 // todo: to be deprecated when SDK stops consuming it
