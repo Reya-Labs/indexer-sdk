@@ -9,7 +9,7 @@ import { BigQueryHistoricalRateRow } from '../../types';
  */
 export const getVariableRates = async (
   chainId: number,
-  vammAddress: string,
+  rateOracleAddress: string,
   startTimestamp: number,
   endTimestamp: number,
 ): Promise<BigQueryHistoricalRateRow[] | null> => {
@@ -17,7 +17,7 @@ export const getVariableRates = async (
 
   const variableRatesQuery = `
     SELECT variable_rate as rate, timestamp FROM \`risk-monitoring-361911.historical_rates.variable_rates\`
-      WHERE vamm_address = "${vammAddress}"
+      WHERE rate_oracle_address = "${rateOracleAddress}"
       AND timestamp >= ${startTimestamp} AND timestamp <= ${endTimestamp}
       AND chain_id = ${chainId}
   `;
