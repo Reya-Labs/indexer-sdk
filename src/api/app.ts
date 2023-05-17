@@ -1,5 +1,6 @@
 import cors from 'cors';
 import express from 'express';
+import fetch from 'node-fetch';
 
 import { getChainTradingVolume } from '../big-query-support/active-swaps-table/pull-data/getTradingVolume';
 import { getFixedRates } from '../big-query-support/historical-rates/pull-data/getFixedRates';
