@@ -7,4 +7,4 @@ export type GCloudIpRanges = {
     service: string;
     scope: string;
   }[];
-}
+};

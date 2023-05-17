@@ -58,10 +58,10 @@ export const getTrustedProxies = () => {
 
   // GCloud Load Balancer ranges
   // https://cloud.google.com/load-balancing/docs/https
-  trustedProxies = trustedProxies.concat(["35.191.0.0/16", "130.211.0.0/22"]);
+  trustedProxies = trustedProxies.concat(['35.191.0.0/16', '130.211.0.0/22']);
 
   // localhost
   trustedProxies = trustedProxies.concat(['::ffff:127.0.0.1', '::1']);
 
   return trustedProxies;
-}
+};
