@@ -24,7 +24,7 @@
     /* Completeness */
     "skipLibCheck": true,                                /* Skip type checking all .d.ts files. */
 
-    "resolveJsonModule": true,
+    "resolveJsonModule": true
   },
   "ts-node": {
     // these options are overrides used only by ts-node
