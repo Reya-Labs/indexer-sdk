@@ -22,12 +22,45 @@ app.use(cors());
 
 app.set('trust proxy', true);
 
+const METADATA_NETWORK_INTERFACE_URL =
+  'http://metadata/computeMetadata/v1/' +
+  '/instance/network-interfaces/0/access-configs/0/external-ip';
+
+const getExternalIp = async (): Promise<string> => {
+  const options = {
+    headers: {
+      'Metadata-Flavor': 'Google',
+    },
+    json: true,
+  };
+
+  try {
+    const response = await fetch(METADATA_NETWORK_INTERFACE_URL, options);
+    const ip = (await response.json()) as string;
+    return ip;
+  } catch (err) {
+    console.log('Error while talking to metadata server, assuming localhost');
+    return 'localhost';
+  }
+};
+
 app.get('/', (_, res) => {
   res.send('Welcome to Voltz API');
 });
 
 app.get('/ip', (req, res) => {
-  res.send(req.ip);
+  const process = async () => {
+    return await getExternalIp();
+  }
+
+  process().then(
+    (output) => {
+      res.send(`${req.ip}, ${output}`);
+    },
+    (error) => {
+      console.log(`API query failed with message ${(error as Error).message}`);
+    },
+  );
 });
 
 // todo: to be deprecated when SDK stops consuming it
