@@ -20,6 +20,8 @@ export const app = express();
 
 app.use(cors());
 
+app.set('trust proxy', 1);
+
 app.get('/', (_, res) => {
   res.send('Welcome to Voltz API');
 });
