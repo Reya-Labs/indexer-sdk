@@ -1,6 +1,5 @@
 import cors from 'cors';
 import express from 'express';
-import * as requestIp from 'request-ip';
 
 import { getChainTradingVolume } from '../big-query-support/active-swaps-table/pull-data/getTradingVolume';
 import { getFixedRates } from '../big-query-support/historical-rates/pull-data/getFixedRates';
@@ -20,16 +19,15 @@ import { getAmm } from './common/getAMM';
 export const app = express();
 
 app.use(cors());
-app.use(requestIp.mw());
 
-// app.set('trust proxy', true);
+app.set('trust proxy', ['35.191.0.0/16', '130.211.0.0/22']);
 
 app.get('/', (_, res) => {
   res.send('Welcome to Voltz API');
 });
 
 app.get('/ip', (req, res) => {
-  res.send(`${req.ip}, ${req.clientIp || ''}`);
+  res.send(req.ip);
 });
 
 // todo: to be deprecated when SDK stops consuming it
