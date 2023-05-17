@@ -16,17 +16,19 @@ import { getProvider } from '../common/provider/getProvider';
 import { getLiquidityIndex } from '../common/services/getLiquidityIndex';
 import { tickToFixedRate } from '../common/services/tickConversions';
 import { getBlockAtTimestamp, getTimeInYearsBetweenTimestamps } from '../common/utils';
-import { getRedisClient } from '../global';
+import { getRedisClient, getTrustedProxies } from '../global';
 import { getAmm } from './common/getAMM';
 
 export const app = express();
 
 app.use(cors());
 
+app.set('trust proxy', getTrustedProxies());
+
 // Create and use the rate limiter
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
-  max: 100000, // Limit each IP to 100 requests per `window` (here, per 1 minutes)
+  max: 1000, // Limit each IP to 1000 requests per `window` (here, per 1 minute)
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 
