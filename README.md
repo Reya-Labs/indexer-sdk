@@ -60,6 +60,19 @@ Branch names can start with the prefixes found in the regex under '.husky/pre-co
 * `npx redis-cli ping` - it should respond pong
 * `brew services stop redis` - to terminate the connection
 
+### Run api on localhost
+
+(only the 1st time) 
+* Install https://cloud.google.com/sdk/docs/install 
+* from downloaded folder, run install.sh script
+* From root, run `gcloud auth application-default login` and log-in with your account
+* Make sure you have permissions set by owner in GCloud
+* `brew install redis`
+
+(run api)
+* `redis-server` (in a different terminal)
+* `npx ts-node src/api/index.ts`
+* query example using curl: `curl localhost:8080/fixed-rates/1/0x0000/1684238057/1684266876`
 
 # Terms & Conditions
 The Voltz Protocol, and any products or services associated therewith, is offered only to persons (aged 18 years or older) or entities who are not residents of, citizens of, are incorporated in, owned or controlled by a person or entity in, located in, or have a registered office or principal place of business in any “Restricted Territory.”

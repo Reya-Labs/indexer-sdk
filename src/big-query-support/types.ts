@@ -105,3 +105,8 @@ export type BigQueryHistoricalRateRow = {
   rate: number;
   timestamp: number;
 };
+
+export type BigQueryVoyageRow = {
+  id: 'v2Voyage';
+  timestamp: number | null; // UNIX milliseconds
+};

@@ -6,6 +6,7 @@ import RedisStore from 'rate-limit-redis';
 import { getChainTradingVolume } from '../big-query-support/active-swaps-table/pull-data/getTradingVolume';
 import { getFixedRates } from '../big-query-support/historical-rates/pull-data/getFixedRates';
 import { getVariableRates } from '../big-query-support/historical-rates/pull-data/getVariableRates';
+import { getVoyageBadges } from '../big-query-support/voyage/pull-data/getVoyageBadges';
 import { getChainTotalLiquidity } from '../big-query-support/mints-and-burns-table/pull-data/getTotalLiquidity';
 import { pullAllChainPools } from '../big-query-support/pools-table/pull-data/pullAllChainPools';
 import { pullExistingPoolRow } from '../big-query-support/pools-table/pull-data/pullExistingPoolRow';
@@ -369,6 +370,27 @@ app.get('/variable-rates/:chainId/:rateOracleAddress/:startTimestamp/:endTimesta
     );
 
     return historicalRates;
+  };
+
+  process().then(
+    (output) => {
+      res.json(output);
+    },
+    (error) => {
+      console.log(`API query failed with message ${(error as Error).message}`);
+    },
+  );
+});
+
+app.get('/voyage/:chainId/:ownerAddress', (req, res) => {
+  console.log(`Requesting information about Voyage Badges`);
+
+  const process = async () => {
+    const chainId = Number(req.params.chainId);
+    const ownerAddress = req.params.ownerAddress;
+    const result = await getVoyageBadges(chainId, ownerAddress); 
+
+    return result;
   };
 
   process().then(
