@@ -83,5 +83,11 @@ export const getTokenName = (address: string): string => {
     return 'USDT';
   }
 
+  // ====== VUSD ======
+  // avalanche fuji
+  if (address.toLowerCase().includes('0x54B868B03c68A1307B24fB0A4b60b18A0714a94C'.toLowerCase())) {
+    return 'VUSD';
+  }
+
   throw new Error(`Token name not found for ${address}.`);
 };
