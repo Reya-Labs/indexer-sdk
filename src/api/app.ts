@@ -6,11 +6,11 @@ import RedisStore from 'rate-limit-redis';
 import { getChainTradingVolume } from '../big-query-support/active-swaps-table/pull-data/getTradingVolume';
 import { getFixedRates } from '../big-query-support/historical-rates/pull-data/getFixedRates';
 import { getVariableRates } from '../big-query-support/historical-rates/pull-data/getVariableRates';
-import { getVoyageBadges } from '../big-query-support/voyage/pull-data/getVoyageBadges';
 import { getChainTotalLiquidity } from '../big-query-support/mints-and-burns-table/pull-data/getTotalLiquidity';
 import { pullAllChainPools } from '../big-query-support/pools-table/pull-data/pullAllChainPools';
 import { pullExistingPoolRow } from '../big-query-support/pools-table/pull-data/pullExistingPoolRow';
 import { pullExistingPositionRow } from '../big-query-support/positions-table/pull-data/pullExistingPositionRow';
+import { getVoyageBadges } from '../big-query-support/voyage/pull-data/getVoyageBadges';
 import { SECONDS_IN_YEAR } from '../common/constants';
 import { getCurrentTick } from '../common/contract-services/getCurrentTick';
 import { getProvider } from '../common/provider/getProvider';
@@ -387,8 +387,8 @@ app.get('/voyage/:chainId/:ownerAddress', (req, res) => {
 
   const process = async () => {
     const chainId = Number(req.params.chainId);
-    const ownerAddress = req.params.ownerAddress;
-    const result = await getVoyageBadges(chainId, ownerAddress); 
+    //const ownerAddress = req.params.ownerAddress;
+    const result = await getVoyageBadges(chainId);
 
     return result;
   };
