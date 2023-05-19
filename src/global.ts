@@ -9,7 +9,7 @@ import { REDISHOST, REDISPORT } from './common/constants';
 
 let bigQuery: BigQuery | null = null;
 let redisClient: Redis | null = null;
-export const chainIds = [1, 42161];
+export const chainIds = [1, 42161, 43114];
 export const indexInactiveTimeInMS = 300_000; // 5 min
 
 export const getBigQuery = (): BigQuery => {

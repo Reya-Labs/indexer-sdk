@@ -3,7 +3,7 @@ import { sleep } from './common/utils';
 import { authenticateImplicitWithAdc, indexInactiveTimeInMS } from './global';
 import { syncPools } from './pools/syncPools';
 
-const chainIds = [1, 5, 42161, 421613];
+const chainIds = [1, 5, 42161, 421613, 43114, 43113];
 
 export const main = async () => {
   await authenticateImplicitWithAdc();
