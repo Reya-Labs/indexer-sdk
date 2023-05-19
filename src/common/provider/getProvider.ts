@@ -1,32 +1,44 @@
 import { ethers } from 'ethers';
 
-import { ALCHEMY_API_KEY } from '../constants';
+import { ALCHEMY_API_KEY, INFURA_API_KEY } from '../constants';
 
 enum SupportedChainId {
   mainnet = 1,
   goerli = 5,
   arbitrum = 42161,
   arbitrumGoerli = 421613,
+  avalanche = 43114,
+  avalancheFuji = 43113,
 }
 
-const alchemyApiKeyToURL = (chainId: SupportedChainId, apiKey: string): string => {
+const providerApiKeyToURL = (
+  chainId: SupportedChainId,
+  alchemyApiKey: string,
+  infuraApiKey: string,
+): string => {
   switch (chainId) {
     case SupportedChainId.mainnet: {
-      return `https://eth-mainnet.g.alchemy.com/v2/${apiKey}`;
+      return `https://eth-mainnet.g.alchemy.com/v2/${alchemyApiKey}`;
     }
     case SupportedChainId.goerli: {
-      return `https://eth-goerli.g.alchemy.com/v2/${apiKey}`;
+      return `https://eth-goerli.g.alchemy.com/v2/${alchemyApiKey}`;
     }
     case SupportedChainId.arbitrum: {
-      return `https://arb-mainnet.g.alchemy.com/v2/${apiKey}`;
+      return `https://arb-mainnet.g.alchemy.com/v2/${alchemyApiKey}`;
     }
     case SupportedChainId.arbitrumGoerli: {
-      return `https://arb-goerli.g.alchemy.com/v2/${apiKey}`;
+      return `https://arb-goerli.g.alchemy.com/v2/${alchemyApiKey}`;
+    }
+    case SupportedChainId.avalanche: {
+      return `https://avalanche-mainnet.infura.io/v3/${infuraApiKey}`;
+    }
+    case SupportedChainId.avalancheFuji: {
+      return `https://avalanche-fuji.infura.io/v3/${infuraApiKey}`;
     }
   }
 };
 
 export const getProvider = (chainId: SupportedChainId): ethers.providers.JsonRpcProvider => {
-  const providerURL = alchemyApiKeyToURL(chainId, ALCHEMY_API_KEY);
+  const providerURL = providerApiKeyToURL(chainId, ALCHEMY_API_KEY, INFURA_API_KEY);
   return new ethers.providers.JsonRpcProvider(providerURL);
 };
