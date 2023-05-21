@@ -387,8 +387,8 @@ app.get('/voyage/:chainId/:ownerAddress', (req, res) => {
 
   const process = async () => {
     const chainId = Number(req.params.chainId);
-    //const ownerAddress = req.params.ownerAddress;
-    const result = await getVoyageBadges(chainId);
+    const ownerAddress = req.params.ownerAddress.toLowerCase();
+    const result = await getVoyageBadges(chainId, ownerAddress);
 
     return result;
   };
