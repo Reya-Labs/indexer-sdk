@@ -1,7 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */ 
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
 import { getBigQuery } from '../../../global';
 import { BigQueryVoyageRow } from '../../types';
 
-export const getVoyageBadges = async (chainId: number, ownerAddress: string): Promise<BigQueryVoyageRow[] | null> => {
+export const getVoyageBadges = async (
+  chainId: number,
+  ownerAddress: string,
+): Promise<BigQueryVoyageRow[] | null> => {
   const bigQuery = getBigQuery();
 
   // queries

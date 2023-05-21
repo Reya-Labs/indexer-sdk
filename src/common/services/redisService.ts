@@ -66,8 +66,7 @@ export const getInformationPerVAMM = async (
 };
 
 export const getInformationPerMarginEngine = async (
-  information:
-    | 'last_block_margin_updates',
+  information: 'last_block_margin_updates',
   chainId: number,
   marginEngineAddress: string,
 ): Promise<{
