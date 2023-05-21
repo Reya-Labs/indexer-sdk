@@ -12,7 +12,9 @@ export const main = async () => {
       await syncMarginUpdates(chainIds);
     } catch (error) {
       console.log(
-        `[Margin Updates]: Loop has failed with message: ${(error as Error).message}.  It will retry...`,
+        `[Margin Updates]: Loop has failed with message: ${
+          (error as Error).message
+        }.  It will retry...`,
       );
     }
 

@@ -1,5 +1,4 @@
 import { getMarginEngineEvents } from '../common/contract-services/getMarginEngineEvents';
-import { MarginUpdateEventInfo } from '../common/event-parsers/types';
 import { getAmms } from '../common/getAmms';
 import { getProvider } from '../common/provider/getProvider';
 import { getInformationPerMarginEngine, setRedis } from '../common/services/redisService';
@@ -38,7 +37,13 @@ export const syncMarginUpdates = async (chainIds: number[]): Promise<void> => {
 
       lastProcessedBlocks[processId] = toBlock;
 
-      const events = await getMarginEngineEvents(amm, ['margin_update'], chainId, fromBlock, toBlock);
+      const events = await getMarginEngineEvents(
+        amm,
+        ['margin_update'],
+        chainId,
+        fromBlock,
+        toBlock,
+      );
 
       if (events.length === 0) {
         return;
@@ -46,7 +51,7 @@ export const syncMarginUpdates = async (chainIds: number[]): Promise<void> => {
 
       for (let i = 0; i < events.length; i++) {
         const event = events[i];
-        await processMarginUpdateEvent(event as MarginUpdateEventInfo);
+        await processMarginUpdateEvent(event );
       }
     });
 

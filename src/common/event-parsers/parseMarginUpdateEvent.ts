@@ -37,6 +37,6 @@ export const parseMarginUpdateEvent = (
     tickLower,
     tickUpper,
 
-    marginDelta
+    marginDelta,
   };
 };

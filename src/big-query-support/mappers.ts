@@ -5,11 +5,11 @@
 
 import {
   BigQueryHistoricalRateRow,
+  BigQueryMarginUpdateRow,
   BigQueryMintOrBurnRow,
   BigQueryPoolRow,
   BigQueryPositionRow,
   BigQuerySwapRow,
-  BigQueryMarginUpdateRow,
 } from './types';
 import { bqNumericToNumber, bqTimestampToUnixSeconds } from './utils';
 

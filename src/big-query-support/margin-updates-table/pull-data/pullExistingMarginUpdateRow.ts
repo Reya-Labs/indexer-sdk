@@ -3,7 +3,9 @@ import { mapToBigQueryMarginUpdatesRow } from '../../mappers';
 import { BigQueryMarginUpdateRow } from '../../types';
 import { getTableFullID } from '../../utils';
 
-export const pullExistingMarginUpdateRow = async (eventId: string): Promise<BigQueryMarginUpdateRow | null> => {
+export const pullExistingMarginUpdateRow = async (
+  eventId: string,
+): Promise<BigQueryMarginUpdateRow | null> => {
   const bigQuery = getBigQuery();
 
   const sqlQuery = `SELECT * FROM \`${getTableFullID(
