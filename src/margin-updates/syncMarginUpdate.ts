@@ -2,10 +2,10 @@ import { getMarginEngineEvents } from '../common/contract-services/getMarginEngi
 import { MarginUpdateEventInfo } from '../common/event-parsers/types';
 import { getAmms } from '../common/getAmms';
 import { getProvider } from '../common/provider/getProvider';
-import { getInformationPerMarginEngine, getInformationPerVAMM, setRedis } from '../common/services/redisService';
+import { getInformationPerMarginEngine, setRedis } from '../common/services/redisService';
 import { processMarginUpdateEvent } from './processMarginUpdateEvent';
 
-export const syncMarginUpdateRow = async (chainIds: number[]): Promise<void> => {
+export const syncMarginUpdates = async (chainIds: number[]): Promise<void> => {
   const lastProcessedBlocks: { [processId: string]: number } = {};
 
   let promises: Promise<void>[] = [];
