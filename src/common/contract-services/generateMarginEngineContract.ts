@@ -19,6 +19,9 @@ export const generateMarginEngineContract = (
         )
         `,
     `function rateOracle() external view returns (address)`,
+    `
+    event PositionMarginUpdate(address sender, address indexed owner, int24 indexed tickLower, int24 indexed tickUpper, int256 marginDelta)
+    `,
   ];
 
   const contract = new ethers.Contract(address, abi, provider);

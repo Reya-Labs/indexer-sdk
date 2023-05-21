@@ -9,6 +9,7 @@ import {
   BigQueryPoolRow,
   BigQueryPositionRow,
   BigQuerySwapRow,
+  BigQueryMarginUpdateRow,
 } from './types';
 import { bqNumericToNumber, bqTimestampToUnixSeconds } from './utils';
 
@@ -111,4 +112,23 @@ export const mapToBigQueryPoolRow = (row: any): BigQueryPoolRow => ({
 export const mapToBigQueryHistoricalRateRow = (row: any): BigQueryHistoricalRateRow => ({
   rate: bqNumericToNumber(row.rate),
   timestamp: bqNumericToNumber(row.timestamp),
+});
+
+export const mapToBigQueryMarginUpdatesRow = (row: any): BigQueryMarginUpdateRow => ({
+  eventId: row.eventId,
+  vammAddress: row.vammAddress,
+  ownerAddress: row.ownerAddress,
+  tickLower: row.tickLower,
+  tickUpper: row.tickUpper,
+
+  marginDelta: bqNumericToNumber(row.variableTokenDelta),
+
+  eventBlockNumber: row.eventBlockNumber,
+  eventTimestamp: bqTimestampToUnixSeconds(row.eventTimestamp),
+  rowLastUpdatedTimestamp: bqTimestampToUnixSeconds(row.rowLastUpdatedTimestamp),
+
+  rateOracle: row.rateOracle,
+  underlyingToken: row.underlyingToken,
+  marginEngineAddress: row.marginEngineAddress,
+  chainId: row.chainId,
 });
