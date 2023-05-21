@@ -106,6 +106,25 @@ export type BigQueryHistoricalRateRow = {
   timestamp: number;
 };
 
+export type BigQueryMarginUpdateRow = {
+  eventId: string;
+  vammAddress: string;
+  ownerAddress: string;
+  tickLower: number;
+  tickUpper: number;
+
+  marginDelta: number;
+
+  eventBlockNumber: number;
+  eventTimestamp: number;
+  rowLastUpdatedTimestamp: number;
+
+  rateOracle: string;
+  underlyingToken: string;
+  marginEngineAddress: string;
+  chainId: number;
+};
+
 export type BigQueryVoyageRow = {
   id: 'v2Voyage';
   timestamp: number | null; // UNIX milliseconds
