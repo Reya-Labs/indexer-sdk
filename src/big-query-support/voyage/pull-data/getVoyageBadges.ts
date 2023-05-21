@@ -1,7 +1,7 @@
 import { getBigQuery } from '../../../global';
 import { BigQueryVoyageRow } from '../../types';
 
-export const getVoyageBadges = async (chainId: number): Promise<BigQueryVoyageRow[] | null> => {
+export const getVoyageBadges = async (chainId: number, ownerAddress: string): Promise<BigQueryVoyageRow[] | null> => {
   const bigQuery = getBigQuery();
 
   // queries
@@ -11,7 +11,7 @@ export const getVoyageBadges = async (chainId: number): Promise<BigQueryVoyageRo
 
         FROM \`risk-monitoring-361911.voyage.badges\`
         
-        WHERE (chainId=${chainId})
+        WHERE (chainId=${chainId}) and (ownerAddress=${ownerAddress})
     `;
 
   // rows
@@ -38,7 +38,7 @@ export const getVoyageBadges = async (chainId: number): Promise<BigQueryVoyageRo
   return [
     {
       id: 'v2Voyage',
-      timestamp: rows[0].timestamp * 1000,
+      timestamp: rows[0].timestamp,
     },
   ];
 };
