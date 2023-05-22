@@ -17,7 +17,7 @@ export const getVoyageBadges = async (
 
         FROM \`risk-monitoring-361911.voyage.badges\`
         
-        WHERE (chainId=${chainId}) and (ownerAddress=${ownerAddress})
+        WHERE (chainId=${chainId}) and (ownerAddress=\"${ownerAddress}\")
     `;
 
   // rows
@@ -26,8 +26,8 @@ export const getVoyageBadges = async (
     query: badgesQuery,
   });
 
-  if (rows === undefined || rows === null || rows.length > 1) {
-    throw new Error('Too many badges');
+  if (rows === undefined || rows === null) {
+    throw new Error('Failed query');
   }
 
   if (rows.length === 0) {
