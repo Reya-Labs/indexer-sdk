@@ -5,7 +5,6 @@ import { getBigQuery } from '../../../global';
 import { BigQueryVoyageRow } from '../../types';
 
 export const getVoyageBadges = async (
-  chainId: number,
   ownerAddress: string,
 ): Promise<BigQueryVoyageRow[] | null> => {
   const bigQuery = getBigQuery();
@@ -17,7 +16,7 @@ export const getVoyageBadges = async (
 
         FROM \`risk-monitoring-361911.voyage.badges\`
         
-        WHERE (chainId=${chainId}) and (ownerAddress=\"${ownerAddress}\")
+        WHERE (chainId=1) and (ownerAddress=\"${ownerAddress}\")
     `;
 
   // rows

@@ -386,9 +386,9 @@ app.get('/voyage/:chainId/:ownerAddress', (req, res) => {
   console.log(`Requesting information about Voyage Badges`);
 
   const process = async () => {
-    const chainId = Number(req.params.chainId);
+    //const chainId = Number(req.params.chainId);
     const ownerAddress = req.params.ownerAddress.toLowerCase();
-    const result = await getVoyageBadges(chainId, ownerAddress);
+    const result = await getVoyageBadges(ownerAddress);
 
     return result;
   };
