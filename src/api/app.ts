@@ -330,7 +330,7 @@ app.get('/position-pnl/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper
 });
 
 app.get('/fixed-rates/:chainId/:vammAddress/:startTimestamp/:endTimestamp', (req, res) => {
-  console.log(`Requesting information about historical fixed rates`);
+  console.log(`Requesting information about historical fixed rates ${req.ip}`);
 
   const process = async () => {
     const chainId = Number(req.params.chainId);
@@ -354,7 +354,7 @@ app.get('/fixed-rates/:chainId/:vammAddress/:startTimestamp/:endTimestamp', (req
 });
 
 app.get('/variable-rates/:chainId/:rateOracleAddress/:startTimestamp/:endTimestamp', (req, res) => {
-  console.log(`Requesting information about historical variable rates`);
+  console.log(`Requesting information about historical variable rates ${req.ip}`);
 
   const process = async () => {
     const chainId = Number(req.params.chainId);
