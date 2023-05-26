@@ -14,7 +14,7 @@ export const getVoyageBadges = async (
   const badgesQuery = `
         SELECT timestamp, chainId, ownerAddress
 
-        FROM \`risk-monitoring-361911.voyage.badges\`
+        FROM \`risk-monitoring-361911.voyage.badges_deprecated\`
         
         WHERE (chainId=1) and (ownerAddress=\"${ownerAddress}\")
     `;
