@@ -11,6 +11,7 @@ export const getVoyages = async (): Promise<BigQueryVoyage[]> => {
   const getVoyagesQuery = `
     SELECT id, startTimestamp, endTimestamp
     FROM \`risk-monitoring-361911.voyage.voyages\`
+    ORDER BY startTimestamp ASC 
   `;
 
   const [rows] = await bigQuery.query({
