@@ -51,7 +51,7 @@ export const syncMarginUpdates = async (chainIds: number[]): Promise<void> => {
 
       for (let i = 0; i < events.length; i++) {
         const event = events[i];
-        await processMarginUpdateEvent(event );
+        await processMarginUpdateEvent(event);
       }
     });
 

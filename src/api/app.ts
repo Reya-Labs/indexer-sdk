@@ -10,7 +10,10 @@ import { getChainTotalLiquidity } from '../big-query-support/mints-and-burns-tab
 import { pullAllChainPools } from '../big-query-support/pools-table/pull-data/pullAllChainPools';
 import { pullExistingPoolRow } from '../big-query-support/pools-table/pull-data/pullExistingPoolRow';
 import { pullExistingPositionRow } from '../big-query-support/positions-table/pull-data/pullExistingPositionRow';
+import { SDKVoyage } from '../big-query-support/types';
 import { getVoyageBadges } from '../big-query-support/voyage/pull-data/getVoyageBadges';
+import { getWalletVoyages } from '../big-query-support/voyage/pull-data/getVoyageBadgesV1';
+import { getVoyages } from '../big-query-support/voyage/pull-data/getVoyages';
 import { SECONDS_IN_YEAR } from '../common/constants';
 import { getCurrentTick } from '../common/contract-services/getCurrentTick';
 import { getProvider } from '../common/provider/getProvider';
@@ -389,6 +392,52 @@ app.get('/voyage/:chainId/:ownerAddress', (req, res) => {
     //const chainId = Number(req.params.chainId);
     const ownerAddress = req.params.ownerAddress.toLowerCase();
     const result = await getVoyageBadges(ownerAddress);
+
+    return result;
+  };
+
+  process().then(
+    (output) => {
+      res.json(output);
+    },
+    (error) => {
+      console.log(`API query failed with message ${(error as Error).message}`);
+    },
+  );
+});
+
+app.get('/voyage-V1/:chainId/:walletAddress', (req, res) => {
+  console.log(`Requesting information about Voyage Badges`);
+
+  const process = async () => {
+    const voyages = await getVoyages();
+
+    const chainId = Number(req.params.chainId);
+    const walletAddress = req.params.walletAddress.toLowerCase();
+    const walletVoyages = await getWalletVoyages(chainId, walletAddress);
+
+    const result: SDKVoyage[] = [];
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    for (const voyage of voyages) {
+      let status: 'achieved' | 'notAchieved' | 'notStarted' | 'inProgress';
+      let timestampInMS: number | null = null;
+      if (currentTimestamp < voyage.startTimestamp) {
+        status = 'notStarted';
+      } else if (currentTimestamp < voyage.endTimestamp) {
+        status = 'inProgress';
+      } else if (!walletVoyages.includes(voyage.id)) {
+        status = 'notAchieved';
+      } else {
+        status = 'achieved';
+        timestampInMS = voyage.endTimestamp * 1000;
+      }
+
+      result.push({
+        id: voyage.id,
+        status,
+        timestamp: timestampInMS,
+      });
+    }
 
     return result;
   };

@@ -10,6 +10,7 @@ import {
   BigQueryPoolRow,
   BigQueryPositionRow,
   BigQuerySwapRow,
+  BigQueryVoyage,
 } from './types';
 import { bqNumericToNumber, bqTimestampToUnixSeconds } from './utils';
 
@@ -132,3 +133,11 @@ export const mapToBigQueryMarginUpdatesRow = (row: any): BigQueryMarginUpdateRow
   marginEngineAddress: row.marginEngineAddress,
   chainId: row.chainId,
 });
+
+export const mapToBigQueryVoyage = (row: any): BigQueryVoyage => ({
+  id: bqNumericToNumber(row.id),
+  startTimestamp: bqNumericToNumber(row.startTimestamp),
+  endTimestamp: bqNumericToNumber(row.endTimestamp),
+});
+
+export const mapToBigQueryVoyageId = (row: any): number => bqNumericToNumber(row.voyageId);
