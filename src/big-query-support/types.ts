@@ -129,3 +129,15 @@ export type BigQueryVoyageRow = {
   id: 'v2Voyage';
   timestamp: number | null; // UNIX milliseconds
 };
+
+export type BigQueryVoyage = {
+  id: number;
+  startTimestamp: number;
+  endTimestamp: number;
+};
+
+export type SDKVoyage = {
+  id: number;
+  status: 'achieved' | 'notAchieved' | 'notStarted' | 'inProgress';
+  timestamp: number | null; // UNIX milliseconds
+};
