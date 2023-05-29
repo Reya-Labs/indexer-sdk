@@ -1,6 +1,5 @@
 import { pullAllChainPools } from '../big-query-support/pools-table/pull-data/pullAllChainPools';
 import { BigQueryPoolRow } from '../big-query-support/types';
-import { APR_2023_TIMESTAMP } from './constants';
 
 export const getAmms = async (chainId: number): Promise<BigQueryPoolRow[]> => {
   // Get AMMs
