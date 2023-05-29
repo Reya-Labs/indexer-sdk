@@ -418,12 +418,14 @@ app.get('/voyage-V1/:chainId/:walletAddress', (req, res) => {
 
     const result: SDKVoyage[] = [];
     const currentTimestamp = Math.floor(Date.now() / 1000);
+    const inTransitPeriod = 3 * 60 * 60; // 3 hours
+
     for (const voyage of voyages) {
       let status: 'achieved' | 'notAchieved' | 'notStarted' | 'inProgress';
       let timestampInMS: number | null = null;
       if (currentTimestamp < voyage.startTimestamp) {
         status = 'notStarted';
-      } else if (currentTimestamp < voyage.endTimestamp) {
+      } else if (currentTimestamp < voyage.endTimestamp + inTransitPeriod) {
         status = 'inProgress';
       } else if (!walletVoyages.includes(voyage.id)) {
         status = 'notAchieved';
