@@ -23,7 +23,9 @@
     "test": "jest --silent",
     "test:coverage": "yarn test --coverage",
     "generate:coverage-badges": "npx istanbul-badges-readme --silent",
-    "code-quality:check": "npx concurrently 'yarn ts:check' 'yarn prettier:check' 'yarn lint:check --quiet'"
+    "code-quality:check": "npx concurrently 'yarn ts:check' 'yarn prettier:check' 'yarn lint:check --quiet'",
+    "index-pools": "npx ts-node src/indexPools.ts",
+    "index-swaps": "npx ts-node src/indexSwaps.ts"
   },
   "repository": {
     "type": "git",
