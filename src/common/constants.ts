@@ -4,9 +4,6 @@ dotenv.config();
 
 export const SECONDS_IN_YEAR = 31_536_000;
 
-// timestamp of active VAMM
-export const APR_2023_TIMESTAMP = 1680337863;
-
 // CoinGecko API key
 export const GECKO_KEY = process.env.COINGECKO_API_KEY || '';
 
