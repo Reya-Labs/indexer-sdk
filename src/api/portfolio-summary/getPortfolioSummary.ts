@@ -1,6 +1,28 @@
+import {
+    getPositions as getRawPositions,
+    Position as RawPosition
+} from '@voltz-protocol/subgraph-data';
+
+import { getSubgraphURL } from "../subgraph/getSubgraphURL";
 import { PortfolioSummary } from "./types";
 
-export const getPortfolioSummary = async (ownerAddress: string): Promise<PortfolioSummary> => {
+export const getPortfolioSummary = async (chainIds: number[], ownerAddress: string): Promise<PortfolioSummary> => {
+
+    const now = Date.now().valueOf();
+    const allPositions: RawPosition[] = [];
+
+    for (const chainId of chainIds) {
+        const positions = await getRawPositions(
+            getSubgraphURL(chainId),
+            now,
+            {
+                owners: [ownerAddress],
+            },
+        );
+
+        allPositions.push(...positions);
+    }
+
 
     const portfolioValue = 0;
     const margin = 0;
@@ -17,19 +39,19 @@ export const getPortfolioSummary = async (ownerAddress: string): Promise<Portfol
     return {
         portfolioValueInUnderlyingToken: portfolioValue,
         portfolioValueInUSD: portfolioValue * underlyingTokenPriceInUSD,
-    
+
         marginInUnderlyingToken: margin,
         marginInUSD: margin * underlyingTokenPriceInUSD,
-    
+
         realisedPnLInUnderlyingToken: realisedPnL,
         realisedPnLInUSD: realisedPnL * underlyingTokenPriceInUSD,
 
         unrealisedPnLInUnderlyingToken: unrealisedPnL,
         unrealisedPnLInUSD: unrealisedPnL * underlyingTokenPriceInUSD,
-    
+
         notionalInUnderlyingToken: notional,
         notionalInUSD: notional * underlyingTokenPriceInUSD,
-    
+
         numberOfPositions,
         healthyPositions,
         warningPositions,

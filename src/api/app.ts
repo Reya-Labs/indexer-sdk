@@ -25,6 +25,7 @@ import { getAmm } from './common/getAMM';
 import { getPortfolioPositions } from './portfolio-positions/getPortfolioPositions';
 import { getPortfolioSummary } from './portfolio-summary/getPortfolioSummary';
 import { getPositionTxHistory } from './position-tx-history/getPositionTxHistory';
+import { getPositionPnL } from './position-pnl/getPositionPnL';
 
 export const app = express();
 
@@ -82,7 +83,6 @@ app.get('/pool/:chainId/:vammAddress', (req, res) => {
 
 app.get('/chain-information/:chainIds', (req, res) => {
   const process = async () => {
-    console.log('chainIds', req.params.chainIds);
     const chainIds = req.params.chainIds.split('&').map((s) => Number(s));
 
     const response = await Promise.allSettled([
@@ -129,10 +129,11 @@ app.get('/all-pools/:chainIds', (req, res) => {
   );
 });
 
-app.get('/portfolio-summary/:ownerAddress', (req, res) => {
+app.get('/portfolio-summary/:chainIds/:ownerAddress', (req, res) => {
+  const chainIds = req.params.chainIds.split('&').map((s) => Number(s));
   const ownerAddress = req.params.ownerAddress;
 
-  getPortfolioSummary(ownerAddress).then(
+  getPortfolioSummary(chainIds, ownerAddress).then(
     (output) => {
       res.json(output);
     },
@@ -157,10 +158,10 @@ app.get('/portfolio-positions/:ownerAddress', (req, res) => {
 
 app.get('/position-tx-history/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper', (req, res) => {
   const chainId = Number(req.params.chainId);
-    const vammAddress = req.params.vammAddress;
-    const ownerAddress = req.params.ownerAddress;
-    const tickLower = Number(req.params.tickLower);
-    const tickUpper = Number(req.params.tickUpper);
+  const vammAddress = req.params.vammAddress;
+  const ownerAddress = req.params.ownerAddress;
+  const tickLower = Number(req.params.tickLower);
+  const tickUpper = Number(req.params.tickUpper);
 
   getPositionTxHistory(chainId, vammAddress, ownerAddress, tickLower, tickUpper).then(
     (output) => {
@@ -174,74 +175,13 @@ app.get('/position-tx-history/:chainId/:vammAddress/:ownerAddress/:tickLower/:ti
 
 // todo: deprecate when SDK stops consuming it
 app.get('/position-pnl/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper', (req, res) => {
-  const process = async () => {
-    const chainId = Number(req.params.chainId);
-    const vammAddress = req.params.vammAddress;
-    const ownerAddress = req.params.ownerAddress;
-    const tickLower = Number(req.params.tickLower);
-    const tickUpper = Number(req.params.tickUpper);
+  const chainId = Number(req.params.chainId);
+  const vammAddress = req.params.vammAddress;
+  const ownerAddress = req.params.ownerAddress;
+  const tickLower = Number(req.params.tickLower);
+  const tickUpper = Number(req.params.tickUpper);
 
-    const provider = getProvider(chainId);
-
-    const existingPosition = await pullExistingPositionRow(
-      chainId,
-      vammAddress,
-      ownerAddress,
-      tickLower,
-      tickUpper,
-    );
-
-    if (!existingPosition) {
-      return {
-        realizedPnLFromSwaps: 0,
-        realizedPnLFromFeesPaid: 0,
-        realizedPnLFromFeesCollected: 0,
-        unrealizedPnLFromSwaps: 0,
-      };
-    }
-
-    const amm = await getAmm(chainId, vammAddress);
-    const maturityTimestamp = Math.floor(amm.termEndTimestampInMS / 1000);
-    let currentTimestamp = (await provider.getBlock('latest')).timestamp;
-
-    let currentLiquidityIndex = 1;
-
-    if (maturityTimestamp >= currentTimestamp) {
-      currentLiquidityIndex = await getLiquidityIndex(chainId, amm.marginEngine);
-    } else {
-      const blockAtSettlement = await getBlockAtTimestamp(provider, maturityTimestamp);
-
-      currentLiquidityIndex = await getLiquidityIndex(chainId, amm.marginEngine, blockAtSettlement);
-
-      currentTimestamp = maturityTimestamp;
-    }
-
-    // realized PnL
-    const rPnL =
-      existingPosition.cashflowLiFactor * currentLiquidityIndex +
-      (existingPosition.cashflowTimeFactor * currentTimestamp) / SECONDS_IN_YEAR +
-      existingPosition.cashflowFreeTerm;
-
-    // unrealized PnL
-    const currentTick = await getCurrentTick(chainId, vammAddress);
-    const currentFixedRate = tickToFixedRate(currentTick);
-
-    const timeInYears = getTimeInYearsBetweenTimestamps(currentTimestamp, maturityTimestamp);
-
-    const uPnL =
-      existingPosition.netNotionalLocked *
-      (currentFixedRate - existingPosition.netFixedRateLocked) *
-      timeInYears;
-
-    return {
-      realizedPnLFromSwaps: rPnL,
-      realizedPnLFromFeesPaid: existingPosition.realizedPnLFromFeesPaid,
-      realizedPnLFromFeesCollected: existingPosition.realizedPnLFromFeesCollected,
-      unrealizedPnLFromSwaps: uPnL,
-    };
-  };
-
-  process().then(
+  getPositionPnL(chainId, vammAddress, ownerAddress, tickLower, tickUpper).then(
     (output) => {
       res.json(output);
     },
