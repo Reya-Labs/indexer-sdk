@@ -22,6 +22,9 @@ import { tickToFixedRate } from '../common/services/tickConversions';
 import { getBlockAtTimestamp, getTimeInYearsBetweenTimestamps } from '../common/utils';
 import { getRedisClient, getTrustedProxies } from '../global';
 import { getAmm } from './common/getAMM';
+import { getPortfolioPositions } from './portfolio-positions/getPortfolioPositions';
+import { getPortfolioSummary } from './portfolio-summary/getPortfolioSummary';
+import { getPositionTxHistory } from './position-tx-history/getPositionTxHistory';
 
 export const app = express();
 
@@ -51,132 +54,6 @@ app.get('/', (_, res) => {
 
 app.get('/ip', (req, res) => {
   res.send(req.ip);
-});
-
-// todo: to be deprecated when SDK stops consuming it
-app.get('/chains/:chainId', (req, res) => {
-  const process = async () => {
-    const chainId = Number(req.params.chainId);
-
-    const tradingVolume = await getChainTradingVolume([chainId]);
-
-    const totalLiquidity = await getChainTotalLiquidity([chainId]);
-
-    return {
-      volume30Day: tradingVolume,
-      totalLiquidity: totalLiquidity,
-    };
-  };
-
-  process().then(
-    (output) => {
-      res.json(output);
-    },
-    (error) => {
-      console.log(`API query failed with message ${(error as Error).message}`);
-    },
-  );
-});
-
-// todo: to be deprecated when SDK stops consuming it
-app.get('/positions/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper', (req, res) => {
-  console.log(`Requesting information about a position`);
-
-  const process = async () => {
-    const chainId = Number(req.params.chainId);
-    const vammAddress = req.params.vammAddress;
-    const ownerAddress = req.params.ownerAddress;
-    const tickLower = Number(req.params.tickLower);
-    const tickUpper = Number(req.params.tickUpper);
-
-    const provider = getProvider(chainId);
-
-    const existingPosition = await pullExistingPositionRow(
-      chainId,
-      vammAddress,
-      ownerAddress,
-      tickLower,
-      tickUpper,
-    );
-
-    if (!existingPosition) {
-      return {
-        realizedPnLFromSwaps: 0,
-        realizedPnLFromFeesPaid: 0,
-        realizedPnLFromFeesCollected: 0,
-        unrealizedPnLFromSwaps: 0,
-      };
-    }
-
-    const amm = await getAmm(chainId, vammAddress);
-    const maturityTimestamp = Math.floor(amm.termEndTimestampInMS / 1000);
-    let currentTimestamp = (await provider.getBlock('latest')).timestamp;
-
-    let currentLiquidityIndex = 1;
-
-    if (maturityTimestamp >= currentTimestamp) {
-      currentLiquidityIndex = await getLiquidityIndex(chainId, amm.marginEngine);
-    } else {
-      const blockAtSettlement = await getBlockAtTimestamp(provider, maturityTimestamp);
-
-      currentLiquidityIndex = await getLiquidityIndex(chainId, amm.marginEngine, blockAtSettlement);
-
-      currentTimestamp = maturityTimestamp;
-    }
-
-    // realized PnL
-    const rPnL =
-      existingPosition.cashflowLiFactor * currentLiquidityIndex +
-      (existingPosition.cashflowTimeFactor * currentTimestamp) / SECONDS_IN_YEAR +
-      existingPosition.cashflowFreeTerm;
-
-    // unrealized PnL
-    const currentTick = await getCurrentTick(chainId, vammAddress);
-    const currentFixedRate = tickToFixedRate(currentTick);
-
-    const timeInYears = getTimeInYearsBetweenTimestamps(currentTimestamp, maturityTimestamp);
-
-    const uPnL =
-      existingPosition.netNotionalLocked *
-      (currentFixedRate - existingPosition.netFixedRateLocked) *
-      timeInYears;
-
-    return {
-      realizedPnLFromSwaps: rPnL,
-      realizedPnLFromFeesPaid: existingPosition.realizedPnLFromFeesPaid,
-      realizedPnLFromFeesCollected: existingPosition.realizedPnLFromFeesCollected,
-      unrealizedPnLFromSwaps: uPnL,
-    };
-  };
-
-  process().then(
-    (output) => {
-      res.json(output);
-    },
-    (error) => {
-      console.log(`API query failed with message ${(error as Error).message}`);
-    },
-  );
-});
-
-// todo: to be deprecated when SDK stops consuming it
-app.get('/chain-pools/:chainId', (req, res) => {
-  const process = async () => {
-    const chainId = Number(req.params.chainId);
-
-    const pools = await pullAllChainPools([chainId]);
-
-    return pools;
-  };
-
-  process().then(
-    (output) => {
-      res.json(output);
-    },
-    (error) => {
-      console.log(`API query failed with message ${(error as Error).message}`);
-    },
-  );
 });
 
 app.get('/pool/:chainId/:vammAddress', (req, res) => {
@@ -252,9 +129,51 @@ app.get('/all-pools/:chainIds', (req, res) => {
   );
 });
 
-app.get('/position-pnl/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper', (req, res) => {
-  console.log(`Requesting information about a position`);
+app.get('/portfolio-summary/:ownerAddress', (req, res) => {
+  const ownerAddress = req.params.ownerAddress;
 
+  getPortfolioSummary(ownerAddress).then(
+    (output) => {
+      res.json(output);
+    },
+    (error) => {
+      console.log(`API query failed with message ${(error as Error).message}`);
+    },
+  );
+});
+
+app.get('/portfolio-positions/:ownerAddress', (req, res) => {
+  const ownerAddress = req.params.ownerAddress;
+
+  getPortfolioPositions(ownerAddress).then(
+    (output) => {
+      res.json(output);
+    },
+    (error) => {
+      console.log(`API query failed with message ${(error as Error).message}`);
+    },
+  );
+});
+
+app.get('/position-tx-history/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper', (req, res) => {
+  const chainId = Number(req.params.chainId);
+    const vammAddress = req.params.vammAddress;
+    const ownerAddress = req.params.ownerAddress;
+    const tickLower = Number(req.params.tickLower);
+    const tickUpper = Number(req.params.tickUpper);
+
+  getPositionTxHistory(chainId, vammAddress, ownerAddress, tickLower, tickUpper).then(
+    (output) => {
+      res.json(output);
+    },
+    (error) => {
+      console.log(`API query failed with message ${(error as Error).message}`);
+    },
+  );
+});
+
+// todo: deprecate when SDK stops consuming it
+app.get('/position-pnl/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper', (req, res) => {
   const process = async () => {
     const chainId = Number(req.params.chainId);
     const vammAddress = req.params.vammAddress;
@@ -389,7 +308,6 @@ app.get('/voyage/:chainId/:ownerAddress', (req, res) => {
   console.log(`Requesting information about Voyage Badges`);
 
   const process = async () => {
-    //const chainId = Number(req.params.chainId);
     const ownerAddress = req.params.ownerAddress.toLowerCase();
     const result = await getVoyageBadges(ownerAddress);
 
