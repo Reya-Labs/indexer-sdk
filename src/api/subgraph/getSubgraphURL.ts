@@ -1,12 +1,11 @@
-
 export enum SupportedChainId {
-    mainnet = 1,
-    goerli = 5,
-    arbitrum = 42161,
-    arbitrumGoerli = 421613,
-    avalanche = 43114,
-    avalancheFuji = 43113,
-  }
+  mainnet = 1,
+  goerli = 5,
+  arbitrum = 42161,
+  arbitrumGoerli = 421613,
+  avalanche = 43114,
+  avalancheFuji = 43113,
+}
 
 export const getSubgraphURL = (chainId: SupportedChainId): string => {
   switch (chainId) {

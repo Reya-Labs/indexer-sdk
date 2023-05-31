@@ -3,6 +3,8 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 export const SECONDS_IN_YEAR = 31_536_000;
+export const SECONDS_IN_DAY = 86_400;
+export const SECONDS_IN_HOUR = 3_600;
 
 // timestamp of active VAMM
 export const APR_2023_TIMESTAMP = 1680337863;

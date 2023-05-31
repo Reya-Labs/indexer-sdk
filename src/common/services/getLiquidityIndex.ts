@@ -109,7 +109,12 @@ export const getLiquidityIndex = async (
 ): Promise<number> => {
   const provider = getProvider(chainId);
 
-  const liquidityIndex = await getLiquidityIndexOneTime(chainId, provider, marginEngineAddress, blockTag);
+  const liquidityIndex = await getLiquidityIndexOneTime(
+    chainId,
+    provider,
+    marginEngineAddress,
+    blockTag,
+  );
 
   return liquidityIndex;
 };

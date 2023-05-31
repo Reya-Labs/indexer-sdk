@@ -15,7 +15,6 @@ import { getWalletVoyages } from '../big-query-support/voyage/pull-data/getVoyag
 import { getVoyages } from '../big-query-support/voyage/pull-data/getVoyages';
 import { getRedisClient, getTrustedProxies } from '../global';
 import { getPortfolioPositions } from './portfolio-positions/getPortfolioPositions';
-// import { getPortfolioSummary } from './portfolio-summary/getPortfolioSummary';
 import { getPositionPnL } from './position-pnl/getPositionPnL';
 import { getPositionTxHistory } from './position-tx-history/getPositionTxHistory';
 
@@ -121,20 +120,6 @@ app.get('/all-pools/:chainIds', (req, res) => {
   );
 });
 
-// app.get('/portfolio-summary/:chainIds/:ownerAddress', (req, res) => {
-//   const chainIds = req.params.chainIds.split('&').map((s) => Number(s));
-//   const ownerAddress = req.params.ownerAddress;
-
-//   getPortfolioSummary(chainIds, ownerAddress).then(
-//     (output) => {
-//       res.json(output);
-//     },
-//     (error) => {
-//       console.log(`API query failed with message ${(error as Error).message}`);
-//     },
-//   );
-// });
-
 app.get('/portfolio-positions/:chainIds/:ownerAddress', (req, res) => {
   const chainIds = req.params.chainIds.split('&').map((s) => Number(s));
   const ownerAddress = req.params.ownerAddress;
@@ -149,22 +134,25 @@ app.get('/portfolio-positions/:chainIds/:ownerAddress', (req, res) => {
   );
 });
 
-app.get('/position-tx-history/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper', (req, res) => {
-  const chainId = Number(req.params.chainId);
-  const vammAddress = req.params.vammAddress;
-  const ownerAddress = req.params.ownerAddress;
-  const tickLower = Number(req.params.tickLower);
-  const tickUpper = Number(req.params.tickUpper);
+app.get(
+  '/position-tx-history/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper',
+  (req, res) => {
+    const chainId = Number(req.params.chainId);
+    const vammAddress = req.params.vammAddress;
+    const ownerAddress = req.params.ownerAddress;
+    const tickLower = Number(req.params.tickLower);
+    const tickUpper = Number(req.params.tickUpper);
 
-  getPositionTxHistory(chainId, vammAddress, ownerAddress, tickLower, tickUpper).then(
-    (output) => {
-      res.json(output);
-    },
-    (error) => {
-      console.log(`API query failed with message ${(error as Error).message}`);
-    },
-  );
-});
+    getPositionTxHistory(chainId, vammAddress, ownerAddress, tickLower, tickUpper).then(
+      (output) => {
+        res.json(output);
+      },
+      (error) => {
+        console.log(`API query failed with message ${(error as Error).message}`);
+      },
+    );
+  },
+);
 
 // todo: deprecate when SDK stops consuming it
 app.get('/position-pnl/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper', (req, res) => {
