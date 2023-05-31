@@ -19,8 +19,7 @@ import { tickToFixedRate } from '../../common/services/tickConversions';
 import { getETHPriceInUSD } from '../get-token-price/getETHPriceInUSD';
 import { getPositionPnL } from '../position-pnl/getPositionPnL';
 import { getSubgraphURL } from '../subgraph/getSubgraphURL';
-import { getPortfolioSummary } from './getPortfolioSummary';
-import { GetPortfolioPositionsResponse, PortfolioPosition, PortfolioPositionAMM } from './types';
+import { PortfolioPosition, PortfolioPositionAMM } from './types';
 
 const isBorrowingProtocol = (protocolId: number) => {
   return protocolId === 6 || protocolId === 5 || protocolId === 9;
@@ -29,7 +28,7 @@ const isBorrowingProtocol = (protocolId: number) => {
 export const getPortfolioPositions = async (
   chainIds: number[],
   ownerAddress: string,
-): Promise<GetPortfolioPositionsResponse> => {
+): Promise<PortfolioPosition[]> => {
   const now = Date.now().valueOf();
 
   const ethPriceUSD = await getETHPriceInUSD();
@@ -68,7 +67,7 @@ export const getPortfolioPositions = async (
         pos.positionType === 3 ? 'LP' : pos.positionType === 2 ? 'Variable' : 'Fixed';
 
       const provider = getProvider(chainId);
-      const tokenPriceInUSD = tokenName === 'ETH' ? ethPriceUSD : 1;
+      const tokenPriceUSD = tokenName === 'ETH' ? ethPriceUSD : 1;
 
       const isBorrowing = isBorrowingProtocol(pos.amm.protocolId);
       const market = 'Aave V2';
@@ -103,13 +102,9 @@ export const getPortfolioPositions = async (
           fixLow,
           fixHigh,
           notionalProvided: 0,
-          notionalProvidedUSD: 0,
           notionalTraded: 0,
-          notionalTradedUSD: 0,
           notional: 0,
-          notionalUSD: 0,
           margin: 0,
-          marginUSD: 0,
           status: {
             health: 'healthy',
             variant: 'settled',
@@ -118,14 +113,11 @@ export const getPortfolioPositions = async (
             paying: 0,
           },
           unrealizedPNL: 0,
-          unrealizedPNLUSD: 0,
           realizedPNLFees: 0,
-          realizedPNLFeesUSD: 0,
           realizedPNLCashflow: 0,
-          realizedPNLCashflowUSD: 0,
 
           realizedPNLTotal: 0,
-          realizedPNLTotalUSD: 0,
+          tokenPriceUSD,
 
           amm,
         };
@@ -146,23 +138,16 @@ export const getPortfolioPositions = async (
         tickLower,
         tickUpper,
       );
-      const notionalProvidedUSD = notionalProvided * tokenPriceInUSD;
-
       const variableTokenBalance = descaler(freshInfo.variableTokenBalance);
-
       const notionalTraded = Math.abs(variableTokenBalance);
-      const notionalTradedUSD = notionalTraded * tokenPriceInUSD;
 
       const fixedTokenBalance = descaler(freshInfo.fixedTokenBalance);
 
       const notional = positionType === 'LP' ? notionalProvided : notionalTraded;
-      const notionalUSD = notional * tokenPriceInUSD;
 
       const accumulatedFees = descaler(freshInfo.accumulatedFees);
-      const accumulatedFeesUSD = accumulatedFees * tokenPriceInUSD;
 
       const margin = descaler(freshInfo.margin) - accumulatedFees;
-      const marginUSD = margin * tokenPriceInUSD;
 
       if (pos.amm.termEndTimestampInMS <= now) {
         // Position is matured
@@ -185,7 +170,6 @@ export const getPortfolioPositions = async (
         }
 
         const realizedPNLCashflow = settlementCashflow;
-        const realizedPNLCashflowUSD = realizedPNLCashflow * tokenPriceInUSD;
 
         return {
           id: positionId,
@@ -196,13 +180,9 @@ export const getPortfolioPositions = async (
           fixLow,
           fixHigh,
           notionalProvided,
-          notionalProvidedUSD,
           notionalTraded,
-          notionalTradedUSD,
           notional,
-          notionalUSD,
           margin,
-          marginUSD,
           status: {
             health: 'healthy',
             variant: 'matured',
@@ -211,14 +191,11 @@ export const getPortfolioPositions = async (
             paying: 0,
           },
           unrealizedPNL: 0,
-          unrealizedPNLUSD: 0,
           realizedPNLFees: accumulatedFees,
-          realizedPNLFeesUSD: accumulatedFeesUSD,
           realizedPNLCashflow,
-          realizedPNLCashflowUSD,
 
           realizedPNLTotal: accumulatedFees + realizedPNLCashflow,
-          realizedPNLTotalUSD: accumulatedFeesUSD + realizedPNLCashflowUSD,
+          tokenPriceUSD,
 
           amm,
         };
@@ -256,13 +233,10 @@ export const getPortfolioPositions = async (
       const positionPnL = positionPnLResponse.value;
 
       const realizedPNLCashflow = positionPnL.realizedPnLFromSwaps;
-      const realizedPNLCashflowUSD = realizedPNLCashflow * tokenPriceInUSD;
 
       const paidFees = positionPnL.realizedPnLFromFeesPaid;
-      const paidFeesUSD = paidFees * tokenPriceInUSD;
 
       const unrealizedPNL = positionPnL.unrealizedPnLFromSwaps;
-      const unrealizedPNLUSD = unrealizedPNL * tokenPriceInUSD;
 
       const fixedRateLocked = positionPnL.fixedRateLocked;
 
@@ -307,13 +281,9 @@ export const getPortfolioPositions = async (
         fixLow,
         fixHigh,
         notionalProvided,
-        notionalProvidedUSD,
         notionalTraded,
-        notionalTradedUSD,
         notional,
-        notionalUSD,
         margin: margin - paidFees,
-        marginUSD: marginUSD - paidFeesUSD,
         status: {
           health,
           variant: 'active',
@@ -322,14 +292,11 @@ export const getPortfolioPositions = async (
           paying,
         },
         unrealizedPNL,
-        unrealizedPNLUSD,
         realizedPNLFees: accumulatedFees + paidFees,
-        realizedPNLFeesUSD: accumulatedFeesUSD + paidFeesUSD,
         realizedPNLCashflow,
-        realizedPNLCashflowUSD,
 
         realizedPNLTotal: accumulatedFees + realizedPNLCashflow + paidFees,
-        realizedPNLTotalUSD: accumulatedFeesUSD + realizedPNLCashflowUSD + paidFeesUSD,
+        tokenPriceUSD,
 
         amm,
       };
@@ -343,8 +310,5 @@ export const getPortfolioPositions = async (
     throw new Error(`Promise rejected with error: ${(resp.reason as Error).message}`);
   });
 
-  return {
-    positions,
-    summary: getPortfolioSummary(positions),
-  };
+  return positions;
 };
