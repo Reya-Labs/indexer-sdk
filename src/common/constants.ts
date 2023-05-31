@@ -3,6 +3,8 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 export const SECONDS_IN_YEAR = 31_536_000;
+export const SECONDS_IN_DAY = 86_400;
+export const SECONDS_IN_HOUR = 3_600;
 
 // CoinGecko API key
 export const GECKO_KEY = process.env.COINGECKO_API_KEY || '';

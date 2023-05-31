@@ -5,7 +5,6 @@ import { ethers } from 'ethers';
 import { generateMarginEngineContract } from '../contract-services/generateMarginEngineContract';
 import { generateRateOracleContract } from '../contract-services/generateRateOracleContract';
 import { getProvider } from '../provider/getProvider';
-import { exponentialBackoff } from '../retry';
 
 const getAaveLendingLiquidityIndex = async (
   provider: ethers.providers.Provider,
@@ -110,8 +109,11 @@ export const getLiquidityIndex = async (
 ): Promise<number> => {
   const provider = getProvider(chainId);
 
-  const liquidityIndex = await exponentialBackoff(() =>
-    getLiquidityIndexOneTime(chainId, provider, marginEngineAddress, blockTag),
+  const liquidityIndex = await getLiquidityIndexOneTime(
+    chainId,
+    provider,
+    marginEngineAddress,
+    blockTag,
   );
 
   return liquidityIndex;
