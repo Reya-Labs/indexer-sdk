@@ -8,6 +8,7 @@ import {
 } from '@voltz-protocol/subgraph-data';
 
 import { getLatestVariableRate } from '../../big-query-support/historical-rates/pull-data/getLatestVariableRate';
+import { pullAllChainPools } from '../../big-query-support/pools-table/pull-data/pullAllChainPools';
 import { SECONDS_IN_YEAR } from '../../common/constants';
 import { generateMarginEngineContract } from '../../common/contract-services/generateMarginEngineContract';
 import { getCurrentTick } from '../../common/contract-services/getCurrentTick';
@@ -118,6 +119,9 @@ export const getPortfolioPositions = async (
 
           realizedPNLTotal: 0,
           tokenPriceUSD,
+          canEdit: false,
+          canSettle: false,
+          rolloverAmmId: null,
 
           amm,
         };
@@ -171,6 +175,17 @@ export const getPortfolioPositions = async (
 
         const realizedPNLCashflow = settlementCashflow;
 
+        // Check for available rollovers
+        const pools = (await pullAllChainPools([chainId]))
+          .filter((pool) => {
+            pool.protocolId === pos.amm.protocolId &&
+              pool.tokenId.toLowerCase() === pos.amm.tokenId.toLowerCase() &&
+              pool.termEndTimestampInMS >= now;
+          })
+          .sort((a, b) => b.termEndTimestampInMS - a.termEndTimestampInMS);
+
+        const rolloverAmmId = pools.length === 0 ? null : pools[0].vamm;
+
         return {
           id: positionId,
           type: positionType,
@@ -196,6 +211,10 @@ export const getPortfolioPositions = async (
 
           realizedPNLTotal: accumulatedFees + realizedPNLCashflow,
           tokenPriceUSD,
+
+          canEdit: false,
+          canSettle: true,
+          rolloverAmmId,
 
           amm,
         };
@@ -297,6 +316,10 @@ export const getPortfolioPositions = async (
 
         realizedPNLTotal: accumulatedFees + realizedPNLCashflow + paidFees,
         tokenPriceUSD,
+
+        canEdit: true,
+        canSettle: false,
+        rolloverAmmId: null,
 
         amm,
       };
