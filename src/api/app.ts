@@ -9,23 +9,15 @@ import { getVariableRates } from '../big-query-support/historical-rates/pull-dat
 import { getChainTotalLiquidity } from '../big-query-support/mints-and-burns-table/pull-data/getTotalLiquidity';
 import { pullAllChainPools } from '../big-query-support/pools-table/pull-data/pullAllChainPools';
 import { pullExistingPoolRow } from '../big-query-support/pools-table/pull-data/pullExistingPoolRow';
-import { pullExistingPositionRow } from '../big-query-support/positions-table/pull-data/pullExistingPositionRow';
 import { SDKVoyage } from '../big-query-support/types';
 import { getVoyageBadges } from '../big-query-support/voyage/pull-data/getVoyageBadges';
 import { getWalletVoyages } from '../big-query-support/voyage/pull-data/getVoyageBadgesV1';
 import { getVoyages } from '../big-query-support/voyage/pull-data/getVoyages';
-import { SECONDS_IN_YEAR } from '../common/constants';
-import { getCurrentTick } from '../common/contract-services/getCurrentTick';
-import { getProvider } from '../common/provider/getProvider';
-import { getLiquidityIndex } from '../common/services/getLiquidityIndex';
-import { tickToFixedRate } from '../common/services/tickConversions';
-import { getBlockAtTimestamp, getTimeInYearsBetweenTimestamps } from '../common/utils';
 import { getRedisClient, getTrustedProxies } from '../global';
-import { getAmm } from './common/getAMM';
 import { getPortfolioPositions } from './portfolio-positions/getPortfolioPositions';
-import { getPortfolioSummary } from './portfolio-summary/getPortfolioSummary';
-import { getPositionTxHistory } from './position-tx-history/getPositionTxHistory';
+// import { getPortfolioSummary } from './portfolio-summary/getPortfolioSummary';
 import { getPositionPnL } from './position-pnl/getPositionPnL';
+import { getPositionTxHistory } from './position-tx-history/getPositionTxHistory';
 
 export const app = express();
 
@@ -129,24 +121,25 @@ app.get('/all-pools/:chainIds', (req, res) => {
   );
 });
 
-app.get('/portfolio-summary/:chainIds/:ownerAddress', (req, res) => {
+// app.get('/portfolio-summary/:chainIds/:ownerAddress', (req, res) => {
+//   const chainIds = req.params.chainIds.split('&').map((s) => Number(s));
+//   const ownerAddress = req.params.ownerAddress;
+
+//   getPortfolioSummary(chainIds, ownerAddress).then(
+//     (output) => {
+//       res.json(output);
+//     },
+//     (error) => {
+//       console.log(`API query failed with message ${(error as Error).message}`);
+//     },
+//   );
+// });
+
+app.get('/portfolio-positions/:chainIds/:ownerAddress', (req, res) => {
   const chainIds = req.params.chainIds.split('&').map((s) => Number(s));
   const ownerAddress = req.params.ownerAddress;
 
-  getPortfolioSummary(chainIds, ownerAddress).then(
-    (output) => {
-      res.json(output);
-    },
-    (error) => {
-      console.log(`API query failed with message ${(error as Error).message}`);
-    },
-  );
-});
-
-app.get('/portfolio-positions/:ownerAddress', (req, res) => {
-  const ownerAddress = req.params.ownerAddress;
-
-  getPortfolioPositions(ownerAddress).then(
+  getPortfolioPositions(chainIds, ownerAddress).then(
     (output) => {
       res.json(output);
     },

@@ -1,60 +1,30 @@
-import {
-    getPositions as getRawPositions,
-    Position as RawPosition
-} from '@voltz-protocol/subgraph-data';
+// import { getPortfolioPositions } from "../portfolio-positions/getPortfolioPositions";
+// import { HealthFactorStatus } from "../portfolio-positions/old-types";
+// import { PortfolioSummary } from "./types";
 
-import { getSubgraphURL } from "../subgraph/getSubgraphURL";
-import { PortfolioSummary } from "./types";
+// export const getPortfolioSummary = async (chainIds: number[], ownerAddress: string): Promise<PortfolioSummary> => {
 
-export const getPortfolioSummary = async (chainIds: number[], ownerAddress: string): Promise<PortfolioSummary> => {
+//     const allPositions = await getPortfolioPositions(chainIds, ownerAddress);
 
-    const now = Date.now().valueOf();
-    const allPositions: RawPosition[] = [];
+//     const marginInUSD = allPositions.reduce((total, curr) => total + curr.marginInUSD, 0);
+//     const realizedPnLInUSD = allPositions.reduce((total, curr) => total + curr.realizedPnLFromSwapsInUSD, 0);
+//     const unrealizedPnLInUSD = allPositions.reduce((total, curr) => total + curr.unrealizedPnLFromSwapsInUSD, 0);
+//     const notionalInUSD = allPositions.reduce((total, curr) => total + curr.notionalInUSD, 0);
+//     const portfolioValueInUSD = marginInUSD + realizedPnLInUSD + unrealizedPnLInUSD;
+//     const numberOfPositions = allPositions.length;
+//     const healthyPositions = allPositions.filter((p) => p.healthFactor === HealthFactorStatus.HEALTHY).length;
+//     const warningPositions = allPositions.filter((p) => p.healthFactor === HealthFactorStatus.WARNING).length;
+//     const dangerPositions = allPositions.filter((p) => p.healthFactor === HealthFactorStatus.DANGER).length;
 
-    for (const chainId of chainIds) {
-        const positions = await getRawPositions(
-            getSubgraphURL(chainId),
-            now,
-            {
-                owners: [ownerAddress],
-            },
-        );
-
-        allPositions.push(...positions);
-    }
-
-
-    const portfolioValue = 0;
-    const margin = 0;
-    const realisedPnL = 0;
-    const unrealisedPnL = 0;
-    const notional = 0;
-    const numberOfPositions = 0;
-    const healthyPositions = 0;
-    const warningPositions = 0;
-    const dangerPositions = 0;
-
-    const underlyingTokenPriceInUSD = 0;
-
-    return {
-        portfolioValueInUnderlyingToken: portfolioValue,
-        portfolioValueInUSD: portfolioValue * underlyingTokenPriceInUSD,
-
-        marginInUnderlyingToken: margin,
-        marginInUSD: margin * underlyingTokenPriceInUSD,
-
-        realisedPnLInUnderlyingToken: realisedPnL,
-        realisedPnLInUSD: realisedPnL * underlyingTokenPriceInUSD,
-
-        unrealisedPnLInUnderlyingToken: unrealisedPnL,
-        unrealisedPnLInUSD: unrealisedPnL * underlyingTokenPriceInUSD,
-
-        notionalInUnderlyingToken: notional,
-        notionalInUSD: notional * underlyingTokenPriceInUSD,
-
-        numberOfPositions,
-        healthyPositions,
-        warningPositions,
-        dangerPositions,
-    };
-}
+//     return {
+//         portfolioValueInUSD,
+//         marginInUSD,
+//         realizedPnLInUSD,
+//         unrealizedPnLInUSD,
+//         notionalInUSD,
+//         numberOfPositions,
+//         healthyPositions,
+//         warningPositions,
+//         dangerPositions,
+//     };
+// }

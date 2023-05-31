@@ -1,4 +1,6 @@
-export const getTokenName = (address: string): string => {
+export type TokenType = 'USDC' | 'DAI' | 'ETH' | 'USDT' | 'VUSD';
+
+export const getTokenName = (address: string): TokenType => {
   // ====== USDC ======
   // mainnet
   if (address.toLowerCase().includes('0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'.toLowerCase())) {

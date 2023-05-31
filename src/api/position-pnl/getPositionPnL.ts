@@ -25,6 +25,7 @@ export const getPositionPnL = async (chainId: number, vammAddress: string, owner
         realizedPnLFromFeesPaid: 0,
         realizedPnLFromFeesCollected: 0,
         unrealizedPnLFromSwaps: 0,
+        fixedRateLocked: 0,
       };
     }
 
@@ -66,5 +67,6 @@ export const getPositionPnL = async (chainId: number, vammAddress: string, owner
       realizedPnLFromFeesPaid: existingPosition.realizedPnLFromFeesPaid,
       realizedPnLFromFeesCollected: existingPosition.realizedPnLFromFeesCollected,
       unrealizedPnLFromSwaps: uPnL,
+      fixedRateLocked: existingPosition.netFixedRateLocked,
     };
 }

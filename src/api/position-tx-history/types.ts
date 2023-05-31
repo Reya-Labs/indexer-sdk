@@ -1,4 +1,4 @@
-export type PortfolioPosition = {
+export type Transaction = {
     chainId: number;
     vammAddress: string;
     ownerAddress: string;

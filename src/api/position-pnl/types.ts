@@ -3,4 +3,5 @@ export type PositionPnL = {
     realizedPnLFromFeesPaid: number,
     realizedPnLFromFeesCollected: number,
     unrealizedPnLFromSwaps: number,
+    fixedRateLocked: number,
 };

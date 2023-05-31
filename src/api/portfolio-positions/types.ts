@@ -1,29 +1,65 @@
-export type PortfolioPosition = {
+export type PortfolioPositionAMM = {
+    id: string;
     chainId: number;
-    vammAddress: string;
+
+    isBorrowing: boolean;
+    market: 'Aave V2' | 'Aave V3' | 'Compound' | 'Lido' | 'Rocket' | 'GMX:GLP' | 'SOFR';
+
+    rateOracle: {
+      protocolId: number;
+    };
+
+    underlyingToken: {
+      name: 'eth' | 'usdc' | 'usdt' | 'dai';
+    };
+
+    termEndTimestampInMS: number;
+    termStartTimestampInMS: number;
+  };
+
+export type PortfolioPosition = {
+    id: string;
+    type: 'LP' | 'Variable' | 'Fixed';
+
     ownerAddress: string;
+
     tickLower: number;
     tickUpper: number;
 
-    status: 'active' | 'matured' | 'settled';
+    fixLow: number;
+    fixHigh: number;
 
     notionalProvided: number;
+    notionalProvidedUSD: number;
+
+    notionalTraded: number;
+    notionalTradedUSD: number;
+
     notional: number;
+    notionalUSD: number;
+
     margin: number;
-    accumulatedFees: number;
+    marginUSD: number;
 
-    realizedPnLFromSwaps: number,
-    realizedPnLFromFeesPaid: number,
-    realizedPnLFromFeesCollected: number,
-    unrealizedPnLFromSwaps: number,
+    status: {    
+      health: 'healthy' | 'danger' | 'warning';
+      variant: 'matured' | 'settled' | 'active';
+      currentFixed: number;
+      receiving: number;
+      paying: number;
+    };
 
-    healthFactor: HealthFactorStatus,
-    inRangeHealthFactor: HealthFactorStatus,
-};
+    unrealizedPNLUSD: number;
+    unrealizedPNL: number;
 
-export enum HealthFactorStatus {
-    NOT_FOUND = 0,
-    DANGER = 1,
-    WARNING = 2,
-    HEALTHY = 3,
-};
+    realizedPNLFees: number;
+    realizedPNLFeesUSD: number;
+
+    realizedPNLCashflow: number;
+    realizedPNLCashflowUSD: number;
+
+    realizedPNLTotal: number;
+    realizedPNLTotalUSD: number;
+
+    amm: PortfolioPositionAMM;
+  };
