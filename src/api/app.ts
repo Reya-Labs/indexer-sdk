@@ -14,9 +14,9 @@ import { getVoyageBadges } from '../big-query-support/voyage/pull-data/getVoyage
 import { getWalletVoyages } from '../big-query-support/voyage/pull-data/getVoyageBadgesV1';
 import { getVoyages } from '../big-query-support/voyage/pull-data/getVoyages';
 import { getRedisClient, getTrustedProxies } from '../global';
+import { getPortfolioPositionDetails } from './get-position-details/getPortfolioPositionDetails';
 import { getPortfolioPositions } from './portfolio-positions/getPortfolioPositions';
 import { getPositionPnL } from './position-pnl/getPositionPnL';
-import { getPositionTxHistory } from './position-tx-history/getPositionTxHistory';
 
 export const app = express();
 
@@ -134,25 +134,18 @@ app.get('/portfolio-positions/:chainIds/:ownerAddress', (req, res) => {
   );
 });
 
-app.get(
-  '/position-tx-history/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper',
-  (req, res) => {
-    const chainId = Number(req.params.chainId);
-    const vammAddress = req.params.vammAddress;
-    const ownerAddress = req.params.ownerAddress;
-    const tickLower = Number(req.params.tickLower);
-    const tickUpper = Number(req.params.tickUpper);
+app.get('/portfolio-position-details/:positionId', (req, res) => {
+  const positionId = req.params.positionId;
 
-    getPositionTxHistory(chainId, vammAddress, ownerAddress, tickLower, tickUpper).then(
-      (output) => {
-        res.json(output);
-      },
-      (error) => {
-        console.log(`API query failed with message ${(error as Error).message}`);
-      },
-    );
-  },
-);
+  getPortfolioPositionDetails(positionId).then(
+    (output) => {
+      res.json(output);
+    },
+    (error) => {
+      console.log(`API query failed with message ${(error as Error).message}`);
+    },
+  );
+});
 
 // todo: deprecate when SDK stops consuming it
 app.get('/position-pnl/:chainId/:vammAddress/:ownerAddress/:tickLower/:tickUpper', (req, res) => {

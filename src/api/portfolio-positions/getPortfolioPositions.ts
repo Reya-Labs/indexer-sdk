@@ -8,18 +8,18 @@ import {
 } from '@voltz-protocol/subgraph-data';
 
 import { getLatestVariableRate } from '../../big-query-support/historical-rates/pull-data/getLatestVariableRate';
-import { pullAllChainPools } from '../../big-query-support/pools-table/pull-data/pullAllChainPools';
 import { SECONDS_IN_YEAR } from '../../common/constants';
 import { generateMarginEngineContract } from '../../common/contract-services/generateMarginEngineContract';
 import { getCurrentTick } from '../../common/contract-services/getCurrentTick';
+import { getPositionInfo } from '../../common/contract-services/getPositionInfo';
 import { descale } from '../../common/descale';
 import { getProvider } from '../../common/provider/getProvider';
-import { getTokensFromLiquidity } from '../../common/services/getTokensFromLiquidity';
 import { getVariableFactor } from '../../common/services/getVariableFactor';
 import { tickToFixedRate } from '../../common/services/tickConversions';
 import { getETHPriceInUSD } from '../get-token-price/getETHPriceInUSD';
 import { getPositionPnL } from '../position-pnl/getPositionPnL';
 import { getSubgraphURL } from '../subgraph/getSubgraphURL';
+import { getProtocolName } from './getProtocolName';
 import { PortfolioPosition, PortfolioPositionAMM } from './types';
 
 const isBorrowingProtocol = (protocolId: number) => {
@@ -71,7 +71,7 @@ export const getPortfolioPositions = async (
       const tokenPriceUSD = tokenName === 'ETH' ? ethPriceUSD : 1;
 
       const isBorrowing = isBorrowingProtocol(pos.amm.protocolId);
-      const market = 'Aave V2';
+      const market = getProtocolName(pos.amm.protocolId);
 
       const amm: PortfolioPositionAMM = {
         id: vammAddress,
@@ -97,6 +97,7 @@ export const getPortfolioPositions = async (
         return {
           id: positionId,
           type: positionType,
+          creationTimestampInMS: pos.creationTimestampInMS,
           ownerAddress,
           tickLower,
           tickUpper,
@@ -119,9 +120,6 @@ export const getPortfolioPositions = async (
 
           realizedPNLTotal: 0,
           tokenPriceUSD,
-          canEdit: false,
-          canSettle: false,
-          rolloverAmmId: null,
 
           amm,
         };
@@ -130,28 +128,23 @@ export const getPortfolioPositions = async (
       const marginEngine = generateMarginEngineContract(marginEngineAddress, provider);
 
       // Get fresh information about the position
-      const freshInfo = await marginEngine.callStatic.getPosition(
+      const {
+        variableTokenBalance,
+        fixedTokenBalance,
+        notionalTraded,
+        notionalProvided,
+        margin,
+        accumulatedFees,
+      } = await getPositionInfo(
+        chainId,
+        marginEngineAddress,
+        tokenDecimals,
         ownerAddress,
         tickLower,
         tickUpper,
       );
 
-      const liquidity = descaler(freshInfo._liquidity);
-      const { absVariableTokenDelta: notionalProvided } = getTokensFromLiquidity(
-        liquidity,
-        tickLower,
-        tickUpper,
-      );
-      const variableTokenBalance = descaler(freshInfo.variableTokenBalance);
-      const notionalTraded = Math.abs(variableTokenBalance);
-
-      const fixedTokenBalance = descaler(freshInfo.fixedTokenBalance);
-
       const notional = positionType === 'LP' ? notionalProvided : notionalTraded;
-
-      const accumulatedFees = descaler(freshInfo.accumulatedFees);
-
-      const margin = descaler(freshInfo.margin) - accumulatedFees;
 
       if (pos.amm.termEndTimestampInMS <= now) {
         // Position is matured
@@ -175,20 +168,10 @@ export const getPortfolioPositions = async (
 
         const realizedPNLCashflow = settlementCashflow;
 
-        // Check for available rollovers
-        const pools = (await pullAllChainPools([chainId]))
-          .filter((pool) => {
-            pool.protocolId === pos.amm.protocolId &&
-              pool.tokenId.toLowerCase() === pos.amm.tokenId.toLowerCase() &&
-              pool.termEndTimestampInMS >= now;
-          })
-          .sort((a, b) => b.termEndTimestampInMS - a.termEndTimestampInMS);
-
-        const rolloverAmmId = pools.length === 0 ? null : pools[0].vamm;
-
         return {
           id: positionId,
           type: positionType,
+          creationTimestampInMS: pos.creationTimestampInMS,
           ownerAddress,
           tickLower,
           tickUpper,
@@ -211,10 +194,6 @@ export const getPortfolioPositions = async (
 
           realizedPNLTotal: accumulatedFees + realizedPNLCashflow,
           tokenPriceUSD,
-
-          canEdit: false,
-          canSettle: true,
-          rolloverAmmId,
 
           amm,
         };
@@ -289,11 +268,12 @@ export const getPortfolioPositions = async (
       const receiving =
         positionType === 'LP' ? 0 : positionType === 'Fixed' ? fixedRateLocked : variableRate;
       const paying =
-        positionType === 'LP' ? 0 : positionType === 'Variable' ? variableRate : fixedRateLocked;
+        positionType === 'LP' ? 0 : positionType === 'Fixed' ? variableRate : fixedRateLocked;
 
       return {
         id: positionId,
         type: positionType,
+        creationTimestampInMS: pos.creationTimestampInMS,
         ownerAddress,
         tickLower,
         tickUpper,
@@ -316,10 +296,6 @@ export const getPortfolioPositions = async (
 
         realizedPNLTotal: accumulatedFees + realizedPNLCashflow + paidFees,
         tokenPriceUSD,
-
-        canEdit: true,
-        canSettle: false,
-        rolloverAmmId: null,
 
         amm,
       };
