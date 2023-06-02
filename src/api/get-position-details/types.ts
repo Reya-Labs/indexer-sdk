@@ -1,14 +1,21 @@
 export type PortfolioPositionDetails = {
   id: string;
+  variant: 'matured' | 'settled' | 'active';
+  type: 'LP' | 'Variable' | 'Fixed';
+  creationTimestampInMS: number;
+  maturityTimestampInMS: number;
 
   tokenPriceUSD: number;
   notional: number;
   margin: number;
-  fees: number;
 
   canEdit: boolean;
   canSettle: boolean;
   rolloverAmmId: null | string;
+
+  realizedPNLFees: number;
+  realizedPNLCashflow: number;
+  realizedPNLTotal: number;
 
   history: HistoryTransaction[];
 };
