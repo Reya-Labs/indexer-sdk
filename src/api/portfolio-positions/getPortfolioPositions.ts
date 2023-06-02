@@ -268,7 +268,7 @@ export const getPortfolioPositions = async (
       const receiving =
         positionType === 'LP' ? 0 : positionType === 'Fixed' ? fixedRateLocked : variableRate;
       const paying =
-        positionType === 'LP' ? 0 : positionType === 'Variable' ? variableRate : fixedRateLocked;
+        positionType === 'LP' ? 0 : positionType === 'Fixed' ? variableRate : fixedRateLocked;
 
       return {
         id: positionId,
