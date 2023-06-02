@@ -59,7 +59,6 @@ export const getPortfolioPositionDetails = async (
 
   const { chainId, vammAddress, ownerAddress, tickLower, tickUpper } = decodePositionId(positionId);
 
-
   // Get transaction history
   const positions = (
     await getRawPositions(
@@ -77,15 +76,22 @@ export const getPortfolioPositionDetails = async (
     return defaultResponse;
   }
 
-
   const position = positions[0];
 
-  const positionType = position.positionType === 3 ? 'LP' : (position.positionType === 2) ? 'Variable' : 'Fixed';
+  const positionType =
+    position.positionType === 3 ? 'LP' : position.positionType === 2 ? 'Variable' : 'Fixed';
 
   const txs = synthetisizeHistory(position);
 
   // Get fresh information about the position
-  const { variableTokenBalance, fixedTokenBalance, notionalTraded, notionalProvided, margin, accumulatedFees } = await getPositionInfo(
+  const {
+    variableTokenBalance,
+    fixedTokenBalance,
+    notionalTraded,
+    notionalProvided,
+    margin,
+    accumulatedFees,
+  } = await getPositionInfo(
     chainId,
     position.amm.marginEngineId,
     position.amm.tokenDecimals,
@@ -99,7 +105,6 @@ export const getPortfolioPositionDetails = async (
   const tokenPriceUSD = await getTokenPriceInUSD(position.amm.tokenName);
 
   if (position.isSettled) {
-
     if (position.settlements.length === 0 || position.settlements.length >= 2) {
       return defaultResponse;
     }
@@ -192,7 +197,13 @@ export const getPortfolioPositionDetails = async (
     };
   }
 
-  const { realizedPnLFromSwaps: realizedPNLCashflow } = await getPositionPnL(chainId, vammAddress, ownerAddress, tickLower, tickUpper);
+  const { realizedPnLFromSwaps: realizedPNLCashflow } = await getPositionPnL(
+    chainId,
+    vammAddress,
+    ownerAddress,
+    tickLower,
+    tickUpper,
+  );
 
   const realizedPNLFees = accumulatedFees;
   const realizedPNLTotal = realizedPNLFees + realizedPNLCashflow;
