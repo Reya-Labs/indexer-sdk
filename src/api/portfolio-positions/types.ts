@@ -20,6 +20,7 @@ export type PortfolioPositionAMM = {
 export type PortfolioPosition = {
   id: string;
   type: 'LP' | 'Variable' | 'Fixed';
+  creationTimestampInMS: number;
 
   ownerAddress: string;
 

@@ -97,6 +97,7 @@ export const getPortfolioPositions = async (
         return {
           id: positionId,
           type: positionType,
+          creationTimestampInMS: pos.creationTimestampInMS,
           ownerAddress,
           tickLower,
           tickUpper,
@@ -170,6 +171,7 @@ export const getPortfolioPositions = async (
         return {
           id: positionId,
           type: positionType,
+          creationTimestampInMS: pos.creationTimestampInMS,
           ownerAddress,
           tickLower,
           tickUpper,
@@ -271,6 +273,7 @@ export const getPortfolioPositions = async (
       return {
         id: positionId,
         type: positionType,
+        creationTimestampInMS: pos.creationTimestampInMS,
         ownerAddress,
         tickLower,
         tickUpper,
