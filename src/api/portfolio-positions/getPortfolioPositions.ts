@@ -19,12 +19,8 @@ import { tickToFixedRate } from '../../common/services/tickConversions';
 import { getETHPriceInUSD } from '../get-token-price/getETHPriceInUSD';
 import { getPositionPnL } from '../position-pnl/getPositionPnL';
 import { getSubgraphURL } from '../subgraph/getSubgraphURL';
-import { getProtocolName } from './getProtocolName';
-import { PortfolioPosition, PortfolioPositionAMM } from './types';
-
-const isBorrowingProtocol = (protocolId: number) => {
-  return protocolId === 6 || protocolId === 5 || protocolId === 9;
-};
+import { buildAMMInfo } from './buildAMMInfo';
+import { PortfolioPosition } from './types';
 
 export const getPortfolioPositions = async (
   chainIds: number[],
@@ -70,27 +66,14 @@ export const getPortfolioPositions = async (
       const provider = getProvider(chainId);
       const tokenPriceUSD = tokenName === 'ETH' ? ethPriceUSD : 1;
 
-      const isBorrowing = isBorrowingProtocol(pos.amm.protocolId);
-      const market = getProtocolName(pos.amm.protocolId);
-
-      const amm: PortfolioPositionAMM = {
-        id: vammAddress,
+      const amm = buildAMMInfo(
         chainId,
-
-        isBorrowing,
-        market,
-
-        rateOracle: {
-          protocolId: pos.amm.protocolId,
-        },
-
-        underlyingToken: {
-          name: tokenName.toLowerCase() as 'eth' | 'usdc' | 'usdt' | 'dai',
-        },
-
-        termStartTimestampInMS: pos.amm.termStartTimestampInMS,
-        termEndTimestampInMS: pos.amm.termEndTimestampInMS,
-      };
+        vammAddress,
+        pos.amm.protocolId,
+        tokenName,
+        pos.amm.termStartTimestampInMS,
+        pos.amm.termEndTimestampInMS,
+      );
 
       // Check if position is settled and return minimum data
       if (pos.isSettled) {

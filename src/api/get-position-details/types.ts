@@ -1,9 +1,10 @@
+import { PortfolioPositionAMM } from '../portfolio-positions/types';
+
 export type PortfolioPositionDetails = {
   id: string;
   variant: 'matured' | 'settled' | 'active';
   type: 'LP' | 'Variable' | 'Fixed';
   creationTimestampInMS: number;
-  maturityTimestampInMS: number;
 
   tokenPriceUSD: number;
   notional: number;
@@ -18,6 +19,7 @@ export type PortfolioPositionDetails = {
   realizedPNLTotal: number;
 
   history: HistoryTransaction[];
+  amm: PortfolioPositionAMM;
 };
 
 export type HistoryTransaction = {

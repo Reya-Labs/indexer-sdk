@@ -5,6 +5,7 @@ import { SECONDS_IN_YEAR } from '../../common/constants';
 import { getPositionInfo } from '../../common/contract-services/getPositionInfo';
 import { getVariableFactor } from '../../common/services/getVariableFactor';
 import { getTokenPriceInUSD } from '../get-token-price/getTokenPriceInUSD';
+import { buildAMMInfo } from '../portfolio-positions/buildAMMInfo';
 import { getPositionPnL } from '../position-pnl/getPositionPnL';
 import { getSubgraphURL } from '../subgraph/getSubgraphURL';
 import { synthetisizeHistory } from './synthetisizeHistory';
@@ -30,28 +31,6 @@ const decodePositionId = (
   };
 };
 
-const defaultResponse: PortfolioPositionDetails = {
-  id: 'invalid_id',
-  variant: 'active',
-  type: 'LP',
-  creationTimestampInMS: 0,
-  maturityTimestampInMS: 0,
-
-  tokenPriceUSD: 0,
-  notional: 0,
-  margin: 0,
-
-  canEdit: false,
-  canSettle: false,
-  rolloverAmmId: null,
-
-  realizedPNLFees: 0,
-  realizedPNLCashflow: 0,
-  realizedPNLTotal: 0,
-
-  history: [],
-};
-
 export const getPortfolioPositionDetails = async (
   positionId: string,
 ): Promise<PortfolioPositionDetails> => {
@@ -73,15 +52,25 @@ export const getPortfolioPositionDetails = async (
   ).filter((p) => p.tickLower === tickLower && p.tickUpper === tickUpper);
 
   if (positions.length === 0 || positions.length >= 2) {
-    return defaultResponse;
+    throw new Error('No position');
   }
 
   const position = positions[0];
 
   const positionType =
     position.positionType === 3 ? 'LP' : position.positionType === 2 ? 'Variable' : 'Fixed';
+  const tokenName = position.amm.tokenName;
 
   const txs = synthetisizeHistory(position);
+
+  const amm = buildAMMInfo(
+    chainId,
+    vammAddress,
+    position.amm.protocolId,
+    tokenName,
+    position.amm.termStartTimestampInMS,
+    position.amm.termEndTimestampInMS,
+  );
 
   // Get fresh information about the position
   const {
@@ -106,7 +95,7 @@ export const getPortfolioPositionDetails = async (
 
   if (position.isSettled) {
     if (position.settlements.length === 0 || position.settlements.length >= 2) {
-      return defaultResponse;
+      throw new Error('No settlement event');
     }
 
     const realizedPNLFees = accumulatedFees;
@@ -118,7 +107,6 @@ export const getPortfolioPositionDetails = async (
       variant: 'settled',
       type: positionType,
       creationTimestampInMS: position.creationTimestampInMS,
-      maturityTimestampInMS: position.amm.termEndTimestampInMS,
 
       tokenPriceUSD,
       notional,
@@ -133,6 +121,7 @@ export const getPortfolioPositionDetails = async (
       realizedPNLTotal,
 
       history: txs,
+      amm,
     };
   }
 
@@ -179,7 +168,6 @@ export const getPortfolioPositionDetails = async (
       variant: 'matured',
       type: positionType,
       creationTimestampInMS: position.creationTimestampInMS,
-      maturityTimestampInMS: position.amm.termEndTimestampInMS,
 
       tokenPriceUSD,
       notional,
@@ -194,6 +182,7 @@ export const getPortfolioPositionDetails = async (
       realizedPNLTotal,
 
       history: txs,
+      amm,
     };
   }
 
@@ -213,7 +202,6 @@ export const getPortfolioPositionDetails = async (
     variant: 'matured',
     type: positionType,
     creationTimestampInMS: position.creationTimestampInMS,
-    maturityTimestampInMS: position.amm.termEndTimestampInMS,
 
     tokenPriceUSD,
     notional,
@@ -228,5 +216,6 @@ export const getPortfolioPositionDetails = async (
     realizedPNLTotal,
 
     history: txs,
+    amm,
   };
 };
