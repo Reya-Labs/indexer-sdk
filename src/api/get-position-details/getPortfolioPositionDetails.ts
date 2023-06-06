@@ -102,6 +102,17 @@ export const getPortfolioPositionDetails = async (
     const realizedPNLCashflow = position.settlements[0].settlementCashflow;
     const realizedPNLTotal = realizedPNLFees + realizedPNLCashflow;
 
+    txs.push({
+      type: 'maturity',
+      creationTimestampInMS: position.amm.termEndTimestampInMS,
+      notional: 0,
+      paidFees: 0,
+      fixedRate: 0,
+      marginDelta: realizedPNLCashflow,
+    });
+
+    txs.sort((a, b) => a.creationTimestampInMS - b.creationTimestampInMS);
+
     return {
       id: positionId,
       variant: 'settled',
@@ -162,6 +173,17 @@ export const getPortfolioPositionDetails = async (
 
     const realizedPNLFees = accumulatedFees;
     const realizedPNLTotal = realizedPNLFees + realizedPNLCashflow;
+
+    txs.push({
+      type: 'maturity',
+      creationTimestampInMS: position.amm.termEndTimestampInMS,
+      notional: 0,
+      paidFees: 0,
+      fixedRate: 0,
+      marginDelta: settlementCashflow,
+    });
+
+    txs.sort((a, b) => a.creationTimestampInMS - b.creationTimestampInMS);
 
     return {
       id: positionId,

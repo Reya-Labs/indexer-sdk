@@ -61,7 +61,7 @@ export const synthetisizeHistory = (position: Position): HistoryTransaction[] =>
       notional: 0,
       paidFees: 0,
       fixedRate: 0,
-      marginDelta: item.settlementCashflow,
+      marginDelta: 0,
     });
   });
 
