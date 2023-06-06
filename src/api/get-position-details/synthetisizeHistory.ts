@@ -76,7 +76,7 @@ export const synthetisizeHistory = (position: Position): HistoryTransaction[] =>
     });
   });
 
-  txs.sort((a, b) => a.creationTimestampInMS - b.creationTimestampInMS);
+  txs.sort((a, b) => b.creationTimestampInMS - a.creationTimestampInMS);
 
   return txs;
 };

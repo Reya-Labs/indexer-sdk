@@ -111,7 +111,7 @@ export const getPortfolioPositionDetails = async (
       marginDelta: realizedPNLCashflow,
     });
 
-    txs.sort((a, b) => a.creationTimestampInMS - b.creationTimestampInMS);
+    txs.sort((a, b) => b.creationTimestampInMS - a.creationTimestampInMS);
 
     return {
       id: positionId,
@@ -183,7 +183,7 @@ export const getPortfolioPositionDetails = async (
       marginDelta: settlementCashflow,
     });
 
-    txs.sort((a, b) => a.creationTimestampInMS - b.creationTimestampInMS);
+    txs.sort((a, b) => b.creationTimestampInMS - a.creationTimestampInMS);
 
     return {
       id: positionId,
