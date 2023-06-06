@@ -8,7 +8,7 @@ export const synthetisizeHistory = (position: Position): HistoryTransaction[] =>
   position.swaps.forEach((item) => {
     const fixedRate =
       Math.abs(item.variableTokenDelta) > 0
-        ? Math.abs(item.unbalancedFixedTokenDelta / item.variableTokenDelta)
+        ? Math.abs(item.unbalancedFixedTokenDelta / item.variableTokenDelta) / 100
         : 0;
 
     txs.push({
