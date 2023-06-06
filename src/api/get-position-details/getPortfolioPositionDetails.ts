@@ -5,7 +5,8 @@ import { SECONDS_IN_YEAR } from '../../common/constants';
 import { getPositionInfo } from '../../common/contract-services/getPositionInfo';
 import { getVariableFactor } from '../../common/services/getVariableFactor';
 import { getTokenPriceInUSD } from '../get-token-price/getTokenPriceInUSD';
-import { buildAMMInfo } from '../portfolio-positions/buildAMMInfo';
+import { getProtocolName, isBorrowingProtocol } from '../portfolio-positions/getProtocolName';
+import { PortfolioPositionAMM } from '../portfolio-positions/types';
 import { getPositionPnL } from '../position-pnl/getPositionPnL';
 import { getSubgraphURL } from '../subgraph/getSubgraphURL';
 import { synthetisizeHistory } from './synthetisizeHistory';
@@ -63,14 +64,29 @@ export const getPortfolioPositionDetails = async (
 
   const txs = synthetisizeHistory(position);
 
-  const amm = buildAMMInfo(
+  const amm: PortfolioPositionAMM = {
+    id: vammAddress,
     chainId,
-    vammAddress,
-    position.amm.protocolId,
-    tokenName,
-    position.amm.termStartTimestampInMS,
-    position.amm.termEndTimestampInMS,
-  );
+
+    marginEngineAddress: position.amm.marginEngineId,
+
+    isBorrowing: isBorrowingProtocol(position.amm.protocolId),
+    market: getProtocolName(position.amm.protocolId),
+
+    rateOracle: {
+      address: position.amm.rateOracleId,
+      protocolId: position.amm.protocolId,
+    },
+
+    underlyingToken: {
+      address: position.amm.tokenId,
+      name: tokenName.toLowerCase() as 'eth' | 'usdc' | 'usdt' | 'dai',
+      tokenDecimals: position.amm.tokenDecimals,
+    },
+
+    termStartTimestampInMS: position.amm.termStartTimestampInMS,
+    termEndTimestampInMS: position.amm.termEndTimestampInMS,
+  };
 
   // Get fresh information about the position
   const {

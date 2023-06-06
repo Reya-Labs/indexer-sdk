@@ -2,15 +2,20 @@ export type PortfolioPositionAMM = {
   id: string;
   chainId: number;
 
+  marginEngineAddress: string;
+
   isBorrowing: boolean;
   market: 'Aave V2' | 'Aave V3' | 'Compound' | 'Lido' | 'Rocket' | 'GMX:GLP' | 'SOFR';
 
   rateOracle: {
+    address: string;
     protocolId: number;
   };
 
   underlyingToken: {
+    address: string;
     name: 'eth' | 'usdc' | 'usdt' | 'dai';
+    tokenDecimals: number;
   };
 
   termEndTimestampInMS: number;

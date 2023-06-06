@@ -19,8 +19,8 @@ import { tickToFixedRate } from '../../common/services/tickConversions';
 import { getETHPriceInUSD } from '../get-token-price/getETHPriceInUSD';
 import { getPositionPnL } from '../position-pnl/getPositionPnL';
 import { getSubgraphURL } from '../subgraph/getSubgraphURL';
-import { buildAMMInfo } from './buildAMMInfo';
-import { PortfolioPosition } from './types';
+import { getProtocolName, isBorrowingProtocol } from './getProtocolName';
+import { PortfolioPosition, PortfolioPositionAMM } from './types';
 
 export const getPortfolioPositions = async (
   chainIds: number[],
@@ -66,14 +66,29 @@ export const getPortfolioPositions = async (
       const provider = getProvider(chainId);
       const tokenPriceUSD = tokenName === 'ETH' ? ethPriceUSD : 1;
 
-      const amm = buildAMMInfo(
+      const amm: PortfolioPositionAMM = {
+        id: vammAddress,
         chainId,
-        vammAddress,
-        pos.amm.protocolId,
-        tokenName,
-        pos.amm.termStartTimestampInMS,
-        pos.amm.termEndTimestampInMS,
-      );
+
+        marginEngineAddress: pos.amm.marginEngineId,
+
+        isBorrowing: isBorrowingProtocol(pos.amm.protocolId),
+        market: getProtocolName(pos.amm.protocolId),
+
+        rateOracle: {
+          address: pos.amm.rateOracleId,
+          protocolId: pos.amm.protocolId,
+        },
+
+        underlyingToken: {
+          address: pos.amm.tokenId,
+          name: tokenName.toLowerCase() as 'eth' | 'usdc' | 'usdt' | 'dai',
+          tokenDecimals,
+        },
+
+        termStartTimestampInMS: pos.amm.termStartTimestampInMS,
+        termEndTimestampInMS: pos.amm.termEndTimestampInMS,
+      };
 
       // Check if position is settled and return minimum data
       if (pos.isSettled) {
