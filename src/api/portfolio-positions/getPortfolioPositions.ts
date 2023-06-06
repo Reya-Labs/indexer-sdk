@@ -292,7 +292,7 @@ export const getPortfolioPositions = async (
     throw new Error(`Promise rejected with error: ${(resp.reason as Error).message}`);
   });
 
-  positions.sort((a, b) => a.creationTimestampInMS - b.creationTimestampInMS);
+  positions.sort((a, b) => b.creationTimestampInMS - a.creationTimestampInMS);
 
   return positions;
 };
