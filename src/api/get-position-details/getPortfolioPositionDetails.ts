@@ -32,10 +32,14 @@ const decodePositionId = (
     tickUpper: Number(parts[4]),
   };
 };
-
-export const getPortfolioPositionDetails = async (
-  positionId: string,
-): Promise<PortfolioPositionDetails> => {
+type GetPortfolioPositionDetails = {
+  positionId: string;
+  includeHistory: boolean;
+};
+export const getPortfolioPositionDetails = async ({
+  positionId,
+  includeHistory,
+}: GetPortfolioPositionDetails): Promise<PortfolioPositionDetails> => {
   const now = Date.now().valueOf();
 
   const { chainId, vammAddress, ownerAddress, tickLower, tickUpper } = decodePositionId(positionId);
@@ -52,7 +56,7 @@ export const getPortfolioPositionDetails = async (
         owners: [ownerAddress],
         ammIDs: [vammAddress],
       },
-      true,
+      includeHistory,
     )
   ).filter((p) => p.tickLower === tickLower && p.tickUpper === tickUpper);
 
