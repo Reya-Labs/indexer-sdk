@@ -45,7 +45,7 @@ export const getPortfolioPositionDetails = async ({
   const { chainId, vammAddress, ownerAddress, tickLower, tickUpper } = decodePositionId(positionId);
 
   const fixLow = tickToFixedRate(tickUpper);
-  const fixHigh = tickToFixedRate(tickUpper);
+  const fixHigh = tickToFixedRate(tickLower);
 
   // Get transaction history
   const positions = (

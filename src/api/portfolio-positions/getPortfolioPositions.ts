@@ -57,7 +57,7 @@ export const getPortfolioPositions = async (
       const tickUpper = pos.tickUpper;
 
       const fixLow = tickToFixedRate(tickUpper);
-      const fixHigh = tickToFixedRate(tickUpper);
+      const fixHigh = tickToFixedRate(tickLower);
 
       const positionId = `${chainId}_${vammAddress.toLowerCase()}_${ownerAddress.toLowerCase()}_${tickLower}_${tickUpper}`;
       const positionType =
