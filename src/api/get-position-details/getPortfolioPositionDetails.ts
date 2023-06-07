@@ -4,6 +4,7 @@ import { pullAllChainPools } from '../../big-query-support/pools-table/pull-data
 import { SECONDS_IN_YEAR } from '../../common/constants';
 import { getPositionInfo } from '../../common/contract-services/getPositionInfo';
 import { getVariableFactor } from '../../common/services/getVariableFactor';
+import { tickToFixedRate } from '../../common/services/tickConversions';
 import { getTokenPriceInUSD } from '../get-token-price/getTokenPriceInUSD';
 import { getProtocolName, isBorrowingProtocol } from '../portfolio-positions/getProtocolName';
 import { PortfolioPositionAMM } from '../portfolio-positions/types';
@@ -38,6 +39,9 @@ export const getPortfolioPositionDetails = async (
   const now = Date.now().valueOf();
 
   const { chainId, vammAddress, ownerAddress, tickLower, tickUpper } = decodePositionId(positionId);
+
+  const fixLow = tickToFixedRate(tickUpper);
+  const fixHigh = tickToFixedRate(tickUpper);
 
   // Get transaction history
   const positions = (
@@ -135,6 +139,12 @@ export const getPortfolioPositionDetails = async (
       type: positionType,
       creationTimestampInMS: position.creationTimestampInMS,
 
+      tickLower,
+      tickUpper,
+
+      fixLow,
+      fixHigh,
+
       tokenPriceUSD,
       notional,
       margin,
@@ -207,6 +217,12 @@ export const getPortfolioPositionDetails = async (
       type: positionType,
       creationTimestampInMS: position.creationTimestampInMS,
 
+      tickLower,
+      tickUpper,
+
+      fixLow,
+      fixHigh,
+
       tokenPriceUSD,
       notional,
       margin,
@@ -240,6 +256,12 @@ export const getPortfolioPositionDetails = async (
     variant: 'matured',
     type: positionType,
     creationTimestampInMS: position.creationTimestampInMS,
+
+    tickLower,
+    tickUpper,
+
+    fixLow,
+    fixHigh,
 
     tokenPriceUSD,
     notional,

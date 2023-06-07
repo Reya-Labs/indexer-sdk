@@ -20,6 +20,12 @@ export type PortfolioPositionDetails = {
 
   history: HistoryTransaction[];
   amm: PortfolioPositionAMM;
+
+  tickLower: number;
+  tickUpper: number;
+
+  fixLow: number;
+  fixHigh: number;
 };
 
 export type HistoryTransaction = {
