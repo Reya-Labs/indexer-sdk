@@ -136,8 +136,16 @@ app.get('/portfolio-positions/:chainIds/:ownerAddress', (req, res) => {
 
 app.get('/portfolio-position-details/:positionId', (req, res) => {
   const positionId = req.params.positionId;
+  const includeHistory = Boolean(
+    req.query.includeHistory &&
+      typeof req.query.includeHistory === 'string' &&
+      req.query.includeHistory.toLowerCase() === 'true',
+  );
 
-  getPortfolioPositionDetails(positionId).then(
+  getPortfolioPositionDetails({
+    positionId,
+    includeHistory,
+  }).then(
     (output) => {
       res.json(output);
     },

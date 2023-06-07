@@ -13,7 +13,7 @@
     "build": "rollup -c --bundleConfigAsCjs",
     "ts:check": "yarn ts:check-types && yarn ts:circular-check",
     "ts:check-types": "tsc --noEmit",
-    "ts:circular-check": "dpdm --no-output --no-tree --no-warning --exit-code circular:1 -T ./src/index.ts",
+    "ts:circular-check": "dpdm --no-output --no-tree --no-warning --exit-code circular:1 -T ./src/api/index.ts ./src/indexSwaps.ts ./src/indexMarginUpdates.ts ./src/indexMintsAndBurns.ts ./src/indexPnL.ts ./src/indexPools.ts",
     "lint:check": "eslint '{src,tests}/**/*.ts'",
     "lint:fix": "eslint --fix '{src,tests}/**/*.ts'",
     "prettier:check": "prettier --check './{src,tests}/**/*.ts'",
