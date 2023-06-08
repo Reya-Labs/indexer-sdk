@@ -7,25 +7,18 @@ export enum SupportedChainId {
   avalancheFuji = 43113,
 }
 
+const CHAIN_SUBGRAPH_URL_MAP: Record<SupportedChainId, string> = {
+  [SupportedChainId.mainnet]: 'https://api.thegraph.com/subgraphs/name/voltzprotocol/mainnet-v1',
+  [SupportedChainId.goerli]: 'https://api.thegraph.com/subgraphs/name/voltzprotocol/voltz-goerli',
+  [SupportedChainId.arbitrum]: 'https://api.thegraph.com/subgraphs/name/voltzprotocol/arbitrum-v1',
+  [SupportedChainId.arbitrumGoerli]:
+    'https://api.thegraph.com/subgraphs/name/voltzprotocol/arbitrum-goerli-v1',
+  [SupportedChainId.avalanche]:
+    'https://api.thegraph.com/subgraphs/name/voltzprotocol/avalanche-v1',
+  [SupportedChainId.avalancheFuji]:
+    'https://api.thegraph.com/subgraphs/name/voltzprotocol/ava-fuji-v1',
+};
+
 export const getSubgraphURL = (chainId: SupportedChainId): string => {
-  switch (chainId) {
-    case SupportedChainId.mainnet: {
-      return 'https://api.thegraph.com/subgraphs/name/voltzprotocol/mainnet-v1';
-    }
-    case SupportedChainId.goerli: {
-      return 'https://api.thegraph.com/subgraphs/name/voltzprotocol/voltz-goerli';
-    }
-    case SupportedChainId.arbitrum: {
-      return 'https://api.thegraph.com/subgraphs/name/voltzprotocol/arbitrum-v1';
-    }
-    case SupportedChainId.arbitrumGoerli: {
-      return 'https://api.thegraph.com/subgraphs/name/voltzprotocol/arbitrum-goerli-v1';
-    }
-    case SupportedChainId.avalanche: {
-      return 'https://api.thegraph.com/subgraphs/name/voltzprotocol/avalanche-v1';
-    }
-    case SupportedChainId.avalancheFuji: {
-      return 'https://api.thegraph.com/subgraphs/name/voltzprotocol/ava-fuji-v1';
-    }
-  }
+  return CHAIN_SUBGRAPH_URL_MAP[chainId] || '';
 };

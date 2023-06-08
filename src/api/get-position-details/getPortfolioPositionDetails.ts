@@ -47,18 +47,21 @@ export const getPortfolioPositionDetails = async ({
   const fixLow = tickToFixedRate(tickUpper);
   const fixHigh = tickToFixedRate(tickLower);
 
+  const subgraphURL = getSubgraphURL(chainId);
   // Get transaction history
-  const positions = (
-    await getRawPositions(
-      getSubgraphURL(chainId),
-      now,
-      {
-        owners: [ownerAddress],
-        ammIDs: [vammAddress],
-      },
-      includeHistory,
-    )
-  ).filter((p) => p.tickLower === tickLower && p.tickUpper === tickUpper);
+  const positions = subgraphURL
+    ? (
+        await getRawPositions(
+          subgraphURL,
+          now,
+          {
+            owners: [ownerAddress],
+            ammIDs: [vammAddress],
+          },
+          includeHistory,
+        )
+      ).filter((p) => p.tickLower === tickLower && p.tickUpper === tickUpper)
+    : [];
 
   if (positions.length === 0 || positions.length >= 2) {
     throw new Error('No position');

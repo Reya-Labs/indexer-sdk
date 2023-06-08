@@ -32,9 +32,12 @@ export const getPortfolioPositions = async (
 
   const allPositions: (RawPosition & { chainId: number })[] = [];
   for (const chainId of chainIds) {
-    const positions = await getRawPositions(getSubgraphURL(chainId), now, {
-      owners: [ownerAddress],
-    });
+    const subgraphURL = getSubgraphURL(chainId);
+    const positions = subgraphURL
+      ? await getRawPositions(subgraphURL, now, {
+          owners: [ownerAddress],
+        })
+      : [];
 
     allPositions.push(
       ...positions.map((p) => ({
