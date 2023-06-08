@@ -105,9 +105,7 @@ app.get('/all-pools/:chainIds', (req, res) => {
   const process = async () => {
     const chainIds = req.params.chainIds.split('&').map((s) => Number(s));
 
-    const pools = await pullAllChainPools(chainIds);
-
-    return pools;
+    return await pullAllChainPools(chainIds);
   };
 
   process().then(
@@ -182,9 +180,7 @@ app.get('/fixed-rates/:chainId/:vammAddress/:startTimestamp/:endTimestamp', (req
     const startTimestamp = Number(req.params.startTimestamp);
     const endTimestamp = Number(req.params.endTimestamp);
 
-    const historicalRates = await getFixedRates(chainId, vammAddress, startTimestamp, endTimestamp);
-
-    return historicalRates;
+    return await getFixedRates(chainId, vammAddress, startTimestamp, endTimestamp);
   };
 
   process().then(
@@ -206,14 +202,7 @@ app.get('/variable-rates/:chainId/:rateOracleAddress/:startTimestamp/:endTimesta
     const startTimestamp = Number(req.params.startTimestamp);
     const endTimestamp = Number(req.params.endTimestamp);
 
-    const historicalRates = await getVariableRates(
-      chainId,
-      rateOracleAddress,
-      startTimestamp,
-      endTimestamp,
-    );
-
-    return historicalRates;
+    return await getVariableRates(chainId, rateOracleAddress, startTimestamp, endTimestamp);
   };
 
   process().then(
@@ -231,9 +220,7 @@ app.get('/voyage/:chainId/:ownerAddress', (req, res) => {
 
   const process = async () => {
     const ownerAddress = req.params.ownerAddress.toLowerCase();
-    const result = await getVoyageBadges(ownerAddress);
-
-    return result;
+    return await getVoyageBadges(ownerAddress);
   };
 
   process().then(

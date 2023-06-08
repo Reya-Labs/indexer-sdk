@@ -72,6 +72,7 @@ export const getPortfolioPositions = async (
 
         marginEngineAddress: pos.amm.marginEngineId,
 
+        isV2: false,
         isBorrowing: isBorrowingProtocol(pos.amm.protocolId),
         market: getProtocolName(pos.amm.protocolId),
 

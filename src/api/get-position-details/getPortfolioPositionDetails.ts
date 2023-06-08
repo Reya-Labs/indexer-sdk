@@ -77,7 +77,7 @@ export const getPortfolioPositionDetails = async ({
     chainId,
 
     marginEngineAddress: position.amm.marginEngineId,
-
+    isV2: false,
     isBorrowing: isBorrowingProtocol(position.amm.protocolId),
     market: getProtocolName(position.amm.protocolId),
 

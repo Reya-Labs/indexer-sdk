@@ -108,6 +108,7 @@ export const mapToBigQueryPoolRow = (row: any): BigQueryPoolRow => ({
   minLeverageAllowed: bqNumericToNumber(row.minLeverageAllowed),
 
   rollover: row.rollover,
+  isV2: false,
 });
 
 export const mapToBigQueryHistoricalRateRow = (row: any): BigQueryHistoricalRateRow => ({

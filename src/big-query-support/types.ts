@@ -99,6 +99,9 @@ export type BigQueryPoolRow = {
   minLeverageAllowed: number;
 
   rollover: string;
+
+  // Indicates if Voltz protocol V2 is used for the pool
+  isV2: boolean;
 };
 
 export type BigQueryHistoricalRateRow = {

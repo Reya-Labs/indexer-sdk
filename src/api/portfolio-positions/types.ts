@@ -5,6 +5,8 @@ export type PortfolioPositionAMM = {
   marginEngineAddress: string;
 
   isBorrowing: boolean;
+  // Indicates if Voltz protocol V2 is used for the pool
+  isV2: boolean;
   market: 'Aave V2' | 'Aave V3' | 'Compound' | 'Lido' | 'Rocket' | 'GMX:GLP' | 'SOFR';
 
   rateOracle: {
