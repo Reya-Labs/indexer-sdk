@@ -31,7 +31,8 @@ export const insertNewMarginUpdates = async (
     `;
 
     // build and fire sql query
-    updates.push(`INSERT INTO \`${tableId}\` VALUES (${rawMarginUpdateRow});`);
+    const u = `INSERT INTO \`${tableId}\` VALUES (${rawMarginUpdateRow});`;
+    updates.push(u);
   }
 
   await sendQueriesInBatches(processName, updates);

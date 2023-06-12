@@ -33,7 +33,8 @@ export const insertNewSwaps = async (
   `;
 
     // build and fire sql query
-    updates.push(`INSERT INTO \`${tableId}\` VALUES (${rawSwapRow});`);
+    const u = `INSERT INTO \`${tableId}\` VALUES (${rawSwapRow});`;
+    updates.push(u);
   }
 
   await sendQueriesInBatches(processName, updates);

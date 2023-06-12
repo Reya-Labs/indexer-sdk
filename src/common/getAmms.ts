@@ -11,8 +11,8 @@ export const getAmms = async (chainId: number): Promise<BigQueryPoolRow[]> => {
 export const getRecentAmms = async (chainId: number): Promise<BigQueryPoolRow[]> => {
   const amms = await pullAllChainPools([chainId]);
 
-  const threeMonthsAgo = Date.now().valueOf() - 90 * SECONDS_IN_DAY * 1000;
-  const recentAmms = amms.filter((amm) => amm.termEndTimestampInMS >= threeMonthsAgo);
+  const timestamp = Date.now().valueOf() - 30 * SECONDS_IN_DAY * 1000;
+  const recentAmms = amms.filter((amm) => amm.termEndTimestampInMS >= timestamp);
 
   return recentAmms;
 };

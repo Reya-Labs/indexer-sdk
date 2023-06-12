@@ -30,7 +30,8 @@ export const insertNewMintOrBurns = async (
     ${event.chainId}
   `;
 
-    updates.push(`INSERT INTO \`${tableId}\` VALUES (${rawMintOrBurnRow});`);
+    const u = `INSERT INTO \`${tableId}\` VALUES (${rawMintOrBurnRow});`;
+    updates.push(u);
   }
 
   await sendQueriesInBatches(processName, updates);
