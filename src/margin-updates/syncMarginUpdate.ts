@@ -1,5 +1,5 @@
 import { getMarginEngineEvents } from '../common/contract-services/getMarginEngineEvents';
-import { getAmms } from '../common/getAmms';
+import { getRecentAmms } from '../common/getAmms';
 import { getProvider } from '../common/provider/getProvider';
 import { getInformationPerMarginEngine, setRedis } from '../common/services/redisService';
 import { processMarginUpdateEvent } from './processMarginUpdateEvent';
@@ -10,7 +10,7 @@ export const syncMarginUpdates = async (chainIds: number[]): Promise<void> => {
   let promises: Promise<void>[] = [];
 
   for (const chainId of chainIds) {
-    const amms = await getAmms(chainId);
+    const amms = await getRecentAmms(chainId);
 
     if (amms.length === 0) {
       continue;
