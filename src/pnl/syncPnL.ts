@@ -6,7 +6,7 @@ import {
   SwapEventInfo,
   VAMMPriceChangeEventInfo,
 } from '../common/event-parsers/types';
-import { getAmms } from '../common/getAmms';
+import { getActiveAmms } from '../common/getAmms';
 import { getProvider } from '../common/provider/getProvider';
 import { getInformationPerVAMM, setRedis } from '../common/services/redisService';
 import { processMintOrBurnEvent } from './processEvents/processMintOrBurnEvent';
@@ -21,7 +21,7 @@ export const syncPnL = async (chainIds: number[]): Promise<void> => {
 
   let promises: Promise<void>[] = [];
   for (const chainId of chainIds) {
-    const amms = await getAmms(chainId);
+    const amms = await getActiveAmms(chainId);
 
     if (amms.length === 0) {
       continue;
