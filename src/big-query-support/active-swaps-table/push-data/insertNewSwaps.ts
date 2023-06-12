@@ -1,15 +1,20 @@
 import { SwapEventInfo } from '../../../common/event-parsers/types';
 import { getTimestampInSeconds } from '../../../common/utils';
-import { getBigQuery } from '../../../global';
+import { sendQueriesInBatches } from '../../sendQueriesInBatches';
 import { getTableFullID, secondsToBqDate } from '../../utils';
 
-export const insertNewSwap = async (event: SwapEventInfo): Promise<void> => {
-  const bigQuery = getBigQuery();
-
-  const eventTimestamp = (await event.getBlock()).timestamp;
+export const insertNewSwaps = async (
+  processName: string,
+  events: SwapEventInfo[],
+): Promise<void> => {
+  const updates: string[] = [];
+  const tableId = getTableFullID('active_swaps');
   const currentTimestamp = getTimestampInSeconds();
 
-  const rawSwapRow = `
+  for (const event of events) {
+    const eventTimestamp = (await event.getBlock()).timestamp;
+
+    const rawSwapRow = `
     \"${event.eventId}\",
     \"${event.vammAddress}\",
     \"${event.ownerAddress}\",
@@ -27,16 +32,9 @@ export const insertNewSwap = async (event: SwapEventInfo): Promise<void> => {
     ${event.chainId}
   `;
 
-  // build and fire sql query
-  const sqlTransactionQuery = `
-    INSERT INTO \`${getTableFullID('active_swaps')}\` VALUES (${rawSwapRow});
-  `;
+    // build and fire sql query
+    updates.push(`INSERT INTO \`${tableId}\` VALUES (${rawSwapRow});`);
+  }
 
-  const options = {
-    query: sqlTransactionQuery,
-    timeoutMs: 100000,
-    useLegacySql: false,
-  };
-
-  await bigQuery.query(options);
+  await sendQueriesInBatches(processName, updates);
 };

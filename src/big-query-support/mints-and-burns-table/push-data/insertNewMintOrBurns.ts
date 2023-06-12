@@ -1,17 +1,20 @@
 import { MintOrBurnEventInfo } from '../../../common/event-parsers/types';
-import { getProvider } from '../../../common/provider/getProvider';
 import { getTimestampInSeconds } from '../../../common/utils';
-import { getBigQuery } from '../../../global';
+import { sendQueriesInBatches } from '../../sendQueriesInBatches';
 import { getTableFullID, secondsToBqDate } from '../../utils';
 
-export const insertNewMintOrBurn = async (event: MintOrBurnEventInfo): Promise<void> => {
-  const bigQuery = getBigQuery();
-  const provider = getProvider(event.chainId);
-
-  const eventTimestamp = (await provider.getBlock(event.blockNumber)).timestamp;
+export const insertNewMintOrBurns = async (
+  processName: string,
+  events: MintOrBurnEventInfo[],
+): Promise<void> => {
+  const updates: string[] = [];
+  const tableId = getTableFullID('mints_and_burns');
   const currentTimestamp = getTimestampInSeconds();
 
-  const rawMintOrBurnRow = `
+  for (const event of events) {
+    const eventTimestamp = (await event.getBlock()).timestamp;
+
+    const rawMintOrBurnRow = `
     \"${event.eventId}\",
     \"${event.vammAddress}\",
     \"${event.ownerAddress}\",
@@ -27,15 +30,8 @@ export const insertNewMintOrBurn = async (event: MintOrBurnEventInfo): Promise<v
     ${event.chainId}
   `;
 
-  const sqlTransactionQuery = `INSERT INTO \`${getTableFullID(
-    'mints_and_burns',
-  )}\` VALUES (${rawMintOrBurnRow});`;
+    updates.push(`INSERT INTO \`${tableId}\` VALUES (${rawMintOrBurnRow});`);
+  }
 
-  const options = {
-    query: sqlTransactionQuery,
-    timeoutMs: 100000,
-    useLegacySql: false,
-  };
-
-  await bigQuery.query(options);
+  await sendQueriesInBatches(processName, updates);
 };

@@ -1,14 +1,15 @@
+import { insertNewSwaps } from '../big-query-support/active-swaps-table/push-data/insertNewSwaps';
 import { getVammEvents } from '../common/contract-services/getVammEvents';
 import { SwapEventInfo } from '../common/event-parsers/types';
 import { getRecentAmms } from '../common/getAmms';
 import { getProvider } from '../common/provider/getProvider';
 import { getInformationPerVAMM, setRedis } from '../common/services/redisService';
-import { processSwapEvent } from './processSwapEvent';
 
 export const syncSwaps = async (chainIds: number[]): Promise<void> => {
   const lastProcessedBlocks: { [processId: string]: number } = {};
 
   let promises: Promise<void>[] = [];
+  const newEvents: SwapEventInfo[] = [];
 
   for (const chainId of chainIds) {
     const amms = await getRecentAmms(chainId);
@@ -39,15 +40,7 @@ export const syncSwaps = async (chainIds: number[]): Promise<void> => {
       lastProcessedBlocks[processId] = toBlock;
 
       const events = await getVammEvents(amm, ['swap'], chainId, fromBlock, toBlock);
-
-      if (events.length === 0) {
-        return;
-      }
-
-      for (let i = 0; i < events.length; i++) {
-        const event = events[i];
-        await processSwapEvent(event as SwapEventInfo);
-      }
+      newEvents.push(...(events as SwapEventInfo[]));
     });
 
     promises = promises.concat(...chainPromises);
@@ -60,8 +53,10 @@ export const syncSwaps = async (chainIds: number[]): Promise<void> => {
     }
   });
 
-  // Update Redis
+  // Push update to BigQuery
+  await insertNewSwaps('[Swaps]', newEvents);
 
+  // Update Redis
   if (Object.entries(lastProcessedBlocks).length > 0) {
     console.log('[Swaps]: Caching to Redis...');
     for (const [processId, lastProcessedBlock] of Object.entries(lastProcessedBlocks)) {

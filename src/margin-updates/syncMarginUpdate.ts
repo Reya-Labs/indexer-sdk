@@ -1,13 +1,15 @@
+import { insertNewMarginUpdates } from '../big-query-support/margin-updates-table/push-data/insertNewMarginUpdates';
 import { getMarginEngineEvents } from '../common/contract-services/getMarginEngineEvents';
 import { getRecentAmms } from '../common/getAmms';
 import { getProvider } from '../common/provider/getProvider';
 import { getInformationPerMarginEngine, setRedis } from '../common/services/redisService';
-import { processMarginUpdateEvent } from './processMarginUpdateEvent';
+import { MarginEngineEventInfo } from '../common/types';
 
 export const syncMarginUpdates = async (chainIds: number[]): Promise<void> => {
   const lastProcessedBlocks: { [processId: string]: number } = {};
 
   let promises: Promise<void>[] = [];
+  const newEvents: MarginEngineEventInfo[] = [];
 
   for (const chainId of chainIds) {
     const amms = await getRecentAmms(chainId);
@@ -45,14 +47,7 @@ export const syncMarginUpdates = async (chainIds: number[]): Promise<void> => {
         toBlock,
       );
 
-      if (events.length === 0) {
-        return;
-      }
-
-      for (let i = 0; i < events.length; i++) {
-        const event = events[i];
-        await processMarginUpdateEvent(event);
-      }
+      newEvents.push(...events);
     });
 
     promises = promises.concat(...chainPromises);
@@ -64,6 +59,9 @@ export const syncMarginUpdates = async (chainIds: number[]): Promise<void> => {
       throw v.reason;
     }
   });
+
+  // Push update to BigQuery
+  await insertNewMarginUpdates('[Margin Updates]', newEvents);
 
   // Update Redis
 

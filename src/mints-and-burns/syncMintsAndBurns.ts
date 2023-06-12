@@ -1,14 +1,15 @@
+import { insertNewMintOrBurns } from '../big-query-support/mints-and-burns-table/push-data/insertNewMintOrBurns';
 import { getVammEvents } from '../common/contract-services/getVammEvents';
 import { MintOrBurnEventInfo } from '../common/event-parsers/types';
 import { getRecentAmms } from '../common/getAmms';
 import { getProvider } from '../common/provider/getProvider';
 import { getInformationPerVAMM, setRedis } from '../common/services/redisService';
-import { processMintOrBurnEvent } from './processMintOrBurnEvent';
 
 export const syncMintsAndBurns = async (chainIds: number[]): Promise<void> => {
   const lastProcessedBlocks: { [processId: string]: number } = {};
 
   const promises: Promise<void>[] = [];
+  const newEvents: MintOrBurnEventInfo[] = [];
 
   for (const chainId of chainIds) {
     const amms = await getRecentAmms(chainId);
@@ -39,15 +40,7 @@ export const syncMintsAndBurns = async (chainIds: number[]): Promise<void> => {
       lastProcessedBlocks[processId] = toBlock;
 
       const events = await getVammEvents(amm, ['mint', 'burn'], chainId, fromBlock, toBlock);
-
-      if (events.length === 0) {
-        return;
-      }
-
-      for (let i = 0; i < events.length; i++) {
-        const event = events[i];
-        await processMintOrBurnEvent(event as MintOrBurnEventInfo);
-      }
+      newEvents.push(...(events as MintOrBurnEventInfo[]));
     });
 
     promises.push(...chainPromises);
@@ -58,6 +51,9 @@ export const syncMintsAndBurns = async (chainIds: number[]): Promise<void> => {
       throw v.reason;
     }
   });
+
+  // Push update to BigQuery
+  await insertNewMintOrBurns('[Mints and burns]', newEvents);
 
   // Update Redis
 

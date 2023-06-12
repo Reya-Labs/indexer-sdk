@@ -1,14 +1,11 @@
-import { getBigQuery } from '../../../global';
+import { sendQueriesInBatches } from '../../sendQueriesInBatches';
 import { getTableFullID, secondsToBqDate } from '../../utils';
 import { TrackedBigQueryPositionRow } from '../pull-data/pullAllPositions';
-
-const CHARACTER_LIMIT = 1_000_000;
 
 export const updatePositions = async (
   processName: string,
   positions: TrackedBigQueryPositionRow[],
 ): Promise<void> => {
-  const bigQuery = getBigQuery();
   const tableId = getTableFullID('positions');
 
   const updates = positions
@@ -75,31 +72,5 @@ export const updatePositions = async (
     })
     .filter((u) => u.length > 0);
 
-  if (updates.length === 0) {
-    return;
-  }
-
-  const queries: string[] = [];
-
-  updates.forEach((u) => {
-    if (queries.length === 0 || queries[queries.length - 1].length + u.length > CHARACTER_LIMIT) {
-      queries.push(u);
-    } else {
-      queries[queries.length - 1] = queries[queries.length - 1].concat(u);
-    }
-  });
-
-  console.log(
-    `${processName}: Sending ${queries.length} queries to BigQuery (updating ${updates.length} positions)...`,
-  );
-
-  for (const query of queries) {
-    const options = {
-      query,
-      timeoutMs: 100000,
-      useLegacySql: false,
-    };
-
-    await bigQuery.query(options);
-  }
+  await sendQueriesInBatches(processName, updates);
 };
